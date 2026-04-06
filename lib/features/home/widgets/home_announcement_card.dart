@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/theme/app_colors.dart';
+import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/widgets.dart';
+
+
+class HomeAnnouncementCard extends StatelessWidget {
+  const HomeAnnouncementCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return     Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 8.h),
+            CustomContainer(
+                marginLeft: 34.w,
+                width: 112.w,
+                child: Divider(color: AppColors.color8A8A8A,)),
+            CustomContainer(
+              horizontalMargin: 16.w,
+              bordersColor: AppColors.primaryColor,
+              radiusAll: 20.r,
+              height: 164.h,
+              width: double.infinity,
+              paddingAll: 20.r,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 12.h),
+                  CustomText(
+                    textAlign: TextAlign.start,
+                    text: 'Announcements & Updates',
+                    fontSize: 16.sp,
+                  ),
+                  SizedBox(height: 12.h),
+                  CustomText(
+                    maxline: 2,
+                    textAlign: TextAlign.start,
+                    text: 'Post your announcement here for your users for bettercommunication about users.',
+                    fontSize: 10.sp,
+                  ),
+                  SizedBox(height: 12.h),
+
+                  CustomButton(
+                    width: 100.w,
+                    height: 32.h,
+                    fontSize: 12.sp,
+                    onPressed: (){},label: 'View details',)
+                ],
+              ),
+            ),
+
+            CustomContainer(
+                marginLeft: 100.w,
+                width: 197.w,
+                child: Divider(color: AppColors.color8A8A8A,)),
+          ],
+        ),
+
+        Positioned(
+            top: 0,
+            right: 44.w,
+            child: CustomContainer(
+                width: 80.w,
+                color: AppColors.bgColor,
+                child: Assets.icons.logo.svg(width: 57.w,height: 45.h))),
+      ],
+    );
+  }
+}

@@ -1,0 +1,98 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/theme/app_colors.dart';
+import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/profile/widgets/profile_list_tile.dart';
+import 'package:get/get.dart';
+
+class SettingScreen extends StatelessWidget {
+  const SettingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScaffold(
+      appBar: const CustomAppBar(
+        title: 'Settings',
+      ),
+      body: Column(
+        children: [
+          SizedBox(height: 20.h),
+
+          // Change Password
+          ProfileListTile(
+            icon: Assets.icons.password.path,
+            title: "Change Password",
+            onTap: () {
+            //  Get.toNamed(AppRoutes.settingChangePassword);
+            },
+          ),
+
+          // Terms & Condition
+          ProfileListTile(
+            icon: Assets.icons.terms.path,
+            title: "Terms & Condition",
+            onTap: () {
+              // Get.toNamed(AppRoutes.privacyPolicyAllScreen, arguments: {
+              //   "title" : "Terms & Condition",
+              // });
+
+             // Get.toNamed(AppRoutes.termsScreen);
+            },
+          ),
+
+          // Privacy Policy
+          ProfileListTile(
+            icon: Assets.icons.policy.path,
+            title: "Privacy Policy",
+            onTap: () {
+              // Get.toNamed(AppRoutes.privacyPolicyAllScreen, arguments: {
+              //   "title" : "Privacy Policy",
+              // });
+             // Get.toNamed(AppRoutes.policyScreen);
+            },
+          ),
+
+          // About Us
+          ProfileListTile(
+            icon: Assets.icons.about.path,
+            title: "About Us",
+            onTap: () {
+              // Get.toNamed(AppRoutes.privacyPolicyAllScreen, arguments: {
+              //   "title" : "About Us",
+              // });
+            },
+          ),
+
+          Spacer(),
+          CustomButton(
+            bordersColor: AppColors.errorColor,
+            prefixIcon: Icons.delete_forever_outlined,
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+            backgroundColor: Colors.transparent,
+            foregroundColor: AppColors.errorColor,
+            label: 'Delete Account',
+              onPressed: (){
+            showDialog(
+              context: context,
+              builder: (context) => CustomDialog(
+                title: "Delete Account",
+                rightButtonLabel: 'Yes, Delete',
+                onTapLeftButton: () {
+                  Get.back();
+                },
+                onTapRightButton: () {
+                  // Handle delete logic here
+                  // Get.offAllNamed(AppRoutes.signUpScreen);
+                }, description: 'Are you sure want to delete your Account?',
+              ),
+            );
+          }),
+
+          SizedBox(height: 20.h),
+        ],
+      ),
+    );
+  }
+}

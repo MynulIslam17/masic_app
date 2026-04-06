@@ -7,13 +7,13 @@
 /// **Usage:**
 /// ```dart
 /// // Navigate to a named route
-/// Get.toNamed(AppRoutes.home);
+/// Get.toNamed(AppRoutes.homeScreen);
 ///
 /// // Navigate and remove all previous routes
-/// Get.offAllNamed(AppRoutes.login);
+/// Get.offAllNamed(AppRoutes.loginScreen);
 ///
 /// // Navigate with arguments
-/// Get.toNamed(AppRoutes.profile, arguments: {'userId': '123'});
+/// Get.toNamed(AppRoutes.announcementsDetailsScreen, arguments: {'id': '123'});
 /// ```
 ///
 /// **Adding a new route:**
@@ -23,16 +23,36 @@
 abstract class AppRoutes {
   AppRoutes._();
 
+  // ─── Initial ─────────────────────────────────────────────────────────────
   static const String initial = '/';
-  static const String home = '/home';
 
-  // ─── Add your routes below ───────────────────────────────────────────────
-  // static const String splash   = '/splash';
-  // static const String login    = '/login';
-  // static const String register = '/register';
-  // static const String profile  = '/profile';
-  // static const String settings = '/settings';
-  // static const String cart     = '/cart';
-  // static const String checkout = '/checkout';
-  // static const String orderDetail = '/order-detail';
+  // ─── Auth ─────────────────────────────────────────────────────────────────
+  static const String splashScreen        = '/';
+  static const String loginScreen         = '/login';
+  static const String signUpScreen        = '/sign-up';
+  static const String forgotScreen        = '/forgot';
+  static const String otpScreen           = '/otp';
+  static const String resetPasswordScreen = '/reset-password';
+
+  // ─── Bottom Nav ───────────────────────────────────────────────────────────
+  static const String customBottomNavUserBar = '/home';
+
+  // ─── Profile ──────────────────────────────────────────────────────────────
+  static const String languageScreen             = '/language';
+  static const String settingScreen              = '/settings';
+  static const String settingChangePassword      = '/settings/change-password';
+  static const String privacyPolicyAllScreen     = '/privacy-policy';
+  static const String supportScreen              = '/support';
+  static const String announcementsScreen        = '/announcements';
+  static const String createAnnouncementsScreen  = '/announcements/create';
+  static const String announcementsDetailsScreen = '/announcements/details';
+  static const String memberSelectScreen         = '/member-select';
+  static const String editProfileScreen          = '/profile/edit';
+  static const String profileInformationScreen   = '/profile/information';
+  static const String personalInfoScreen         = '/profile/personal-info';
+  static const String addBioScreen               = '/profile/add-bio';
+  static const String addContactScreen           = '/profile/add-contact';
+  static const String addEducationScreen         = '/profile/add-education';
+  static const String addJobScreen               = '/profile/add-job';
+  static const String addCvScreen                = '/profile/add-cv';
 }

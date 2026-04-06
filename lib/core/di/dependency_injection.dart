@@ -1,7 +1,6 @@
+import 'package:flutter_task/core/services/translation_service.dart';
+import 'package:flutter_task/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
-import '../../features/home/data/repositories/home_repository.dart';
-import '../../features/home/domain/services/home_service.dart';
-import '../../features/home/presentation/controllers/home_controller.dart';
 import '../services/api_service.dart';
 import '../services/cache_service.dart';
 import '../services/connectivity_service.dart';
@@ -64,33 +63,45 @@ class DependencyInjection {
     await storageService.init();
     Get.put<StorageService>(storageService, permanent: true);
 
-    // Repositories
-    Get.lazyPut<HomeRepository>(
-      () => HomeRepository(
-        apiService: Get.find<ApiService>(),
-        cacheService: Get.find<CacheService>(),
-        connectivityService: Get.find<ConnectivityService>(),
-      ),
-      fenix: true,
-    );
 
-    // Domain Services
-    Get.lazyPut<HomeService>(
-      () => HomeService(
-        repository: Get.find<HomeRepository>(),
-        connectivityService: Get.find<ConnectivityService>(),
-      ),
-      fenix: true,
-    );
+    // Translation Service
+    final translationService = TranslationService();
+    await translationService.init();
+    Get.put<TranslationService>(translationService, permanent: true);
+    Get.put<TranslationController>(TranslationController(), permanent: true);
 
-    // Controllers
-    Get.lazyPut<HomeController>(
-      () => HomeController(
-        homeService: Get.find<HomeService>(),
-        repository: Get.find<HomeRepository>(),
-        connectivityService: Get.find<ConnectivityService>(),
-      ),
-    );
+
+
+  //
+  //   // Repositories
+  //   Get.lazyPut<HomeRepository>(
+  //     () => HomeRepository(
+  //       apiService: Get.find<ApiService>(),
+  //       cacheService: Get.find<CacheService>(),
+  //       connectivityService: Get.find<ConnectivityService>(),
+  //     ),
+  //     fenix: true,
+  //   );
+  //
+  //   // Domain Services
+  //   Get.lazyPut<HomeService>(
+  //     () => HomeService(
+  //       repository: Get.find<HomeRepository>(),
+  //       connectivityService: Get.find<ConnectivityService>(),
+  //     ),
+  //     fenix: true,
+  //   );
+  //
+  //   // Controllers
+  //   Get.lazyPut<HomeController>(
+  //     () => HomeController(
+  //       homeService: Get.find<HomeService>(),
+  //       repository: Get.find<HomeRepository>(),
+  //       connectivityService: Get.find<ConnectivityService>(),
+  //     ),
+  //   );
+
+
   }
 
   /// Clear all dependencies from memory.
