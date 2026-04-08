@@ -1,4 +1,3 @@
-// lib/features/translation/screens/language_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/constants/language_constants.dart';
@@ -16,7 +15,7 @@ class LanguageScreen extends StatelessWidget {
     final controller = TranslationController.to;
 
     return CustomScaffold(
-      appBar: CustomAppBar(title: 'language'.tr),
+      appBar: CustomAppBar(title: 'language'),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

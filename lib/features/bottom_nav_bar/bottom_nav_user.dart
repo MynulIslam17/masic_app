@@ -7,13 +7,14 @@ import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/home/home_screen.dart';
 import 'package:flutter_task/features/profile/profile_screen.dart';
+import 'package:flutter_task/features/tree/tree_screen.dart';
 import 'package:get/get.dart';
 
-class CustomBottomNavUserBar extends StatelessWidget {
-  const CustomBottomNavUserBar({super.key});
+class BottomNavUserBar extends StatelessWidget {
+  const BottomNavUserBar({super.key});
 
   static final List<Widget> _screens = [
-    HomeScreen(),
+    TreeScreen(),
     HomeScreen(),
     ProfileScreen(),
   ];

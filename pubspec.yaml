@@ -37,6 +37,7 @@ dependencies:
   dots_indicator: ^4.0.1
   carousel_slider: ^5.1.2
   translator: ^1.0.4+1
+  graphview: ^1.5.1
 
 
 dev_dependencies:

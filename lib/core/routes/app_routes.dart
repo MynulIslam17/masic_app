@@ -35,7 +35,7 @@ abstract class AppRoutes {
   static const String resetPasswordScreen = '/reset-password';
 
   // ─── Bottom Nav ───────────────────────────────────────────────────────────
-  static const String customBottomNavUserBar = '/home';
+  static const String bottomNavUserBar = '/bottomNavUserBar';
 
   // ─── Profile ──────────────────────────────────────────────────────────────
   static const String languageScreen             = '/language';

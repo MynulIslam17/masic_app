@@ -5,6 +5,7 @@ import 'package:flutter_task/features/auth/otp/otp_screen.dart';
 import 'package:flutter_task/features/auth/reset_pass/reset_password_screen.dart';
 import 'package:flutter_task/features/auth/sign_up/sign_up_screen.dart';
 import 'package:flutter_task/features/bottom_nav_bar/bottom_nav_user.dart';
+import 'package:flutter_task/features/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/profile/add_bio_screen.dart';
 import 'package:flutter_task/features/profile/add_contact_screen.dart';
 import 'package:flutter_task/features/profile/add_cv_screen.dart';
@@ -25,34 +26,6 @@ import 'package:flutter_task/features/profile/support_screen.dart';
 import 'package:flutter_task/features/splash/splash_screen.dart';
 import 'package:get/get.dart';
 
-/// All application routes mapped to their pages and bindings.
-///
-/// [AppPages.routes] is passed to `GetMaterialApp(getPages: ...)` to enable
-/// GetX named routing. Each [GetPage] entry ties a URL-like route name to a
-/// page widget and an optional [Bindings] class that supplies dependencies.
-///
-/// **Activating named routing in `main.dart` or `app.dart`:**
-/// ```dart
-/// GetMaterialApp(
-///   initialRoute: AppRoutes.splashScreen,
-///   getPages: AppPages.routes,
-/// );
-/// ```
-///
-/// **Navigating between screens:**
-/// ```dart
-/// // Simple navigation
-/// Get.toNamed(AppRoutes.loginScreen);
-///
-/// // Pass arguments
-/// Get.toNamed(AppRoutes.announcementsDetailsScreen, arguments: {'id': item.id});
-///
-/// // Receive arguments in screen
-/// final id = Get.arguments['id'];
-///
-/// // Clear all previous routes (used after login/logout)
-/// Get.offAllNamed(AppRoutes.customBottomNavUserBar);
-/// ```
 abstract class AppPages {
   AppPages._();
 
@@ -93,8 +66,9 @@ abstract class AppPages {
 
     // ─── Bottom Nav ───────────────────────────────────────────────────────────
     GetPage(
-      name: AppRoutes.customBottomNavUserBar,
-      page: () => CustomBottomNavUserBar(),
+      name: AppRoutes.bottomNavUserBar,
+      page: () => BottomNavUserBar(),
+      binding: BottomNavBinding(),
       // middlewares: [AuthMiddleware()], // Uncomment when AuthMiddleware is ready
     ),
 
@@ -185,18 +159,7 @@ abstract class AppPages {
   ];
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Bindings
-// ─────────────────────────────────────────────────────────────────────────────
-// প্রতিটি Binding-এ তোমার feature-এর Controller/Repository/Service
-// Get.lazyPut() দিয়ে register করো। Route ছাড়লে auto-dispose হবে।
-//
-// Template:
-// Get.lazyPut<XController>(() => XController(
-//   repository: Get.find<XRepository>(),
-//   service: Get.find<XService>(),
-// ));
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 /// Auth feature — Login, SignUp, Forgot, OTP, ResetPassword
 class AuthBinding extends Bindings {
@@ -204,6 +167,15 @@ class AuthBinding extends Bindings {
   void dependencies() {
     // Get.lazyPut<AuthRepository>(() => AuthRepository(api: Get.find<ApiService>()));
     // Get.lazyPut<AuthController>(() => AuthController(repository: Get.find<AuthRepository>()));
+  }
+}
+
+
+/// Bottom Nav feature — UserBar
+class BottomNavBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<BottomNavBarController>(() => BottomNavBarController());
   }
 }
 

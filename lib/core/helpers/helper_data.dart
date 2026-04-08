@@ -82,4 +82,63 @@ class HelperData {
     },
   ];
 
+
+  static final List<Map<String, dynamic>> demoFamilyList = [
+    {
+      "name": "Mohammad",
+      "level": 0,
+      "children": [
+        {
+          "name": "Lulouah",
+          "level": 1,
+          "children": [
+            {
+              "name": "Ali",
+              "level": 2,
+              "children": []
+            },
+            {
+              "name": "Sara",
+              "level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Ibrahim",
+          "level": 1,
+          "children": [
+            {
+              "name": "Omar",
+              "level": 2,
+              "children": []
+            },
+            {
+              "name": "Aisha",
+              "level": 2,
+              "children": []
+            },
+            {
+              "name": "Yusuf",
+              "level": 2,
+              "children": []
+            }
+          ]
+        },
+        {
+          "name": "Nassir",
+          "level": 1,
+          "children": [
+            {
+              "name": "Montasir Mihad",
+              "level": 2,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ];
+
+
 }
