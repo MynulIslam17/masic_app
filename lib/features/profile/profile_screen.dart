@@ -16,7 +16,9 @@ class ProfileScreen extends StatelessWidget {
       appBar: CustomAppBar(),
       body: Column(
         children: [
-          CustomNetworkImage(height: 60.r, width: 60.r ,imageUrl: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg'),
+          CustomNetworkImage(
+              boxShape: BoxShape.circle,
+              height: 80.r, width: 80.r ,imageUrl: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg'),
           CustomText(
             text: "Tanvir Hridoy",
             fontSize: 24.sp,
@@ -31,44 +33,44 @@ class ProfileScreen extends StatelessWidget {
             icon: Assets.icons.profile.path,
             title: "Profile Information",
             onTap: () {
-            //  Get.toNamed(AppRoutes.profileInformationScreen);
+              Get.toNamed(AppRoutes.profileInformationScreen);
             },
           ),ProfileListTile(
             icon: Assets.icons.requested.path,
             title: "Requested",
             onTap: () {
-              //Get.toNamed(AppRoutes.personalInfoScreen);
+              Get.toNamed(AppRoutes.personalInfoScreen);
             },
           ),ProfileListTile(
             icon: Assets.icons.personal.path,
             title: "Personal Information",
             onTap: () {
-            //  Get.toNamed(AppRoutes.personalInfoScreen);
+              Get.toNamed(AppRoutes.personalInfoScreen);
             },
           ), ProfileListTile(
             icon: Assets.icons.language.path,
             title: "Language",
             onTap: () {
-            //  Get.toNamed(AppRoutes.languageScreen);
+              Get.toNamed(AppRoutes.languageScreen);
             },
           ),ProfileListTile(
             icon: Assets.icons.announcement.path,
             title: "Announcement request",
             onTap: () {
-              //Get.toNamed(AppRoutes.announcementsScreen);
+              Get.toNamed(AppRoutes.announcementsScreen);
             },
           ),ProfileListTile(
             icon: Assets.icons.admin.path,
             title: "Admin Support",
             onTap: () {
-              //Get.toNamed(AppRoutes.supportScreen);
+              Get.toNamed(AppRoutes.supportScreen);
             },
           ),
           ProfileListTile(
             icon: Assets.icons.setting.path,
             title: "Settings",
             onTap: () {
-            // Get.toNamed(AppRoutes.settingScreen);
+            Get.toNamed(AppRoutes.settingScreen);
             },
           ),
 
@@ -88,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
                   },
                   onTapRightButton: () {
                    //  PrefsHelper.remove(AppConstants.bearerToken);
-                   //  Get.back();
+                     Get.back();
                    // Get.offAllNamed(AppRoutes.customBottomNavUserBar);
                   },
                 ),

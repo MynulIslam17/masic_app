@@ -67,7 +67,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               },
               child: Stack(
                 children: [
-                  CustomNetworkImage(height: 54.r, width: 54.r, imageUrl: ''),
+                  CustomNetworkImage(
+                      boxShape: BoxShape.circle,
+                      height: 80.r,
+                      width: 80.r,
+                      colorFilter: ColorFilter.mode(AppColors.grayShade100, BlendMode.srcIn),
+                      fallbackAsset: Assets.images.profile.path,
+                      imageUrl: ''),
 
                   Positioned(
                     bottom: 7.h,

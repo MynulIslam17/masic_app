@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
+import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:get/get.dart';
 
@@ -23,7 +25,7 @@ class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
           child: CustomButton(
             label: 'Edit profile',
             onPressed: () {
-             // Get.toNamed(AppRoutes.editProfileScreen);
+              Get.toNamed(AppRoutes.editProfileScreen);
             },
           ),
         ),
@@ -34,8 +36,11 @@ class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
           children: [
             SizedBox(height: 8.h),
             CustomNetworkImage(
-              height: 54.r,
-              width: 54.r,
+              boxShape: BoxShape.circle,
+              height: 80.r,
+              width: 80.r,
+              colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
+              fallbackAsset: Assets.images.profile.path,
               imageUrl: '' ?? '',
             ),
             SizedBox(height: 24.h),

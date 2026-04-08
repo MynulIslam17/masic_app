@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
@@ -24,7 +25,7 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.password.path,
             title: "Change Password",
             onTap: () {
-            //  Get.toNamed(AppRoutes.settingChangePassword);
+              Get.toNamed(AppRoutes.settingChangePassword);
             },
           ),
 

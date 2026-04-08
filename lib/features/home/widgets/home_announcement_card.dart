@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:get/get.dart';
 
 
 class HomeAnnouncementCard extends StatelessWidget {
@@ -50,7 +52,9 @@ class HomeAnnouncementCard extends StatelessWidget {
                     width: 100.w,
                     height: 32.h,
                     fontSize: 12.sp,
-                    onPressed: (){},label: 'View details',)
+                    onPressed: (){
+                      Get.toNamed(AppRoutes.announcementsDetailsScreen);
+                    },label: 'View details',)
                 ],
               ),
             ),

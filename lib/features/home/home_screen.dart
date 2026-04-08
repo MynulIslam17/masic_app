@@ -29,7 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
           return [
             SliverAppBar(
               actions: [
-                IconButton(onPressed: (){}, icon:   Assets.icons.noti.svg(
+                IconButton(onPressed: (){
+
+                }, icon:   Assets.icons.noti.svg(
 
                 ),)
               ],

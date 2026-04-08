@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/helpers/helper_data.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
@@ -71,7 +72,7 @@ class _MemberSelectScreenState extends State<MemberSelectScreen> {
         child: Padding(
           padding: EdgeInsets.all(16.r),
           child: CustomButton(onPressed: () {
-          //  Get.toNamed(AppRoutes.createAnnouncementsScreen);
+            Get.toNamed(AppRoutes.createAnnouncementsScreen);
           }, label: 'Submit'),
         ),
       ),

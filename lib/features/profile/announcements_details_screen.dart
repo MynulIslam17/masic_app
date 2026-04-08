@@ -28,7 +28,7 @@ class _AnnouncementsDetailsScreenState
               children: [
                 CustomNetworkImage(
                   borderRadius: 12.r,
-                  height: 152.h,
+                  height: 225.h,
                   width: double.infinity,
                   imageUrl:
                       'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg' ??
@@ -66,44 +66,44 @@ class _AnnouncementsDetailsScreenState
           ],
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(16.r),
-          child: Row(
-            children: [
-              Expanded(
-                child: CustomButton(onPressed: () {}, label: 'Edit'),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: CustomButton(
-                  bordersColor: AppColors.errorColor,
-                  foregroundColor: AppColors.errorColor,
-                  backgroundColor: AppColors.bgColor,
-                  fontWeight: FontWeight.w400,
-                  label: 'Delete',
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => CustomDialog(
-                        title: "Delete Announcements",
-                        rightButtonLabel: 'Yes, Delete',
-                        onTapLeftButton: () {
-                          Get.back();
-                        },
-                        onTapRightButton: () {
-                        },
-                        description:
-                            'Are you sure want to delete your Announcements?',
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      // bottomNavigationBar: SafeArea(
+      //   child: Padding(
+      //     padding: EdgeInsets.all(16.r),
+      //     child: Row(
+      //       children: [
+      //         Expanded(
+      //           child: CustomButton(onPressed: () {}, label: 'Edit'),
+      //         ),
+      //         SizedBox(width: 12.w),
+      //         Expanded(
+      //           child: CustomButton(
+      //             bordersColor: AppColors.errorColor,
+      //             foregroundColor: AppColors.errorColor,
+      //             backgroundColor: AppColors.bgColor,
+      //             fontWeight: FontWeight.w400,
+      //             label: 'Delete',
+      //             onPressed: () {
+      //               showDialog(
+      //                 context: context,
+      //                 builder: (context) => CustomDialog(
+      //                   title: "Delete Announcements",
+      //                   rightButtonLabel: 'Yes, Delete',
+      //                   onTapLeftButton: () {
+      //                     Get.back();
+      //                   },
+      //                   onTapRightButton: () {
+      //                   },
+      //                   description:
+      //                       'Are you sure want to delete your Announcements?',
+      //                 ),
+      //               );
+      //             },
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

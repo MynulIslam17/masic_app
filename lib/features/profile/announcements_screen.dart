@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/helpers/helper_data.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
@@ -67,11 +68,11 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
                         titleColor: AppColors.primaryColor,
                         onTapLeftButton: () {
                           Get.back();
-                        //  Get.toNamed(AppRoutes.memberSelectScreen);
+                          Get.toNamed(AppRoutes.memberSelectScreen);
                         },
                         onTapRightButton: () {
                           Get.back();
-                        //  Get.toNamed(AppRoutes.createAnnouncementsScreen);
+                         Get.toNamed(AppRoutes.createAnnouncementsScreen);
                         },
                         description:
                         'Please select one which type of announcement you want to upload',
@@ -163,7 +164,7 @@ class _AnnouncementsScreenState extends State<AnnouncementsScreen> {
           SizedBox(height: 12.h),
           CustomButton(
             onPressed: () {
-            //  Get.toNamed(AppRoutes.announcementsDetailsScreen);
+             Get.toNamed(AppRoutes.announcementsDetailsScreen);
             },
             bordersColor: AppColors.primaryColor,
             foregroundColor: AppColors.primaryColor,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:get/get.dart';
@@ -107,7 +108,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               _addOutlineButton(
                 label: 'Add bio',
                 onPressed: () {
-                 // Get.toNamed(AppRoutes.addBioScreen);
+                  Get.toNamed(AppRoutes.addBioScreen);
                 },
               ),
 
@@ -124,7 +125,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               _addOutlineButton(
                 label: 'Add contact information',
                 onPressed: () {
-                //  Get.toNamed(AppRoutes.addContactScreen);
+                  Get.toNamed(AppRoutes.addContactScreen);
                 },
               ),
 
@@ -143,7 +144,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             _addOutlineButton(
               label: 'Add education',
               onPressed: () {
-               // Get.toNamed(AppRoutes.addEducationScreen);
+                Get.toNamed(AppRoutes.addEducationScreen);
               },
             ),
 
@@ -160,7 +161,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             _addOutlineButton(
               label: 'Add job experience',
               onPressed: () {
-                //Get.toNamed(AppRoutes.addJobScreen);
+                Get.toNamed(AppRoutes.addJobScreen);
               },
             ),
 
@@ -177,7 +178,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               _addOutlineButton(
                 label: 'Upload CV',
                 onPressed: () {
-                //  Get.toNamed(AppRoutes.addCvScreen);
+                  Get.toNamed(AppRoutes.addCvScreen);
                 },
               ),
 
