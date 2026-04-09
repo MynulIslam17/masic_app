@@ -55,4 +55,9 @@ abstract class AppRoutes {
   static const String addEducationScreen         = '/profile/add-education';
   static const String addJobScreen               = '/profile/add-job';
   static const String addCvScreen                = '/profile/add-cv';
+
+
+
+
+  static const String requestScreen                = '/home/request';
 }

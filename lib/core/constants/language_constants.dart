@@ -31,26 +31,26 @@ abstract class AppLanguages {
     locale: 'ar-SA',
   );
 
-  static const AppLanguage bangla = AppLanguage(
-    code: 'bn',
-    name: 'বাংলা',
-    flag: '🇧🇩',
-    locale: 'bn-BD',
-  );
-
-  static const AppLanguage french = AppLanguage(
-    code: 'fr',
-    name: 'Français',
-    flag: '🇫🇷',
-    locale: 'fr-FR',
-  );
-
-  static const AppLanguage spanish = AppLanguage(
-    code: 'es',
-    name: 'Español',
-    flag: '🇪🇸',
-    locale: 'es-ES',
-  );
+  // static const AppLanguage bangla = AppLanguage(
+  //   code: 'bn',
+  //   name: 'বাংলা',
+  //   flag: '🇧🇩',
+  //   locale: 'bn-BD',
+  // );
+  //
+  // static const AppLanguage french = AppLanguage(
+  //   code: 'fr',
+  //   name: 'Français',
+  //   flag: '🇫🇷',
+  //   locale: 'fr-FR',
+  // );
+  //
+  // static const AppLanguage spanish = AppLanguage(
+  //   code: 'es',
+  //   name: 'Español',
+  //   flag: '🇪🇸',
+  //   locale: 'es-ES',
+  // );
 
   // ─── Add more languages here ─────────────────────────────────────────────
   // static const AppLanguage hindi = AppLanguage(
@@ -65,9 +65,6 @@ abstract class AppLanguages {
   static const List<AppLanguage> all = [
     english,
     arabic,
-    bangla,
-    french,
-    spanish,
   ];
 
   /// Default / fallback language.

@@ -1,6 +1,7 @@
-// lib/features/translation/widget/language_picker.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/theme/app_colors.dart';
+import 'package:flutter_task/core/widgets/custom_text.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/constants/language_constants.dart';
@@ -29,8 +30,8 @@ class LanguagePicker {
       }) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape:  RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
       builder: (_) => _LanguagePickerSheet(onChange: onChange),
     );
@@ -54,23 +55,22 @@ class _LanguagePickerSheet extends StatelessWidget {
         children: [
           // Handle
           Container(
-            width: 40,
-            height: 4,
+            width: 40.w,
+            height: 4.h,
             decoration: BoxDecoration(
               color: theme.dividerColor,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(2.r),
             ),
           ),
-          const SizedBox(height: 16),
+           SizedBox(height: 16.h),
 
           // Title
-          Text(
+          CustomText(text:
             'Select Language',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
           ),
-          const SizedBox(height: 12),
+           SizedBox(height: 12.h),
 
           // Language list
           Obx(() {
@@ -80,17 +80,21 @@ class _LanguagePickerSheet extends StatelessWidget {
                 final isSelected = lang.code == current;
                 return ListTile(
                   leading: Text(lang.flag,
-                      style: const TextStyle(fontSize: 28)),
-                  title: Text(lang.name),
-                  subtitle: Text(lang.code.toUpperCase(),
-                      style: TextStyle(color: theme.hintColor)),
+                      style:  TextStyle(fontSize: 28.sp)),
+                  title: CustomText(
+                    textAlign: TextAlign.start,
+                      text : lang.name,color: AppColors.primaryColor),
+                  subtitle: CustomText(
+                    textAlign: TextAlign.start,
+                      text: lang.code.toUpperCase(),
+                      color: theme.hintColor),
                   trailing: isSelected
                       ? Icon(Icons.check_circle,
-                      color: theme.colorScheme.primary)
+                      color: AppColors.primaryColor)
                       : null,
                   selected: isSelected,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   onTap: () {
                     Navigator.of(context).pop();
@@ -114,41 +118,41 @@ class _LanguagePickerSheet extends StatelessWidget {
 /// ```dart
 /// LanguageButton()  // place in AppBar actions or settings screen
 /// ```
-class LanguageButton extends StatelessWidget {
-  const LanguageButton({
-    super.key,
-    this.onChange,
-  });
-
-  final void Function(AppLanguage)? onChange;
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      final controller = TranslationController.to;
-      return InkWell(
-        onTap: () => LanguagePicker.show(context, onChange: onChange),
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                controller.currentFlag,
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                controller.currentCode.toUpperCase(),
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    });
-  }
-}
+// class LanguageButton extends StatelessWidget {
+//   const LanguageButton({
+//     super.key,
+//     this.onChange,
+//   });
+//
+//   final void Function(AppLanguage)? onChange;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Obx(() {
+//       final controller = TranslationController.to;
+//       return InkWell(
+//         onTap: () => LanguagePicker.show(context, onChange: onChange),
+//         borderRadius: BorderRadius.circular(8),
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//           child: Row(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               Text(
+//                 controller.currentFlag,
+//                 style: const TextStyle(fontSize: 20),
+//               ),
+//               const SizedBox(width: 4),
+//               Text(
+//                 controller.currentCode.toUpperCase(),
+//                 style: Theme.of(context).textTheme.labelMedium?.copyWith(
+//                   fontWeight: FontWeight.w600,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       );
+//     });
+//   }
+// }

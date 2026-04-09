@@ -10,7 +10,7 @@ class PollCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
-      //horizontalMargin: 16.w,
+      horizontalMargin: 6.w,
       bordersColor: AppColors.color8A8A8A,
       radiusAll: 20.r,
       height: 158.h,

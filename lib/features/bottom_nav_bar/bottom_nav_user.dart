@@ -28,6 +28,8 @@ class BottomNavUserBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
+      extendBodyBehindAppBar: true,
       extendBody: true,
       body: GetBuilder<BottomNavBarController>(
         builder: (controller) => _screens[controller.selectedIndex],

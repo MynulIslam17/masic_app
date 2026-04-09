@@ -14,7 +14,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
-  final String role = Get.arguments['role'];
+  final String role = Get.arguments as String;
 
   final TextEditingController _otpController = TextEditingController();
 

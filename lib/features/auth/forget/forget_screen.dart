@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:get/get.dart';
 import '../widgets/app_logo.dart';
 
 class ForgetScreen extends StatefulWidget {
@@ -63,6 +65,7 @@ class _ForgetScreenState extends State<ForgetScreen> {
 
   void _onGetVerificationCode(){
     if(_globalKey.currentState!.validate()) return;
+    Get.toNamed(AppRoutes.otpScreen,arguments: 'forgot');
   }
 
 }

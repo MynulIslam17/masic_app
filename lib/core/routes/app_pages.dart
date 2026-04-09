@@ -15,6 +15,7 @@ import 'package:flutter_task/features/profile/announcements_details_screen.dart'
 import 'package:flutter_task/features/profile/announcements_screen.dart';
 import 'package:flutter_task/features/profile/create_announcements_screen.dart';
 import 'package:flutter_task/features/profile/edit_profile_screen.dart';
+import 'package:flutter_task/features/request/request_screen.dart';
 import 'package:flutter_task/features/translation/presentation/language_screen.dart';
 import 'package:flutter_task/features/profile/member_select_screen.dart';
 import 'package:flutter_task/features/profile/personal_info_screen.dart';
@@ -155,6 +156,12 @@ abstract class AppPages {
       name: AppRoutes.addCvScreen,
       page: () => AddCvScreen(),
       binding: ProfileBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.requestScreen,
+      page: () => RequestScreen(),
+      //binding: ProfileBinding(),
     ),
   ];
 }

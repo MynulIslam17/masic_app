@@ -4,6 +4,7 @@ import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/auth/widgets/app_logo.dart';
+import 'package:get/get.dart';
 
 
 
@@ -155,9 +156,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     fontSize: 14.sp,
                     color: AppColors.colorB0B0B0,
                   ),
-                  CustomText(
-                    text: "Sign In",
-                    color: AppColors.primaryColor,
+                  GestureDetector(
+                    onTap: (){
+                      Get.back();
+                    },
+                    child: CustomText(
+                      text: "Sign In",
+                      color: AppColors.primaryColor,
+                    ),
                   ),
                 ],
               ),

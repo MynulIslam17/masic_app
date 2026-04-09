@@ -2,11 +2,14 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/home/widgets/home_announcement_card.dart';
 import 'package:flutter_task/features/home/widgets/poll_card_widget.dart';
+import 'package:flutter_task/features/request/widgets/request_card_widget.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.bgColor,
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -174,40 +178,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
 
-
-            CustomContainer(
-              horizontalMargin: 16.w,
-              bordersColor: AppColors.color8A8A8A,
-              radiusAll: 20.r,
-              height: 158.h,
-              width: double.infinity,
-              paddingHorizontal: 44.r,
-              paddingVertical: 20.r,
-              child: Column(
-                children: [
-                  CustomText(
-                    maxline: 1,
-                    text: 'Request for opportunities',
-                    fontSize: 16.sp,
-                    color: AppColors.primaryColor,
-                  ),
-                  SizedBox(height: 12.h),
-                  CustomText(
-                    maxline: 2,
-                    text:
-                    'Submit requests for jobs, volunteering opportunities, workshops',
-                    fontSize: 10.sp,
-                  ),
-                  SizedBox(height: 14.h),
-
-                  CustomButton(
-                    height: 38.h,
-                    fontSize: 12.sp,
-                    onPressed: () {},
-                    label: 'Request',
-                  ),
-                ],
-              ),
+            RequestCardWidget(
+              onTap: (){
+                Get.toNamed(AppRoutes.requestScreen);
+              },
             ),
 
             CustomText(

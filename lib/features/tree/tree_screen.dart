@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/helpers/helper_data.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/custom_text.dart';
+import 'package:get/get.dart' hide Node;
 import 'package:graphview/GraphView.dart';
 
 class TreeScreen extends StatefulWidget {
@@ -115,39 +118,41 @@ class _TreeScreenState extends State<TreeScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.bgColor,
-      body: InteractiveViewer(
-            boundaryMargin: EdgeInsets.only(right:  200.r),
-            constrained: false,
-            minScale: 0.5,
-            maxScale: 2.5,
-            child: Stack(
-      children: [
-        Assets.icons.treeHome.svg(),
-        Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2,left: 44.w),
-          child: GraphView(
-            graph: graph,
-            algorithm: BuchheimWalkerAlgorithm(
-              builder,
-              TreeEdgeRenderer(builder),
-            ),
-            paint: Paint()
-              ..color = const Color(0xFFC5CDE6)
-              ..strokeWidth = 1.5
-              ..style = PaintingStyle.stroke,
-            builder: (Node node) {
-              final id = node.key!.value as String;
-              final isRoot = _nodeDataMap[id] == null ||
-                  (_nodeDataMap[id]!['level'] == 0);
-              return _buildNodeWidget(id, isRoot);
-            },
-          ),
-        ),
-      ],
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: AppColors.bgColor,
+        body: InteractiveViewer(
+              boundaryMargin: EdgeInsets.only(right:  200.r),
+              constrained: false,
+              minScale: 0.5,
+              maxScale: 2.5,
+              child: Stack(
+        children: [
+          Assets.icons.treeHome.svg(),
+          Padding(
+            padding: EdgeInsets.only(top: MediaQuery.of(context).size.height / 2,left: 44.w),
+            child: GraphView(
+              graph: graph,
+              algorithm: BuchheimWalkerAlgorithm(
+                builder,
+                TreeEdgeRenderer(builder),
+              ),
+              paint: Paint()
+                ..color = const Color(0xFFC5CDE6)
+                ..strokeWidth = 1.5
+                ..style = PaintingStyle.stroke,
+              builder: (Node node) {
+                final id = node.key!.value as String;
+                final isRoot = id == HelperData.demoFamilyList[0]['name'];
+                return _buildNodeWidget(id, isRoot);
+              },
             ),
           ),
+        ],
+              ),
+            ),
+      ),
     );
   }
 
@@ -158,7 +163,9 @@ class _TreeScreenState extends State<TreeScreen>
     final isExpanded = _expandedNodes[label] ?? true;
 
     return GestureDetector(
-      onTap: hasChildren ? () => _toggleNode(label) : null,
+      onTap: () {
+        Get.toNamed(AppRoutes.profileInformationScreen);
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -167,49 +174,42 @@ class _TreeScreenState extends State<TreeScreen>
           color: Colors.white,
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(
-            color: isRoot ? const Color(0xFF3D6BCE) : const Color(0xFFC5CDE6),
+            color: isRoot
+                ? AppColors.primaryColor
+                : AppColors.primaryColor.withOpacity(0.4),
             width: isRoot ? 1.5 : 1.0,
           ),
-          boxShadow: isRoot
-              ? [
-                  BoxShadow(
-                    color: const Color(0xFF3D6BCE).withOpacity(0.15),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  ),
-                ]
-              : [],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontWeight: isRoot ? FontWeight.w600 : FontWeight.w400,
-                color: const Color(0xFF1A2540),
-              ),
+            CustomText(
+              text: label,
+              fontSize: 13.sp,
+              fontWeight: isRoot ? FontWeight.w600 : FontWeight.w400,
+              color: AppColors.primaryColor,
             ),
+
             if (hasChildren) ...[
               SizedBox(width: 8.w),
-              Container(
-                width: 20.r,
-                height: 20.r,
-                decoration: BoxDecoration(
-                  color: isRoot
-                      ? const Color(0xFF3D6BCE)
-                      : const Color(0xFFE8EDFA),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isExpanded
-                      ? Icons.keyboard_arrow_left_rounded
-                      : Icons.keyboard_arrow_right_rounded,
-                  size: 14.sp,
-                  color: isRoot ? Colors.white : const Color(0xFF3D6BCE),
+              GestureDetector(
+                onTap: () => _toggleNode(label),
+                child: Container(
+                  width: 26.r,
+                  height: 26.r,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryColor.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isExpanded ? Icons.arrow_back : Icons.arrow_forward,
+                    size: 16.sp,
+                    color: AppColors.primaryColor.withOpacity(0.5),
+                  ),
                 ),
               ),
+            ] else ...[
+              SizedBox.shrink(),
             ],
           ],
         ),

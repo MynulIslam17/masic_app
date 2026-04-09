@@ -5,7 +5,6 @@ import 'package:flutter_task/core/helpers/photo_picker_helper.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:get/get.dart';
 
 
 class EditProfileScreen extends StatefulWidget {

@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppColors.colorB0B0B0,
                   ),
                   GestureDetector(
-                  //  onTap: () => Get.toNamed(AppRoutes.signUpScreen),
+                   onTap: () => Get.toNamed(AppRoutes.signUpScreen),
                     child: CustomText(
                       text: "Sign up",
                       color: AppColors.primaryColor,
