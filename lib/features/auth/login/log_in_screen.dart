@@ -129,6 +129,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onSingUp() {
     if (_globalKey.currentState!.validate()) return;
-    Get.offAllNamed(AppRoutes.bottomNavUserBar);
+    Get.offAllNamed(AppRoutes.adminDashboardScreen);
   }
 }

@@ -67,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomText(
+                              enableAutoTranslate: false,
                               fontSize: 14.sp,
                               color: isCollapsed ? AppColors.primaryColor : Colors.white,
                               textAlign: TextAlign.start,

@@ -57,7 +57,12 @@ abstract class AppRoutes {
   static const String addCvScreen                = '/profile/add-cv';
 
 
-
-
+// ─── Request ──────────────────────────────────────────────────────────────
   static const String requestScreen                = '/home/request';
+
+
+
+
+  // ─── Admin ──────────────────────────────────────────────────────────────
+  static const String adminDashboardScreen                = '/home/admin';
 }
