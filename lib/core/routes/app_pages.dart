@@ -4,8 +4,8 @@ import 'package:flutter_task/features/auth/login/log_in_screen.dart';
 import 'package:flutter_task/features/auth/otp/otp_screen.dart';
 import 'package:flutter_task/features/auth/reset_pass/reset_password_screen.dart';
 import 'package:flutter_task/features/auth/sign_up/sign_up_screen.dart';
-import 'package:flutter_task/features/bottom_nav_bar/bottom_nav_user.dart';
-import 'package:flutter_task/features/bottom_nav_bar/controller/bottom_nav_bar_controller.dart';
+import 'package:flutter_task/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
+import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/profile/add_bio_screen.dart';
 import 'package:flutter_task/features/profile/add_contact_screen.dart';
 import 'package:flutter_task/features/profile/add_cv_screen.dart';
@@ -70,7 +70,7 @@ abstract class AppPages {
       name: AppRoutes.bottomNavUserBar,
       page: () => BottomNavUserBar(),
       binding: BottomNavBinding(),
-      // middlewares: [AuthMiddleware()], // Uncomment when AuthMiddleware is ready
+       //middlewares: [AuthMiddleware()],
     ),
 
     // ─── Profile ──────────────────────────────────────────────────────────────
