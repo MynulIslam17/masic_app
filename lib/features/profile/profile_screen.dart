@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/profile/widgets/profile_list_tile.dart';
+import 'package:flutter_task/core/widgets/profile_list_tile.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {

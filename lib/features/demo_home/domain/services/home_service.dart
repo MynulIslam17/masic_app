@@ -6,7 +6,7 @@ import '../../data/models/product_model.dart';
 import '../../data/models/restaurant_model.dart';
 import '../../data/repositories/home_repository.dart';
 
-/// Service layer that handles business logic for the demo_home feature.
+/// Service layer that handles business logic for the dashboard feature.
 ///
 /// This class implements the **Service Layer Pattern**, separating business logic
 /// from data access logic. It coordinates multiple repository calls and handles
@@ -46,7 +46,7 @@ class HomeService {
   })  : _repository = repository,
         _connectivityService = connectivityService;
 
-  /// Fetches all demo_home screen data in parallel.
+  /// Fetches all dashboard screen data in parallel.
   ///
   /// This method performs the following operations concurrently:
   /// 1. Fetch banners
@@ -155,7 +155,7 @@ class HomeService {
     return _repository.hasCache();
   }
 
-  /// Retrieves all cached demo_home screen data.
+  /// Retrieves all cached dashboard screen data.
   ///
   /// This method loads data from the local cache without making network requests.
   /// Useful for offline mode or showing stale data while fetching fresh data.
@@ -186,9 +186,9 @@ class HomeService {
   }
 }
 
-/// Data transfer object that holds all demo_home screen data.
+/// Data transfer object that holds all dashboard screen data.
 ///
-/// This class aggregates all the data needed for the demo_home screen in a single object,
+/// This class aggregates all the data needed for the dashboard screen in a single object,
 /// making it easier to pass around and reducing the number of parameters needed.
 ///
 /// **Usage:**
@@ -224,7 +224,7 @@ class HomeData {
   /// Total number of restaurants available (for pagination)
   final int totalRestaurants;
 
-  /// Creates a [HomeData] object with all demo_home screen data.
+  /// Creates a [HomeData] object with all dashboard screen data.
   HomeData({
     required this.banners,
     required this.categories,

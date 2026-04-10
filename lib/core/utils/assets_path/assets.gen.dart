@@ -24,6 +24,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/admin.svg
   SvgGenImage get admin => const SvgGenImage('assets/icons/admin.svg');
 
+  /// File path: assets/icons/all_admin.svg
+  SvgGenImage get allAdmin => const SvgGenImage('assets/icons/all_admin.svg');
+
+  /// File path: assets/icons/all_user.svg
+  SvgGenImage get allUser => const SvgGenImage('assets/icons/all_user.svg');
+
   /// File path: assets/icons/announcement.svg
   SvgGenImage get announcement =>
       const SvgGenImage('assets/icons/announcement.svg');
@@ -35,8 +41,17 @@ class $AssetsIconsGen {
   SvgGenImage get backButton =>
       const SvgGenImage('assets/icons/back_button.svg');
 
+  /// File path: assets/icons/banner.svg
+  SvgGenImage get banner => const SvgGenImage('assets/icons/banner.svg');
+
   /// File path: assets/icons/call.svg
   SvgGenImage get call => const SvgGenImage('assets/icons/call.svg');
+
+  /// File path: assets/icons/clean.svg
+  SvgGenImage get clean => const SvgGenImage('assets/icons/clean.svg');
+
+  /// File path: assets/icons/dashboard.svg
+  SvgGenImage get dashboard => const SvgGenImage('assets/icons/dashboard.svg');
 
   /// File path: assets/icons/date.svg
   SvgGenImage get date => const SvgGenImage('assets/icons/date.svg');
@@ -87,6 +102,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/policy.svg
   SvgGenImage get policy => const SvgGenImage('assets/icons/policy.svg');
 
+  /// File path: assets/icons/poll.svg
+  SvgGenImage get poll => const SvgGenImage('assets/icons/poll.svg');
+
   /// File path: assets/icons/profile.svg
   SvgGenImage get profile => const SvgGenImage('assets/icons/profile.svg');
 
@@ -130,10 +148,15 @@ class $AssetsIconsGen {
   List<SvgGenImage> get values => [
     about,
     admin,
+    allAdmin,
+    allUser,
     announcement,
     appLogo,
     backButton,
+    banner,
     call,
+    clean,
+    dashboard,
     date,
     education,
     email,
@@ -150,6 +173,7 @@ class $AssetsIconsGen {
     person,
     personal,
     policy,
+    poll,
     profile,
     profileHome,
     requested,

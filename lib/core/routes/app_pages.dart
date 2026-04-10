@@ -1,5 +1,6 @@
 import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/features/admin/admin_dashboard_screen.dart';
+import 'package:flutter_task/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
+import 'package:flutter_task/features/admin/profile/presentation/admin_profile_screen.dart';
 import 'package:flutter_task/features/auth/forget/forget_screen.dart';
 import 'package:flutter_task/features/auth/login/log_in_screen.dart';
 import 'package:flutter_task/features/auth/otp/otp_screen.dart';
@@ -169,6 +170,12 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.adminDashboardScreen,
       page: () => AdminDashboardScreen(),
+      //binding: ProfileBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.adminProfileScreen,
+      page: () => AdminProfileScreen(),
       //binding: ProfileBinding(),
     ),
   ];
