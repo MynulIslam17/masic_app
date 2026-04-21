@@ -61,7 +61,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               onTap: () {
                 PhotoPickerHelper.showPicker(
                   context: context,
-                  onImagePicked: (image) {},
+                  onImagePicked: (image) {
+
+                  },
                 );
               },
               child: Stack(

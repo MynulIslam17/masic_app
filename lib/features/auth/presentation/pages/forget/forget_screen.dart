@@ -1,37 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:flutter_task/features/auth/presentation/widgets/app_logo.dart';
 import 'package:get/get.dart';
-import '../widgets/app_logo.dart';
 
-class ForgetScreen extends StatefulWidget {
+class ForgetScreen extends StatelessWidget {
   const ForgetScreen({super.key});
 
   @override
-  State<ForgetScreen> createState() => _ForgetScreenState();
-}
-
-class _ForgetScreenState extends State<ForgetScreen> {
-
-  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
-
-
-  final TextEditingController _emailController = TextEditingController();
-
-
-
-
-
-  @override
   Widget build(BuildContext context) {
+    final AuthController to = AuthController.to;
     return CustomScaffold(
       paddingSide: 24.w,
       appBar:  CustomAppBar(title: 'E-mail Verification'),
       body: SingleChildScrollView(
         child: Form(
-          key: _globalKey,
+          key: to.forgotFormKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -41,17 +29,22 @@ class _ForgetScreenState extends State<ForgetScreen> {
               SizedBox(height: 40.h),
               CustomTextField(
                 prefixIcon: Assets.icons.email.svg(),
-                controller: _emailController,
+                controller: to.emailController,
                 hintText: "Enter your email",
                 keyboardType: TextInputType.emailAddress,
                 isEmail: true,
               ),
               SizedBox(height: 54.h),
 
-                    CustomButton(
-                    label: "Send OTP",
-                    onPressed: _onGetVerificationCode,
-                  ),
+                    GetBuilder<AuthController>(
+                      builder: (to) {
+                        return CustomButton(
+                        label: "Send OTP",
+                        isLoading: to.forgotState.isLoading,
+                        onPressed: to.forgot,
+                                          );
+                      }
+                    ),
 
 
               SizedBox(height: 18.h),
@@ -60,12 +53,6 @@ class _ForgetScreenState extends State<ForgetScreen> {
         ),
       ),
     );
-  }
-
-
-  void _onGetVerificationCode(){
-    if(_globalKey.currentState!.validate()) return;
-    Get.toNamed(AppRoutes.otpScreen,arguments: 'forgot');
   }
 
 }

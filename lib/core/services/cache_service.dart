@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class CacheService {
@@ -22,11 +23,14 @@ class CacheService {
 
   Future<void> put(String key, dynamic value) async {
     await box.put(key, value);
+    debugPrint('Saved to cache: ----------------------->>>  $key: $value');
   }
 
   T? get<T>(String key, {T? defaultValue}) {
     try {
+
       return box.get(key, defaultValue: defaultValue) as T?;
+
     } catch (_) {
       return defaultValue;
     }
@@ -38,6 +42,7 @@ class CacheService {
 
   Future<void> delete(String key) async {
     await box.delete(key);
+    debugPrint('Deleted from cache: ----------------------->>>  $key');
   }
 
   Future<void> clear() async {

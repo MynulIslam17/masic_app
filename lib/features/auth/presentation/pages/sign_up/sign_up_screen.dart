@@ -1,44 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/auth/widgets/app_logo.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:flutter_task/features/auth/presentation/widgets/app_logo.dart';
 import 'package:get/get.dart';
 
 
 
 
 
-class SignUpScreen extends StatefulWidget {
+class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
-}
-
-class _SignUpScreenState extends State<SignUpScreen> {
-
-  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
-
-  final TextEditingController _fastNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPassController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-
-
-
-
-  @override
   Widget build(BuildContext context) {
+    final AuthController to = AuthController.to;
     return CustomScaffold(
       paddingSide: 24.w,
       appBar: CustomAppBar(),
       body: SingleChildScrollView(
         child: Form(
-          key: _globalKey,
+          key: to.registerFormKey,
           child: Column(
             spacing: 4.h,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,19 +35,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
               CustomTextField(
                 prefixIcon: Assets.icons.person.svg(),
                 labelText: 'First Name',
-                controller: _fastNameController,
+                controller: to.fastNameController,
                 hintText: "Enter your first name",
               ), CustomTextField(
                 prefixIcon: Assets.icons.person.svg(),
                 labelText: 'Last Name',
-                controller: _lastNameController,
+                controller: to.lastNameController,
                 hintText: "Enter your last name",
               ),
 
               CustomTextField(
                 prefixIcon: Assets.icons.email.svg(),
                 labelText: 'Email',
-                controller: _emailController,
+                controller: to.emailController,
                 hintText: "Enter your email",
                 keyboardType: TextInputType.emailAddress,
                 isEmail: true,
@@ -71,27 +56,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
               CustomTextField(
                 prefixIcon: Assets.icons.number.svg(),
                 labelText: 'Phone Number',
-                controller: _phoneController,
+                controller: to.phoneController,
                 hintText: "Enter your number",
                 keyboardType: TextInputType.number,
               ),
               CustomTextField(
                 prefixIcon: Assets.icons.password.svg(),
                 labelText: 'Password',
-                controller: _passwordController,
+                controller: to.passwordController,
                 hintText: "Enter your password",
                 isPassword: true,
               ),
               CustomTextField(
                 prefixIcon: Assets.icons.password.svg(),
                 labelText: 'Confirm Password',
-                controller: _confirmPassController,
+                controller: to.confirmPasswordController,
                 hintText: "Confirm Password",
                 isPassword: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Confirm password is required';
-                  } else if (value != _passwordController.text) {
+                  } else if (value != to.passwordController.text) {
                     return 'Passwords do not match';
                   }
                   return null;
@@ -99,11 +84,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               Row(
                 children: [
-                         Checkbox(
-                          value: true,
-                          onChanged: (value) {},
-                          activeColor: AppColors.primaryColor,
-                        ),
+                         GetBuilder<AuthController>(
+                           builder: (to) {
+                             return Checkbox(
+                              value: to.checked,
+                              onChanged: (value) => to.toggleCheckbox(value),
+                              activeColor: AppColors.primaryColor,
+                                                     );
+                           }
+                         ),
 
                   CustomText(
                     text: "I accept the Terms & Conditions & Privacy Policy",
@@ -115,7 +104,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
               SizedBox(height: 44.h),
 
-               CustomButton(label: "Sign Up", onPressed: _onSignUp),
+               GetBuilder<AuthController>(
+                 builder: (controller) {
+                   return CustomButton(
+                     isLoading: controller.registerState.isLoading,
+                       label: "Sign Up", onPressed: controller.register);
+                 }
+               ),
 
               SizedBox(height: 24.h),
               Row(
@@ -144,10 +139,5 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
-
-  void _onSignUp() {
-    if (!_globalKey.currentState!.validate()) return;
-  }
-
 }
 

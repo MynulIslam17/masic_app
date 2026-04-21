@@ -95,7 +95,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   final RxString _currentLang = (Get.locale?.languageCode ?? 'en').obs;
   final RxString _translatedHint = ''.obs;
   final RxString _pleaseEnterText = ''.obs;
-  final RxString _passwordMinText = 'Password: 8 characters min!'.obs;
+  final RxString _passwordMinText = 'Password: 6 characters min!'.obs;
   final RxString _checkEmailText = 'Please check your email!'.obs;
 
   late final Worker _localeWorker;
@@ -128,7 +128,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     final results = await Future.wait([
       hint != null ? _translate(hint) : Future.value(''),
       pleasePrefix.isNotEmpty ? _translate(pleasePrefix) : Future.value(''),
-      _translate('Password: 8 characters min!'),
+      _translate('Password: 6 characters min!'),
       _translate('Please check your email!'),
     ]);
 
@@ -169,7 +169,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   String? _defaultValidator(String? value) {
     if (widget.isEmail == false) {
       if (value!.isEmpty) return _pleaseEnterText.value;
-      if (widget.isPassword && value.length < 8) return _passwordMinText.value;
+      if (widget.isPassword && value.length < 6) return _passwordMinText.value;
     } else {
       if (value!.isEmpty) return _pleaseEnterText.value;
       if (!AppConstants.emailValidate.hasMatch(value)) return _checkEmailText.value;

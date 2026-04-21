@@ -1,114 +1,174 @@
-/// Base exception class for all application exceptions.
-///
-/// All custom exceptions in the app should extend this class to provide
-/// consistent error handling and better debugging information.
-///
-/// **Properties:**
-/// - [message]: A user-friendly error message
-/// - [details]: Optional technical details for debugging
-///
-/// **Usage:**
-/// ```dart
-/// try {
-///   // Some operation
-/// } on NoInternetException catch (e) {
-///   print('Offline: ${e.message}');
-/// } on ServerException catch (e) {
-///   print('Server error (${e.statusCode}): ${e.message}');
-/// }
-/// ```
 abstract class AppException implements Exception {
-  /// User-friendly error message
   final String message;
-
-  /// Optional technical details for debugging
   final String? details;
+  final String? errorCode;
 
-  /// Creates an [AppException] with a [message] and optional [details].
-  AppException(this.message, [this.details]);
+  AppException(this.message, {this.details, this.errorCode});
 
   @override
   String toString() {
-    if (details != null) {
-      return '$message: $details';
-    }
+    if (details != null) return '$message: $details';
     return message;
   }
 }
 
-/// Exception thrown when there is no internet connection.
-///
-/// This exception indicates that the device is offline or cannot reach
-/// the server due to network connectivity issues.
-///
-/// **When to use:**
-/// - Device is in airplane mode
-/// - WiFi/cellular data is disabled
-/// - Network socket errors occur
-///
-/// **Example:**
-/// ```dart
-/// if (!await connectivity.checkConnectivity()) {
-///   throw NoInternetException();
-/// }
-/// ```
+// ═══════════════════════════════════════════════
+// NETWORK
+// ═══════════════════════════════════════════════
 class NoInternetException extends AppException {
   NoInternetException([String? details])
-      : super('No internet connection', details);
+      : super('No internet connection', details: details, errorCode: 'NO_INTERNET');
 }
 
-/// Exception thrown when an API request times out.
-///
-/// This occurs when the server takes too long to respond, typically due to:
-/// - Slow network connection
-/// - Server overload
-/// - Large data transfers
-///
-/// **Default timeout:** 30 seconds (configured in ApiService)
-///
-/// **Example:**
-/// ```dart
-/// try {
-///   await apiService.get('/data');
-/// } on TimeoutException {
-///   // Show retry option to user
-/// }
-/// ```
 class TimeoutException extends AppException {
-  TimeoutException([String? details])
-      : super('Request timeout', details);
+  TimeoutException([String? message, String? details])
+      : super(message ?? 'Request timeout', details: details, errorCode: 'TIMEOUT');
 }
 
-/// Exception thrown when the server returns an error response.
-///
-/// This exception includes the HTTP status code for more specific error handling.
-///
-/// **Common status codes:**
-/// - 400: Bad Request
-/// - 401: Unauthorized
-/// - 403: Forbidden
-/// - 404: Not Found
-/// - 500: Internal Server Error
-/// - 503: Service Unavailable
-///
-/// **Example:**
-/// ```dart
-/// try {
-///   await apiService.get('/users/123');
-/// } on ServerException catch (e) {
-///   if (e.statusCode == 404) {
-///     print('User not found');
-///   } else if (e.statusCode == 500) {
-///     print('Server error, try again later');
-///   }
-/// }
-/// ```
+class SSLException extends AppException {
+  SSLException([String? details])
+      : super('Secure connection failed', details: details, errorCode: 'SSL_ERROR');
+}
+
+// ═══════════════════════════════════════════════
+// 4xx CLIENT ERRORS
+// ═══════════════════════════════════════════════
+class BadRequestException extends AppException {
+  BadRequestException([String? message, String? details])
+      : super(message ?? 'Bad request. Please check your input', details: details, errorCode: 'BAD_REQUEST');
+}
+
+class UnauthorizedException extends AppException {
+  UnauthorizedException([String? message, String? details])
+      : super(message ?? 'Unauthorized access', details: details, errorCode: 'UNAUTHORIZED');
+}
+
+class ForbiddenException extends AppException {
+  ForbiddenException([String? message, String? details])
+      : super(message ?? 'Access forbidden', details: details, errorCode: 'FORBIDDEN');
+}
+
+class ResourceNotFoundException extends AppException {
+  ResourceNotFoundException([String? message, String? details])
+      : super(message ?? 'Requested resource not found', details: details, errorCode: 'NOT_FOUND');
+}
+
+class MethodNotAllowedException extends AppException {
+  MethodNotAllowedException([String? details])
+      : super('Method not allowed', details: details, errorCode: 'METHOD_NOT_ALLOWED');
+}
+
+class NotAcceptableException extends AppException {
+  NotAcceptableException([String? details])
+      : super('Request not acceptable', details: details, errorCode: 'NOT_ACCEPTABLE');
+}
+
+class RequestTimeoutException extends AppException {
+  RequestTimeoutException([String? details])
+      : super('Request timeout. Try again', details: details, errorCode: 'REQUEST_TIMEOUT');
+}
+
+class ConflictException extends AppException {
+  ConflictException([String? message, String? details])
+      : super(message ?? 'Conflict. Resource already exists', details: details, errorCode: 'CONFLICT');
+}
+
+class GoneException extends AppException {
+  GoneException([String? details])
+      : super('Resource no longer available', details: details, errorCode: 'GONE');
+}
+
+class ValidationException extends AppException {
+  final List<String> errors;
+  ValidationException(this.errors, [String? details])
+      : super(errors.first, details: details, errorCode: 'VALIDATION_ERROR');
+}
+
+class UnprocessableException extends AppException {
+  UnprocessableException([String? message, String? details])
+      : super(message ?? 'Unprocessable request', details: details, errorCode: 'UNPROCESSABLE');
+}
+
+class TooManyRequestsException extends AppException {
+  TooManyRequestsException([String? details])
+      : super('Too many requests. Please slow down', details: details, errorCode: 'RATE_LIMIT');
+}
+
+// ═══════════════════════════════════════════════
+// 5xx SERVER ERRORS
+// ═══════════════════════════════════════════════
+class InternalServerException extends AppException {
+  InternalServerException([String? details])
+      : super('Something went wrong on our end', details: details, errorCode: 'INTERNAL_SERVER_ERROR');
+}
+
+class NotImplementedException extends AppException {
+  NotImplementedException([String? details])
+      : super('Feature not implemented', details: details, errorCode: 'NOT_IMPLEMENTED');
+}
+
+class ServerDownException extends AppException {
+  final int? statusCode;
+  ServerDownException([this.statusCode, String? details])
+      : super('Server is down. Please try again later', details: details, errorCode: 'SERVER_DOWN');
+}
+
+class ServiceUnavailableException extends AppException {
+  ServiceUnavailableException([String? details])
+      : super('Service unavailable. Please try again later', details: details, errorCode: 'SERVICE_UNAVAILABLE');
+}
+
+class GatewayTimeoutException extends AppException {
+  GatewayTimeoutException([String? details])
+      : super('Gateway timeout. Please try again', details: details, errorCode: 'GATEWAY_TIMEOUT');
+}
+
+class HttpVersionException extends AppException {
+  HttpVersionException([String? details])
+      : super('HTTP version not supported', details: details, errorCode: 'HTTP_VERSION_ERROR');
+}
+
+class InsufficientStorageException extends AppException {
+  InsufficientStorageException([String? details])
+      : super('Server storage is full', details: details, errorCode: 'INSUFFICIENT_STORAGE');
+}
+
+class NetworkAuthException extends AppException {
+  NetworkAuthException([String? details])
+      : super('Network authentication required', details: details, errorCode: 'NETWORK_AUTH_REQUIRED');
+}
+
+// ═══════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════
+class ParsingException extends AppException {
+  ParsingException([String? details])
+      : super('Failed to parse data', details: details, errorCode: 'PARSING_ERROR');
+}
+
+class CacheException extends AppException {
+  CacheException([String? details])
+      : super('Cache operation failed', details: details, errorCode: 'CACHE_ERROR');
+}
+
+class NotFoundException extends AppException {
+  NotFoundException([String? details])
+      : super('Data not found', details: details, errorCode: 'NOT_FOUND');
+}
+
+class UnknownException extends AppException {
+  UnknownException([String? details])
+      : super('An unexpected error occurred', details: details, errorCode: 'UNKNOWN');
+}
+
+// ═══════════════════════════════════════════════
+// SERVER (generic fallback)
+// ═══════════════════════════════════════════════
 class ServerException extends AppException {
-  /// HTTP status code (e.g., 404, 500)
   final int? statusCode;
 
-  /// Creates a [ServerException] with a [message], optional [statusCode], and [details].
-  ServerException(super.message, [this.statusCode, super.details]);
+  ServerException(super.message, [this.statusCode, String? details])
+      : super(details: details, errorCode: 'SERVER_ERROR');
 
   @override
   String toString() {
@@ -117,83 +177,4 @@ class ServerException extends AppException {
     }
     return super.toString();
   }
-}
-
-/// Exception thrown when JSON/data parsing fails.
-///
-/// This occurs when:
-/// - API response format doesn't match expected structure
-/// - Required fields are missing in the response
-/// - Data types don't match model definitions
-///
-/// **Example:**
-/// ```dart
-/// try {
-///   final data = json.decode(response);
-///   return Model.fromJson(data);
-/// } catch (e) {
-///   throw ParsingException('Invalid model structure: $e');
-/// }
-/// ```
-class ParsingException extends AppException {
-  ParsingException([String? details])
-      : super('Failed to parse data', details);
-}
-
-/// Exception thrown when cache operations fail.
-///
-/// This can occur when:
-/// - Cache storage is full
-/// - Cache service is not initialized
-/// - Data corruption in cache
-///
-/// **Example:**
-/// ```dart
-/// try {
-///   await cacheService.put('key', data);
-/// } on CacheException catch (e) {
-///   // Log error and continue without caching
-///   print('Cache write failed: ${e.message}');
-/// }
-/// ```
-class CacheException extends AppException {
-  CacheException([String? details])
-      : super('Cache operation failed', details);
-}
-
-/// Exception thrown when requested data is not found.
-///
-/// This is different from [ServerException] with 404 status, as it can also
-/// indicate missing data in local storage or cache.
-///
-/// **Example:**
-/// ```dart
-/// final user = cache.get('user_123');
-/// if (user == null) {
-///   throw NotFoundException('User not found in cache');
-/// }
-/// ```
-class NotFoundException extends AppException {
-  NotFoundException([String? details])
-      : super('Data not found', details);
-}
-
-/// Exception thrown for unexpected or unknown errors.
-///
-/// This is a catch-all exception for errors that don't fit other categories.
-/// Should be used sparingly - prefer specific exception types when possible.
-///
-/// **Example:**
-/// ```dart
-/// try {
-///   // Complex operation
-/// } on AppException {
-///   rethrow;
-/// } catch (e) {
-///   throw UnknownException('Unexpected error: $e');
-/// }
-/// ```
-class UnknownException extends AppException {
-  UnknownException([String? details])
-      : super('An unknown error occurred', details);
 }

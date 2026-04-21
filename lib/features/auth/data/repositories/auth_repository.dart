@@ -1,0 +1,33 @@
+import 'package:flutter_task/features/auth/data/models/user_response_model.dart';
+
+abstract class AuthRepository {
+  Future<UserResponseModel> login({
+    required String email,
+    required String password,
+  });
+
+  Future<UserResponseModel> register({
+    required String name,
+    required String email,
+    required String phone,
+    required String password,
+  });
+
+  Future<void> forgotPassword({required String email});
+
+  Future<bool> otpVerify({required String otp, required String email});
+
+  Future<void> resetPassword({
+    required String newPassword,
+  });
+
+  /// ─── CACHE GETTERS ───────────────────────────────
+  bool isLoggedIn();
+
+  String? getAccessToken();
+
+  UserResponseModel? getCachedUser();
+
+  /// ─── LOGOUT ──────────────────────────────────────
+  Future<void> logout();
+}

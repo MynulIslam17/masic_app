@@ -1,17 +1,28 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_task/core/constants/app_constants.dart';
+import 'package:flutter_task/core/services/cache_service.dart';
+import 'package:flutter_task/core/services/connectivity_service.dart';
 import '../constants/api_constants.dart';
 import '../exceptions/app_exceptions.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
   late Dio _dio;
+  late CacheService _cacheService;
 
-  factory ApiService() {
-    return _instance;
-  }
+  factory ApiService() => _instance;
 
-  ApiService._internal() {
+  ApiService._internal();
+
+  static Options get withoutAuth =>
+      Options(headers: {ApiConstants.requiresAuthHeader: false});
+
+  void init(
+    ConnectivityService connectivityService,
+    CacheService cacheService,
+  ) {
+    _cacheService = cacheService;
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
@@ -21,41 +32,83 @@ class ApiService {
       ),
     );
 
-    // Add interceptors for logging (only in debug mode)
+    //  _dio.interceptors.add(ConnectivityInterceptor(connectivityService));
+
+    // ✅ Token Interceptor
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          // Request logging
-          assert(() {
-            if (kDebugMode) {
-              print('REQUEST[${options.method}] => PATH: ${options.path}');
+          final requiresAuth =
+              options.headers[ApiConstants.requiresAuthHeader] != false;
+          options.headers.remove(ApiConstants.requiresAuthHeader);
+
+          if (requiresAuth) {
+            final token = _cacheService.get<String>(AppConstants.accessToken);
+            if (token != null && token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
             }
-            return true;
-          }());
+          }
+
+          return handler.next(options);
+        },
+
+        onError: (error, handler) async {
+          if (error.response?.statusCode == 401) {
+            await _cacheService.clear();
+          }
+          return handler.next(error);
+        },
+      ),
+    );
+
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (kDebugMode) {
+            final sep = '─' * 50;
+            debugPrint(
+              '\n🔵 ──── REQUEST ────────────────────────────────────',
+            );
+            debugPrint('   METHOD : ${options.method}');
+            debugPrint('   PATH   : ${options.path}');
+            if (options.headers.isNotEmpty) {
+              debugPrint('   HEADERS: ${options.headers}');
+            }
+            if (options.queryParameters.isNotEmpty) {
+              debugPrint('   PARAMS : ${options.queryParameters}');
+            }
+            if (options.data != null) {
+              debugPrint('   BODY   : ${options.data}');
+            }
+            debugPrint('$sep\n');
+          }
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          // Response logging
-          assert(() {
-            if (kDebugMode) {
-              print(
-                'RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}',
-              );
-            }
-            return true;
-          }());
+          if (kDebugMode) {
+            final sep = '─' * 50;
+            debugPrint(
+              '\n🟢 ──── RESPONSE ───────────────────────────────────',
+            );
+            debugPrint('   STATUS : ${response.statusCode}');
+            debugPrint('   PATH   : ${response.requestOptions.path}');
+            debugPrint('   BODY   : ${response.data}');
+            debugPrint('$sep\n');
+          }
           return handler.next(response);
         },
         onError: (error, handler) {
-          // Error logging
-          assert(() {
-            if (kDebugMode) {
-              print(
-                'ERROR[${error.response?.statusCode}] => PATH: ${error.requestOptions.path}',
-              );
-            }
-            return true;
-          }());
+          if (kDebugMode) {
+            final sep = '─' * 50;
+            debugPrint(
+              '\n🔴 ──── ERROR ──────────────────────────────────────',
+            );
+            debugPrint('   STATUS    : ${error.response?.statusCode}');
+            debugPrint('   PATH      : ${error.requestOptions.path}');
+            debugPrint('   ERROR BODY: ${error.response?.data}');
+            debugPrint('   SENT DATA : ${error.requestOptions.data}');
+            debugPrint('$sep\n');
+          }
           return handler.next(error);
         },
       ),
@@ -378,31 +431,91 @@ class ApiService {
   /// ```
   AppException _handleDioError(DioException error) {
     switch (error.type) {
+      // ─── Network ────────────────────────────────
       case DioExceptionType.connectionTimeout:
+        return TimeoutException(
+          'Connection timeout. Check your internet',
+          error.message,
+        );
+
       case DioExceptionType.sendTimeout:
+        return TimeoutException(
+          'Request took too long to send. Try again',
+          error.message,
+        );
+
       case DioExceptionType.receiveTimeout:
-        return TimeoutException(error.message);
+        return TimeoutException(
+          'Server took too long to respond. Try again',
+          error.message,
+        );
 
       case DioExceptionType.connectionError:
         return NoInternetException(error.message);
 
-      case DioExceptionType.badResponse:
-        final statusCode = error.response?.statusCode;
-        final message = error.response?.statusMessage ?? 'Server error';
-        return ServerException(message, statusCode, error.message);
+      case DioExceptionType.badCertificate:
+        return SSLException(error.message);
 
       case DioExceptionType.cancel:
-        return UnknownException('Request cancelled');
+        return UnknownException('Request was cancelled');
 
-      case DioExceptionType.badCertificate:
-        return ServerException('Bad certificate', null, error.message);
+      // ─── HTTP Response ───────────────────────────
+      case DioExceptionType.badResponse:
+        final statusCode = error.response?.statusCode;
+        final message = _parseErrorMessage(error.response?.data);
 
+        return switch (statusCode) {
+          // 4xx
+          400 => BadRequestException(message, error.message),
+          401 => UnauthorizedException(message, error.message),
+          403 => ForbiddenException(message, error.message),
+          404 => ResourceNotFoundException(message, error.message),
+          405 => MethodNotAllowedException(error.message),
+          406 => NotAcceptableException(error.message),
+          408 => RequestTimeoutException(error.message),
+          409 => ConflictException(message, error.message),
+          410 => GoneException(error.message),
+          415 => UnprocessableException(
+            'Unsupported media type',
+            error.message,
+          ),
+          422 => ValidationException([message], error.message),
+          429 => TooManyRequestsException(error.message),
+          // 5xx
+          500 => InternalServerException(error.message),
+          501 => NotImplementedException(error.message),
+          502 => ServerDownException(502, error.message),
+          503 => ServiceUnavailableException(error.message),
+          504 => GatewayTimeoutException(error.message),
+          505 => HttpVersionException(error.message),
+          507 => InsufficientStorageException(error.message),
+          511 => NetworkAuthException(error.message),
+          // fallback
+          _ => ServerException(message, statusCode, error.message),
+        };
+
+      // ─── Unknown ─────────────────────────────────
       case DioExceptionType.unknown:
         if (error.message?.contains('SocketException') ?? false) {
           return NoInternetException(error.message);
         }
+        if (error.message?.contains('HandshakeException') ?? false) {
+          return SSLException(error.message);
+        }
+        if (error.message?.contains('HttpException') ?? false) {
+          return ServerException('HTTP error occurred', null, error.message);
+        }
         return UnknownException(error.message);
     }
+  }
+
+  String _parseErrorMessage(dynamic data) {
+    if (data is! Map<String, dynamic>) return 'Server error';
+    return data['message'] ??
+        data['error'] ??
+        data['msg'] ??
+        data['errors']?[0]?['message'] ??
+        'Server error';
   }
 
   void dispose() {

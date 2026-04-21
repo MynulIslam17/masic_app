@@ -1,11 +1,11 @@
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
 import 'package:flutter_task/features/admin/profile/presentation/admin_profile_screen.dart';
-import 'package:flutter_task/features/auth/forget/forget_screen.dart';
-import 'package:flutter_task/features/auth/login/log_in_screen.dart';
-import 'package:flutter_task/features/auth/otp/otp_screen.dart';
-import 'package:flutter_task/features/auth/reset_pass/reset_password_screen.dart';
-import 'package:flutter_task/features/auth/sign_up/sign_up_screen.dart';
+import 'package:flutter_task/features/auth/presentation/pages/forget/forget_screen.dart';
+import 'package:flutter_task/features/auth/presentation/pages/login/log_in_screen.dart';
+import 'package:flutter_task/features/auth/presentation/pages/otp/otp_screen.dart';
+import 'package:flutter_task/features/auth/presentation/pages/reset_pass/reset_password_screen.dart';
+import 'package:flutter_task/features/auth/presentation/pages/sign_up/sign_up_screen.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/poll/poll_screen.dart';

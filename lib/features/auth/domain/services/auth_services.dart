@@ -1,0 +1,61 @@
+import 'package:flutter_task/features/auth/data/models/user_response_model.dart';
+import 'package:flutter_task/features/auth/data/repositories/auth_repository.dart';
+
+class AuthService {
+  final AuthRepository _repository;
+
+  AuthService({required AuthRepository repository}) : _repository = repository;
+
+  /// ─── LOGIN ─────────────────────────────
+  Future<UserResponseModel> login({
+    required String email,
+    required String password,
+  }) async {
+    final response = await _repository.login(email: email, password: password);
+
+    return response;
+  }
+
+  /// ─── REGISTER ──────────────────────────
+  Future<UserResponseModel> register({
+    required String name,
+    required String email,
+    required String phone,
+    required String confirmPassword,
+  }) async {
+    return await _repository.register(
+      name: name,
+      email: email,
+      phone: phone,
+      password: confirmPassword,
+    );
+  }
+
+  /// ─── FORGOT PASSWORD ───────────────────
+  Future<void> forgotPassword(String email) async {
+    return await _repository.forgotPassword(email: email);
+  }
+
+  /// ─── OTP VERIFY ───────────────────
+  Future<bool> otpVerify({required String email, required String otp}) async {
+    return await _repository.otpVerify(email: email, otp: otp);
+  }
+
+  /// ─── OTP VERIFY ───────────────────
+  Future<void> resetPassword({
+    required String newPassword,
+  }) async {
+    return await _repository.resetPassword(
+      newPassword: newPassword,
+    );
+  }
+
+  /// ─── SESSION ───────────────────────────
+  bool isLoggedIn() => _repository.isLoggedIn();
+
+  String? getToken() => _repository.getAccessToken();
+
+  Future<void> logout() => _repository.logout();
+
+  UserResponseModel? getCachedUser() => _repository.getCachedUser();
+}
