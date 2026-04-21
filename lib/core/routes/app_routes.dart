@@ -66,4 +66,9 @@ abstract class AppRoutes {
   // ─── Admin ──────────────────────────────────────────────────────────────
   static const String adminDashboardScreen                = '/admin/home';
   static const String adminProfileScreen                = '/admin/profile';
+
+
+
+  // ─── Poll ──────────────────────────────────────────────────────────────
+  static const String pollScreen                = '/home/poll';
 }

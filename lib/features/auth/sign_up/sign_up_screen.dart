@@ -112,36 +112,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 10.h),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: CustomContainer(
-                      height: 1.h,
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
-                      linearColors: [
-                        AppColors.primaryRedColor,
-                        AppColors.bgColor,
-                      ],
-                    ),
-                  ),
-                  CustomText(text: 'Or log in with',fontSize: 12.sp,fontWeight: FontWeight.w600,left: 9.w,right: 9.w),
-                  Expanded(
-                    child: CustomContainer(
-                      height: 1.h,
-                      linearColors: [
-                        AppColors.primaryRedColor,
-                        AppColors.bgColor,
-                      ],
-                      end: Alignment.centerRight,
-                      begin: Alignment.centerLeft,
-                    ),
-                  ),
-                ],
-              ),
 
               SizedBox(height: 44.h),
 

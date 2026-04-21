@@ -8,6 +8,7 @@ import 'package:flutter_task/features/auth/reset_pass/reset_password_screen.dart
 import 'package:flutter_task/features/auth/sign_up/sign_up_screen.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
+import 'package:flutter_task/features/poll/poll_screen.dart';
 import 'package:flutter_task/features/profile/add_bio_screen.dart';
 import 'package:flutter_task/features/profile/add_contact_screen.dart';
 import 'package:flutter_task/features/profile/add_cv_screen.dart';
@@ -176,6 +177,13 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.adminProfileScreen,
       page: () => AdminProfileScreen(),
+      //binding: ProfileBinding(),
+    ),
+
+
+    GetPage(
+      name: AppRoutes.pollScreen,
+      page: () => PollScreen(),
       //binding: ProfileBinding(),
     ),
   ];

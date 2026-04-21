@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:get/get.dart';
 
 
 class PollCardWidget extends StatelessWidget {
@@ -43,7 +45,9 @@ class PollCardWidget extends StatelessWidget {
             foregroundColor: AppColors.primaryColor,
             height: 38.h,
             fontSize: 12.sp,
-            onPressed: () {},
+            onPressed: () {
+              Get.toNamed(AppRoutes.pollScreen);
+            },
             label: 'Answer poll',
           ),
         ],
