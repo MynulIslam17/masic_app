@@ -26,7 +26,7 @@ class AdminAppBar extends  StatelessWidget implements PreferredSizeWidget {
               height: 42.r,
               width: 42.r,
               imageUrl: '',
-              fallbackAsset: Assets.images.profile.path,
+              fallbackAsset: Assets.images.profile.image(),
               colorFilter: ColorFilter.mode(
                 AppColors.color8A8A8A,
                 BlendMode.srcIn,

@@ -5,40 +5,16 @@ import 'package:flutter_task/core/helpers/photo_picker_helper.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:get/get.dart';
 
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
-}
-
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _dateOfBirthController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
-  final TextEditingController _employmentController = TextEditingController();
-  final TextEditingController _educationController = TextEditingController();
-  final TextEditingController _universityController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _dateOfBirthController.dispose();
-    _genderController.dispose();
-    _employmentController.dispose();
-    _educationController.dispose();
-    _universityController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = ProfileController.to;
     return CustomScaffold(
       appBar: CustomAppBar(title: "Edit Profile"),
       bottomNavigationBar: Padding(
@@ -57,36 +33,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             SizedBox(height: 24.h),
 
             // ── Avatar Picker ──────────────────────────────────────────────
-            GestureDetector(
-              onTap: () {
-                PhotoPickerHelper.showPicker(
-                  context: context,
-                  onImagePicked: (image) {
-
+            Obx(() {
+                return GestureDetector(
+                  onTap: () {
+                    PhotoPickerHelper.showPicker(
+                      context: context,
+                      onImagePicked: controller.selectImage,
+                    );
                   },
-                );
-              },
-              child: Stack(
-                children: [
-                  CustomNetworkImage(
-                      boxShape: BoxShape.circle,
-                      height: 80.r,
-                      width: 80.r,
-                      colorFilter: ColorFilter.mode(AppColors.grayShade100, BlendMode.srcIn),
-                      fallbackAsset: Assets.images.profile.path,
-                      imageUrl: ''),
+                  child: Stack(
+                    children: [
+                      CustomNetworkImage(
+                          boxShape: BoxShape.circle,
+                          height: 80.r,
+                          width: 80.r,
+                          colorFilter: ColorFilter.mode(AppColors.grayShade100, BlendMode.srcIn),
+                          fallbackAsset: Assets.images.profile.image(),
+                          imageFile: controller.selectedImage,
+                          imageUrl: controller.userData?.profileImage ?? ''),
 
-                  Positioned(
-                    bottom: 7.h,
-                    left: 0,
-                    right: 0,
-                    child: const Icon(
-                      Icons.camera_alt_outlined,
-                      color: Colors.white,
-                    ),
+                      Positioned(
+                        bottom: 7.h,
+                        left: 0,
+                        right: 0,
+                        child: const Icon(
+                          Icons.camera_alt_outlined,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              }
             ),
 
             SizedBox(height: 24.h),
@@ -97,7 +75,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _nameController,
+              controller: controller.nameController,
               hintText: "Full name",
             ),
 
@@ -106,7 +84,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _emailController,
+              controller: controller.emailController,
               hintText: "Email address",
               keyboardType: TextInputType.emailAddress,
             ),
@@ -116,7 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _phoneController,
+              controller: controller.phoneController,
               hintText: "Phone number",
               keyboardType: TextInputType.phone,
             ),
@@ -126,7 +104,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _dateOfBirthController,
+              controller: controller.dateOfBirthController,
               hintText: "Date of birth",
               readOnly: true,
               onTap: () async {
@@ -137,7 +115,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   lastDate: DateTime.now(),
                 );
                 if (picked != null) {
-                  _dateOfBirthController.text =
+                  controller.dateOfBirthController.text =
                       "${picked.day}/${picked.month}/${picked.year}";
                 }
               },
@@ -151,7 +129,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   options: ["Male", "Female"],
                 );
                 value.then((value) {
-                  _genderController.text = value!;
+                  controller.genderController.text = value!;
                 });
               },
               child: CustomTextField(
@@ -164,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 showShadow: false,
                 borderColor: AppColors.colorE6E6E6,
                 filColor: AppColors.bgColor,
-                controller: _genderController,
+                controller: controller.genderController,
                 hintText: "Gender",
               ),
             ),
@@ -178,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 );
 
                 value.then((value) {
-                  _employmentController.text = value!;
+                  controller.employmentController.text = value!;
                 });
               },
               child: CustomTextField(
@@ -191,7 +169,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 showShadow: false,
                 borderColor: AppColors.colorE6E6E6,
                 filColor: AppColors.bgColor,
-                controller: _employmentController,
+                controller: controller.employmentController,
                 hintText: "Employment status",
               ),
             ),
@@ -209,7 +187,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ],
                 );
                 value.then((value) {
-                  _educationController.text = value!;
+                  controller.educationController.text = value!;
                 });
               },
               child: CustomTextField(
@@ -222,7 +200,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 showShadow: false,
                 borderColor: AppColors.colorE6E6E6,
                 filColor: AppColors.bgColor,
-                controller: _educationController,
+                controller: controller.educationController,
                 hintText: "Education",
               ),
             ),
@@ -232,7 +210,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _universityController,
+              controller: controller.universityController,
               hintText: "University name",
             ),
             SizedBox(height: 32.h),

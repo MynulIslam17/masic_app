@@ -1,4 +1,7 @@
 import 'package:flutter_task/core/routes/app_routes.dart';
+import 'package:flutter_task/core/services/api_service.dart';
+import 'package:flutter_task/core/services/cache_service.dart';
+import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
 import 'package:flutter_task/features/admin/profile/presentation/admin_profile_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/forget/forget_screen.dart';
@@ -14,10 +17,13 @@ import 'package:flutter_task/features/profile/add_contact_screen.dart';
 import 'package:flutter_task/features/profile/add_cv_screen.dart';
 import 'package:flutter_task/features/profile/add_education_screen.dart';
 import 'package:flutter_task/features/profile/add_job_screen.dart';
-import 'package:flutter_task/features/profile/announcements_details_screen.dart';
-import 'package:flutter_task/features/profile/announcements_screen.dart';
-import 'package:flutter_task/features/profile/create_announcements_screen.dart';
+import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_details_screen.dart';
+import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_screen.dart';
+import 'package:flutter_task/features/announcement/presentation/screens/comon/create_announcements_screen.dart';
+import 'package:flutter_task/features/profile/data/repositories/profile_repository.dart';
+import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
 import 'package:flutter_task/features/profile/edit_profile_screen.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:flutter_task/features/request/request_screen.dart';
 import 'package:flutter_task/features/translation/presentation/language_screen.dart';
 import 'package:flutter_task/features/profile/member_select_screen.dart';
@@ -34,38 +40,17 @@ abstract class AppPages {
   AppPages._();
 
   static final List<GetPage> routes = [
-
     // ─── Splash ──────────────────────────────────────────────────────────────
-    GetPage(
-      name: AppRoutes.splashScreen,
-      page: () => SplashScreen(),
-    ),
+    GetPage(name: AppRoutes.splashScreen, page: () => SplashScreen()),
 
     // ─── Auth ─────────────────────────────────────────────────────────────────
-    GetPage(
-      name: AppRoutes.loginScreen,
-      page: () => LoginScreen(),
-      binding: AuthBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.signUpScreen,
-      page: () => SignUpScreen(),
-      binding: AuthBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.forgotScreen,
-      page: () => ForgetScreen(),
-      binding: AuthBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.otpScreen,
-      page: () => OtpScreen(),
-      binding: AuthBinding(),
-    ),
+    GetPage(name: AppRoutes.loginScreen, page: () => LoginScreen()),
+    GetPage(name: AppRoutes.signUpScreen, page: () => SignUpScreen()),
+    GetPage(name: AppRoutes.forgotScreen, page: () => ForgetScreen()),
+    GetPage(name: AppRoutes.otpScreen, page: () => OtpScreen()),
     GetPage(
       name: AppRoutes.resetPasswordScreen,
       page: () => ResetPasswordScreen(),
-      binding: AuthBinding(),
     ),
 
     // ─── Bottom Nav ───────────────────────────────────────────────────────────
@@ -73,180 +58,95 @@ abstract class AppPages {
       name: AppRoutes.bottomNavUserBar,
       page: () => BottomNavUserBar(),
       binding: BottomNavBinding(),
-       //middlewares: [AuthMiddleware()],
     ),
 
     // ─── Profile ──────────────────────────────────────────────────────────────
-    GetPage(
-      name: AppRoutes.languageScreen,
-      page: () => LanguageScreen(),
-      binding: LanguageBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.settingScreen,
-      page: () => SettingScreen(),
-      binding: SettingBinding(),
-    ),
+    GetPage(name: AppRoutes.languageScreen, page: () => LanguageScreen()),
+    GetPage(name: AppRoutes.settingScreen, page: () => SettingScreen()),
     GetPage(
       name: AppRoutes.settingChangePassword,
       page: () => SettingChangePassword(),
-      binding: SettingBinding(),
     ),
     GetPage(
       name: AppRoutes.privacyPolicyAllScreen,
       page: () => PrivacyPolicyAllScreen(),
     ),
-    GetPage(
-      name: AppRoutes.supportScreen,
-      page: () => SupportScreen(),
-    ),
+    GetPage(name: AppRoutes.supportScreen, page: () => SupportScreen()),
     GetPage(
       name: AppRoutes.announcementsScreen,
       page: () => AnnouncementsScreen(),
-      binding: AnnouncementsBinding(),
     ),
     GetPage(
       name: AppRoutes.createAnnouncementsScreen,
       page: () => CreateAnnouncementsScreen(),
-      binding: AnnouncementsBinding(),
     ),
     GetPage(
       name: AppRoutes.announcementsDetailsScreen,
       page: () => AnnouncementsDetailsScreen(),
-      binding: AnnouncementsBinding(),
     ),
     GetPage(
       name: AppRoutes.memberSelectScreen,
       page: () => MemberSelectScreen(),
-      binding: MemberBinding(),
     ),
-    GetPage(
-      name: AppRoutes.editProfileScreen,
-      page: () => EditProfileScreen(),
-      binding: ProfileBinding(),
-    ),
+    GetPage(name: AppRoutes.editProfileScreen, page: () => EditProfileScreen()),
     GetPage(
       name: AppRoutes.profileInformationScreen,
       page: () => ProfileInformationScreen(),
-      binding: ProfileBinding(),
     ),
     GetPage(
       name: AppRoutes.personalInfoScreen,
       page: () => PersonalInfoScreen(),
-      binding: ProfileBinding(),
     ),
-    GetPage(
-      name: AppRoutes.addBioScreen,
-      page: () => AddBioScreen(),
-      binding: ProfileBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.addContactScreen,
-      page: () => AddContactScreen(),
-      binding: ProfileBinding(),
-    ),
+    GetPage(name: AppRoutes.addBioScreen, page: () => AddBioScreen()),
+    GetPage(name: AppRoutes.addContactScreen, page: () => AddContactScreen()),
     GetPage(
       name: AppRoutes.addEducationScreen,
       page: () => AddEducationScreen(),
-      binding: ProfileBinding(),
     ),
-    GetPage(
-      name: AppRoutes.addJobScreen,
-      page: () => AddJobScreen(),
-      binding: ProfileBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.addCvScreen,
-      page: () => AddCvScreen(),
-      binding: ProfileBinding(),
-    ),
+    GetPage(name: AppRoutes.addJobScreen, page: () => AddJobScreen()),
+    GetPage(name: AppRoutes.addCvScreen, page: () => AddCvScreen()),
 
-    GetPage(
-      name: AppRoutes.requestScreen,
-      page: () => RequestScreen(),
-      //binding: ProfileBinding(),
-    ),
-
+    GetPage(name: AppRoutes.requestScreen, page: () => RequestScreen()),
 
     GetPage(
       name: AppRoutes.adminDashboardScreen,
       page: () => AdminDashboardScreen(),
-      //binding: ProfileBinding(),
     ),
 
     GetPage(
       name: AppRoutes.adminProfileScreen,
       page: () => AdminProfileScreen(),
-      //binding: ProfileBinding(),
     ),
 
-
-    GetPage(
-      name: AppRoutes.pollScreen,
-      page: () => PollScreen(),
-      //binding: ProfileBinding(),
-    ),
+    GetPage(name: AppRoutes.pollScreen, page: () => PollScreen()),
   ];
 }
-
-
-
-/// Auth feature — Login, SignUp, Forgot, OTP, ResetPassword
-class AuthBinding extends Bindings {
-  @override
-  void dependencies() {
-    // Get.lazyPut<AuthRepository>(() => AuthRepository(api: Get.find<ApiService>()));
-    // Get.lazyPut<AuthController>(() => AuthController(repository: Get.find<AuthRepository>()));
-  }
-}
-
 
 /// Bottom Nav feature — UserBar
 class BottomNavBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<BottomNavBarController>(() => BottomNavBarController());
-  }
-}
 
-/// Profile feature — Edit, Information, PersonalInfo, Bio, Contact, Education, Job, CV
-class ProfileBinding extends Bindings {
-  @override
-  void dependencies() {
-    // Get.lazyPut<ProfileRepository>(() => ProfileRepository(api: Get.find<ApiService>()));
-    // Get.lazyPut<ProfileController>(() => ProfileController(repository: Get.find<ProfileRepository>()));
-  }
-}
+    Get.lazyPut<ProfileRepository>(
+      () => ProfileRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
 
-/// Announcements feature — List, Create, Details
-class AnnouncementsBinding extends Bindings {
-  @override
-  void dependencies() {
-    // Get.lazyPut<AnnouncementsRepository>(() => AnnouncementsRepository(api: Get.find<ApiService>()));
-    // Get.lazyPut<AnnouncementsController>(() => AnnouncementsController(repository: Get.find<AnnouncementsRepository>()));
-  }
-}
+    Get.lazyPut<ProfileService>(
+      () => ProfileService(repository: Get.find<ProfileRepository>()),
+      fenix: true,
+    );
 
-/// Settings feature — Settings, ChangePassword
-class SettingBinding extends Bindings {
-  @override
-  void dependencies() {
-    // Get.lazyPut<SettingController>(() => SettingController());
-  }
-}
-
-/// Language feature
-class LanguageBinding extends Bindings {
-  @override
-  void dependencies() {
-    // Get.lazyPut<LanguageController>(() => LanguageController());
-  }
-}
-
-/// Member select feature
-class MemberBinding extends Bindings {
-  @override
-  void dependencies() {
-    // Get.lazyPut<MemberController>(() => MemberController());
+    Get.lazyPut<ProfileController>(
+      () => ProfileController(
+        service: Get.find<ProfileService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
   }
 }

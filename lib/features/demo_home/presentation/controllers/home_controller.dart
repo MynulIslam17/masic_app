@@ -88,22 +88,22 @@ class HomeController extends GetxController {
   void _listenToConnectivity() {
     bool isFirstEvent = true;
 
-    _connectivitySubscription = _connectivityService.connectivityStream.listen((
-      isConnected,
-    ) {
-      _isConnected.value = isConnected;
-
-      // Skip the first event (initial state) to avoid duplicate calls
-      if (isFirstEvent) {
-        isFirstEvent = false;
-        return;
-      }
-
-      // Auto-refresh when connection is restored (not on initial load)
-      if (isConnected && _repository.hasCache()) {
-        loadData(forceRefresh: true);
-      }
-    });
+    // _connectivitySubscription = _connectivityService.connectivityStream.listen((
+    //   isConnected,
+    // ) {
+    //   _isConnected.value = isConnected;
+    //
+    //   // Skip the first event (initial state) to avoid duplicate calls
+    //   if (isFirstEvent) {
+    //     isFirstEvent = false;
+    //     return;
+    //   }
+    //
+    //   // Auto-refresh when connection is restored (not on initial load)
+    //   if (isConnected && _repository.hasCache()) {
+    //     loadData(forceRefresh: true);
+    //   }
+    // });
   }
 
   void _onScroll() {

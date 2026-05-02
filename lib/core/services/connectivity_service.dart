@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:get/get.dart';
 
 class ConnectivityService {
   static final ConnectivityService _instance = ConnectivityService._internal();
@@ -7,58 +8,52 @@ class ConnectivityService {
   ConnectivityService._internal();
 
   final Connectivity _connectivity = Connectivity();
-  StreamController<bool>? _connectivityController;
   StreamSubscription<List<ConnectivityResult>>? _subscription;
 
-  Stream<bool> get connectivityStream {
-    _connectivityController ??= StreamController<bool>.broadcast(
-      onCancel: () {
-        _subscription?.cancel();
-        _connectivityController?.close();
-        _connectivityController = null;
-      },
-    );
+  final RxBool isConnected = false.obs;
+
+  Future<void> init() async {
+    final result = await _connectivity.checkConnectivity();
+    isConnected.value = _isConnectedFromResults(result);
     _startListening();
-    return _connectivityController!.stream;
   }
 
   void _startListening() {
     if (_subscription != null) return;
 
     _subscription = _connectivity.onConnectivityChanged.listen(
-      (List<ConnectivityResult> results) {
-        final isConnected = results.any(
-          (result) =>
-              result == ConnectivityResult.mobile ||
-              result == ConnectivityResult.wifi ||
-              result == ConnectivityResult.ethernet,
-        );
-        _connectivityController?.add(isConnected);
+          (List<ConnectivityResult> results) {
+        isConnected.value = _isConnectedFromResults(results);
       },
       onError: (_) {
-        _connectivityController?.add(false);
+        isConnected.value = false;
       },
+    );
+  }
+
+  bool _isConnectedFromResults(List<ConnectivityResult> results) {
+    return results.any(
+          (result) =>
+      result == ConnectivityResult.mobile ||
+          result == ConnectivityResult.wifi ||
+          result == ConnectivityResult.ethernet,
     );
   }
 
   Future<bool> checkConnectivity() async {
     try {
       final results = await _connectivity.checkConnectivity();
-      return results.any(
-        (result) =>
-            result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi ||
-            result == ConnectivityResult.ethernet,
-      );
+      final connected = _isConnectedFromResults(results);
+      isConnected.value = connected;
+      return connected;
     } catch (_) {
+      isConnected.value = false;
       return false;
     }
   }
 
   void dispose() {
     _subscription?.cancel();
-    _connectivityController?.close();
     _subscription = null;
-    _connectivityController = null;
   }
 }

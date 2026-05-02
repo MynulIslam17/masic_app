@@ -40,8 +40,8 @@ class _ProfileInformationScreenState extends State<ProfileInformationScreen> {
               height: 80.r,
               width: 80.r,
               colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
-              fallbackAsset: Assets.images.profile.path,
-              imageUrl: '' ?? '',
+              fallbackAsset: Assets.images.profile.image(),
+              imageUrl: '',
             ),
             SizedBox(height: 24.h),
             CustomContainer(

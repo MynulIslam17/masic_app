@@ -329,6 +329,31 @@ class ApiService {
     }
   }
 
+
+  Future<Response> uploadFilePatch(
+    String path, {
+    required MultipartFile file,
+    String fieldName = 'file',
+    Map<String, dynamic>? data,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final formData = FormData.fromMap({fieldName: file, ...?data});
+
+      return await _dio.patch(
+        path,
+        data: formData,
+        options: options,
+        cancelToken: cancelToken,
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
   /// Uploads multiple files to the specified path
   ///
   /// Example usage:

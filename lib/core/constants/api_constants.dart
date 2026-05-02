@@ -5,6 +5,11 @@ class ApiConstants {
 
 /// ─── Auth Marker ───────────────────────────
   static const String requiresAuthHeader = 'X-Requires-Auth';
+  static const Map<String, dynamic> headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+
 
 
 
@@ -19,6 +24,9 @@ class ApiConstants {
   static const String resetPassword = '/api/v1/auth/reset-password';
 
 
+  /// USER ──────────────────────────────────────────────
+  static const String userProfile = '/api/v1/users/me';
+  static const String userProfileUpdate = '/api/v1/users/edit-profile';
 
 
 
@@ -26,6 +34,11 @@ class ApiConstants {
 
 
 
+
+
+  /// chach inpoint ──────────────────────────────────────────────
+
+  static const String cacheUserProfile = 'user/me';
 
 
 
@@ -52,10 +65,6 @@ class ApiConstants {
   static String restaurants(int offset, int limit) =>
       '/api/v1/restaurants/get-restaurants/all?offset=$offset&limit=$limit';
 
-  static const Map<String, dynamic> headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  };
 
 
 
