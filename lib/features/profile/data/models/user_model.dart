@@ -143,23 +143,26 @@ class UserModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      "dateOfBirth": dateOfBirth,
-      "gender": gender,
-      "employmentStatus": employmentStatus,
-      "education": education,
-      "educationLevel": educationLevel,
-      "universityName": universityName,
-      "fieldOfWork": fieldOfWork,
-      "spouseName": spouseName,
-      "spousePhone": spousePhone,
-      "linkedinLink": linkedinLink,
-      //"address": address,
-      "country": country,
-      "countryCode": countryCode,
-      "region": region,
-      "city": city,
-      "district": district,
+    final map = <String, dynamic>{
+      if (name != null && name!.isNotEmpty) "name": name,
+      if (email != null && email!.isNotEmpty) "email": email,
+      if (dateOfBirth != null && dateOfBirth!.isNotEmpty) "dateOfBirth": dateOfBirth,
+      if (gender != null && gender!.isNotEmpty) "gender": gender,
+      if (employmentStatus != null && employmentStatus!.isNotEmpty) "employmentStatus": employmentStatus,
+      if (education != null && education!.isNotEmpty) "education": education,
+      if (educationLevel != null && educationLevel!.isNotEmpty) "educationLevel": educationLevel,
+      if (universityName != null && universityName!.isNotEmpty) "universityName": universityName,
+      if (fieldOfWork != null && fieldOfWork!.isNotEmpty) "fieldOfWork": fieldOfWork,
+      if (spouseName != null && spouseName!.isNotEmpty) "spouseName": spouseName,
+      if (spousePhone != null && spousePhone!.isNotEmpty) "spousePhone": spousePhone,
+      if (linkedinLink != null && linkedinLink!.isNotEmpty) "linkedinLink": linkedinLink,
+      if (country != null && country!.isNotEmpty) "country": country,
+      if (countryCode != null && countryCode!.isNotEmpty) "countryCode": countryCode,
+      if (region != null && region!.isNotEmpty) "region": region,
+      if (city != null && city!.isNotEmpty) "city": city,
+      if (district != null && district!.isNotEmpty) "district": district,
     };
+
+    return map;
   }
 }

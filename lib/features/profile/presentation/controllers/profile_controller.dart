@@ -1,10 +1,10 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
+import 'package:flutter_task/core/helpers/time_format.dart';
 import 'package:flutter_task/core/helpers/toast_message_helper.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
@@ -21,37 +21,38 @@ class ProfileController extends GetxController {
   ProfileController({
     required ProfileService service,
     required ConnectivityService connectivityService,
-  }) : _service = service,
-       _connectivityService = connectivityService;
+  })  : _service = service,
+        _connectivityService = connectivityService;
 
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _updateLoadingState = LoadingState.initial.obs;
 
   final _selectedImage = Rxn<File>();
-
   final _userData = Rxn<UserModel>();
+  DateTime? _selectedDate;
 
   LoadingState get loadingState => _loadingState.value;
-
   LoadingState get updateLoadingState => _updateLoadingState.value;
-
   File? get selectedImage => _selectedImage.value;
-
   UserModel? get userData => _userData.value;
 
   void selectImage(XFile image) {
     _selectedImage.value = File(image.path);
   }
 
-  final  nameController = TextEditingController();
-  final  emailController = TextEditingController();
-  final  phoneController = TextEditingController();
-  final  dateOfBirthController = TextEditingController();
-  final  genderController = TextEditingController();
-  final  employmentController = TextEditingController();
-  final  educationController = TextEditingController();
-  final  universityController = TextEditingController();
+  void setSelectedDate(DateTime date) {
+    _selectedDate = date;
+    dateOfBirthController.text = TimeFormatHelper.formatDateTime(date.toString());
+  }
 
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final dateOfBirthController = TextEditingController();
+  final genderController = TextEditingController();
+  final employmentController = TextEditingController();
+  final educationController = TextEditingController();
+  final universityController = TextEditingController();
 
   @override
   void onInit() {
@@ -85,24 +86,54 @@ class ProfileController extends GetxController {
       }
     } catch (e) {
       _loadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('Unexpected error: ${e.errorMessage}');
+      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
     }
   }
 
   void _loadFromCache() {
+    _populateControllers(_service.getCachedUserData());
     _userData.value = _service.getCachedUserData();
   }
 
   Future<void> updateUserProfile() async {
+    final user = _userData.value;
+    if (user == null) {
+      ToastMessageHelper.show('User data not loaded yet. Please try again.');
+      return;
+    }
+
     try {
-      if (selectedImage == null) return;
       _updateLoadingState.value = LoadingState.loading;
-      final user = _userData.value!;
+      final dateOfBirth = _selectedDate != null
+          ? _selectedDate!.toUtc().toIso8601String()
+          : user.dateOfBirth;
+
       final updatedUser = await _service.updateUserProfile(
-        UserModel.fromJson(user.toMap()),
-        image: selectedImage!,
+        UserModel(
+          name: nameController.text.trim(),
+          email: emailController.text.trim(),
+          spousePhone: phoneController.text.trim(),
+          dateOfBirth: dateOfBirth,
+          gender: genderController.text.trim(),
+          employmentStatus: employmentController.text.trim(),
+          education: educationController.text.trim(),
+          universityName: universityController.text.trim(),
+          country: user.country,
+          countryCode: user.countryCode,
+          region: user.region,
+          city: user.city,
+          district: user.district,
+          educationLevel: user.educationLevel,
+          fieldOfWork: user.fieldOfWork,
+          spouseName: user.spouseName,
+          linkedinLink: user.linkedinLink,
+        ),
+        image: selectedImage,
       );
+
       _userData.value = updatedUser;
+      _selectedDate = null;
+      _populateControllers(updatedUser);
       _updateLoadingState.value = LoadingState.loaded;
     } catch (e) {
       _updateLoadingState.value = LoadingState.error;
@@ -110,14 +141,26 @@ class ProfileController extends GetxController {
     }
   }
 
+  void _populateControllers(UserModel? data) {
+    if (data == null) return;
+    nameController.text = data.name ?? '';
+    emailController.text = data.email ?? '';
+    phoneController.text = data.spousePhone ?? '';
+    dateOfBirthController.text = TimeFormatHelper.formatDateTime(data.dateOfBirth ?? '');
+    genderController.text = data.gender ?? '';
+    employmentController.text = data.employmentStatus ?? '';
+    educationController.text = data.education ?? '';
+    universityController.text = data.universityName ?? '';
+  }
+
   Future<void> retry() => loadData();
 
   @override
   Future<void> refresh() async {
     _userData.value = null;
+    _selectedDate = null;
     await loadData();
   }
-
 
   @override
   void onClose() {

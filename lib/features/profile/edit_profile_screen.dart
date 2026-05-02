@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/menu_show_helper.dart';
 import 'package:flutter_task/core/helpers/photo_picker_helper.dart';
+import 'package:flutter_task/core/helpers/time_format.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
-
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
@@ -19,10 +20,13 @@ class EditProfileScreen extends StatelessWidget {
       appBar: CustomAppBar(title: "Edit Profile"),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16.r),
-        child: CustomButton(
-          label: "Update Profile",
-          onPressed: () {
-            // TODO: call update API
+        child: Obx(
+              () {
+            return CustomButton(
+              label: "Update Profile",
+              isLoading: controller.updateLoadingState.isLoading,
+              onPressed: controller.updateUserProfile,
+            );
           },
         ),
       ),
@@ -34,38 +38,37 @@ class EditProfileScreen extends StatelessWidget {
 
             // ── Avatar Picker ──────────────────────────────────────────────
             Obx(() {
-                return GestureDetector(
-                  onTap: () {
-                    PhotoPickerHelper.showPicker(
-                      context: context,
-                      onImagePicked: controller.selectImage,
-                    );
-                  },
-                  child: Stack(
-                    children: [
-                      CustomNetworkImage(
-                          boxShape: BoxShape.circle,
-                          height: 80.r,
-                          width: 80.r,
-                          colorFilter: ColorFilter.mode(AppColors.grayShade100, BlendMode.srcIn),
-                          fallbackAsset: Assets.images.profile.image(),
-                          imageFile: controller.selectedImage,
-                          imageUrl: controller.userData?.profileImage ?? ''),
+              return GestureDetector(
+                onTap: () {
+                  PhotoPickerHelper.showPicker(
+                    context: context,
+                    onImagePicked: (image) => controller.selectImage(image),
+                  );
+                },
+                child: Stack(
+                  children: [
+                    CustomNetworkImage(
+                      boxShape: BoxShape.circle,
+                      height: 80.r,
+                      width: 80.r,
 
-                      Positioned(
-                        bottom: 7.h,
-                        left: 0,
-                        right: 0,
-                        child: const Icon(
-                          Icons.camera_alt_outlined,
-                          color: Colors.white,
-                        ),
+                      fallbackAsset: Assets.images.profile.image(),
+                      imageFile: controller.selectedImage,
+                      imageUrl: controller.userData?.profileImage,
+                    ),
+                    Positioned(
+                      bottom: 7.h,
+                      left: 0,
+                      right: 0,
+                      child: const Icon(
+                        Icons.camera_alt_outlined,
+                        color: Colors.white,
                       ),
-                    ],
-                  ),
-                );
-              }
-            ),
+                    ),
+                  ],
+                ),
+              );
+            }),
 
             SizedBox(height: 24.h),
 
@@ -107,6 +110,10 @@ class EditProfileScreen extends StatelessWidget {
               controller: controller.dateOfBirthController,
               hintText: "Date of birth",
               readOnly: true,
+              suffixIcon: Icon(
+                Icons.arrow_drop_down_outlined,
+                color: AppColors.colorB0B0B0,
+              ),
               onTap: () async {
                 final picked = await showDatePicker(
                   context: context,
@@ -115,8 +122,7 @@ class EditProfileScreen extends StatelessWidget {
                   lastDate: DateTime.now(),
                 );
                 if (picked != null) {
-                  controller.dateOfBirthController.text =
-                      "${picked.day}/${picked.month}/${picked.year}";
+                  controller.setSelectedDate(picked);
                 }
               },
             ),
@@ -129,7 +135,7 @@ class EditProfileScreen extends StatelessWidget {
                   options: ["Male", "Female"],
                 );
                 value.then((value) {
-                  controller.genderController.text = value!;
+                  if (value != null) controller.genderController.text = value;
                 });
               },
               child: CustomTextField(
@@ -147,6 +153,7 @@ class EditProfileScreen extends StatelessWidget {
               ),
             ),
 
+            // FIX #4 (employment): null-safe menu result
             GestureDetector(
               onTapDown: (details) {
                 final value = MenuShowHelper.showCustomMenu(
@@ -154,9 +161,10 @@ class EditProfileScreen extends StatelessWidget {
                   details: details,
                   options: ["Employed", "Self-employed", "Unemployed"],
                 );
-
                 value.then((value) {
-                  controller.employmentController.text = value!;
+                  if (value != null) {
+                    controller.employmentController.text = value;
+                  }
                 });
               },
               child: CustomTextField(
@@ -174,7 +182,9 @@ class EditProfileScreen extends StatelessWidget {
               ),
             ),
 
+            // FIX #4 (education): null-safe menu result
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTapDown: (details) {
                 final value = MenuShowHelper.showCustomMenu(
                   context: context,
@@ -187,7 +197,9 @@ class EditProfileScreen extends StatelessWidget {
                   ],
                 );
                 value.then((value) {
-                  controller.educationController.text = value!;
+                  if (value != null) {
+                    controller.educationController.text = value;
+                  }
                 });
               },
               child: CustomTextField(
@@ -213,6 +225,7 @@ class EditProfileScreen extends StatelessWidget {
               controller: controller.universityController,
               hintText: "University name",
             ),
+
             SizedBox(height: 32.h),
           ],
         ),

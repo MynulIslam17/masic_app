@@ -54,10 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           width: 42.r,
                           imageUrl: userData?.profileImage,
                           fallbackAsset: Assets.images.profile.image(),
-                          colorFilter: ColorFilter.mode(
-                            isCollapsed ? AppColors.primaryColor : Colors.white,
-                            BlendMode.srcIn,
-                          ),
                         ),
                         SizedBox(width: 8.w),
                         Flexible(

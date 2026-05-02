@@ -55,13 +55,19 @@ class ProfileRepository {
 
   Future<UserModel> updateUserProfile(
     UserModel user, {
-    required File image,
+     File? image,
   }) async {
     try {
+
+      final bodyRequest = {
+        'data': jsonEncode(user.toMap()),
+      };
+
       final response = await _apiService.uploadFilePatch(
         ApiConstants.userProfileUpdate,
-        data: {'data': jsonEncode(user.toMap())},
-        file: MultipartFile.fromFileSync(image.path),
+        data: bodyRequest,
+        fieldName: 'image',
+        file: image == null ? null : MultipartFile.fromFileSync(image.path, filename: image.path.split('/').last),
       );
 
       final data = response.data['data'];

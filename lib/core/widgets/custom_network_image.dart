@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
@@ -41,43 +40,37 @@ class CustomNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (imageFile != null) {
-      if (imageFile!.existsSync()) {
-        return _buildContainer(FileImage(imageFile!));
-      }
-      return _buildFallback();
+      return _buildContainer(
+        null,
+        fileChild: Image.file(imageFile!, fit: fit ?? BoxFit.cover),
+      );
     }
 
     if ((imageUrl ?? '').trim().isNotEmpty) {
-      final trimmedUrl = imageUrl!.trim();
-      final uri = Uri.tryParse(trimmedUrl);
-      final isValidNetworkUrl =
-          uri != null &&
-              uri.hasScheme &&
-              (uri.scheme == 'http' || uri.scheme == 'https') &&
-              uri.host.isNotEmpty;
-
-      if (isValidNetworkUrl) {
-        return CachedNetworkImage(
-          imageUrl: trimmedUrl,
-          imageBuilder: (context, imageProvider) =>
-              _buildContainer(imageProvider),
-          placeholder: (context, url) => Shimmer.fromColors(
-            baseColor: Colors.grey.shade200,
-            highlightColor: Colors.grey.shade50,
-            child: _buildContainer(null, shimmer: true),
-          ),
-          errorWidget: (context, url, error) => _buildFallback(),
-        );
-      }
-
-      return _buildFallback();
+      return CachedNetworkImage(
+        imageUrl: imageUrl!, // ✅ non-null assert
+        imageBuilder: (context, imageProvider) =>
+            _buildContainer(imageProvider),
+        placeholder: (context, url) => Shimmer.fromColors(
+          baseColor: Colors.grey.shade200,
+          highlightColor: Colors.grey.shade50,
+          child: _buildContainer(null, shimmer: true),
+        ),
+        errorWidget: (context, url, error) {
+          debugPrint('❌ Image load error: $error');
+          return _buildFallback();
+        },
+      );
     }
 
     return _buildFallback();
   }
 
-  Widget _buildContainer(ImageProvider? imageProvider,
-      {bool shimmer = false}) {
+  Widget _buildContainer(
+    ImageProvider? imageProvider, {
+    bool shimmer = false,
+    Widget? fileChild,
+  }) {
     return Container(
       height: height,
       width: width,
@@ -85,7 +78,16 @@ class CustomNetworkImage extends StatelessWidget {
         imageProvider: imageProvider,
         shimmer: shimmer,
       ),
-      child: child,
+      child: fileChild != null
+          ? ClipRRect(
+              borderRadius: boxShape == BoxShape.circle
+                  ? BorderRadius.circular(9999)
+                  : borderRadius != null
+                  ? BorderRadius.circular(borderRadius!)
+                  : BorderRadius.zero,
+              child: fileChild,
+            )
+          : child,
     );
   }
 
@@ -95,28 +97,32 @@ class CustomNetworkImage extends StatelessWidget {
   }) {
     return BoxDecoration(
       color: shimmer
-          ? Colors.grey.withOpacity(0.4)
+          ? Colors.grey.withValues(alpha: 0.4)
           : (backgroundColor ?? Colors.grey.shade300),
-      boxShadow: boxShadow ??
+      boxShadow:
+          boxShadow ??
           (elevation
               ? [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.06),
-              blurRadius: 20,
-              spreadRadius: 6,
-            ),
-          ]
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.06),
+                    blurRadius: 20,
+                    spreadRadius: 6,
+                  ),
+                ]
               : null),
       border: border,
-      borderRadius:
-      borderRadius != null ? BorderRadius.circular(borderRadius!) : null,
+      borderRadius: boxShape == BoxShape.circle
+          ? null
+          : borderRadius != null
+          ? BorderRadius.circular(borderRadius!)
+          : null,
       shape: boxShape,
       image: imageProvider != null
           ? DecorationImage(
-        image: imageProvider,
-        fit: fit ?? BoxFit.cover,
-        colorFilter: colorFilter,
-      )
+              image: imageProvider,
+              fit: fit ?? BoxFit.cover,
+              colorFilter: colorFilter,
+            )
           : null,
     );
   }
@@ -125,15 +131,13 @@ class CustomNetworkImage extends StatelessWidget {
     return Container(
       height: height,
       width: width,
-      decoration: _buildDecoration(
-        imageProvider: null,
-        shimmer: false,
-      ),
-      child: fallbackAsset ??
+      decoration: _buildDecoration(imageProvider: null, shimmer: false),
+      child:
+          fallbackAsset ??
           Icon(
             Icons.person,
             color: Colors.grey.shade500,
-            size: height,
+            size: height ?? width,
           ),
     );
   }

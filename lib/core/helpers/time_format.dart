@@ -6,8 +6,8 @@ class TimeFormatHelper {
     return DateFormat('MMM dd, yyyy').format(date); //western date format
   }
 
-  static String formatDateTime(DateTime date) {
-    return DateFormat('HH:mm ,MMM dd, yyyy').format(date);  // Example: 05 May, 2025 14:30
+  static String formatDateTime(String date) {
+    return DateFormat('dd/MMM/yyyy').format(DateTime.parse(date));
   }
 
 

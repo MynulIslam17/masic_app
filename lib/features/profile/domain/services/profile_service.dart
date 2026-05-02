@@ -24,7 +24,7 @@ class ProfileService {
 
   Future<UserModel> updateUserProfile(
     UserModel user, {
-    required File image,
+     File? image,
   }) async {
 
     return await _repository.updateUserProfile(user, image: image);
