@@ -4,6 +4,9 @@ import 'package:flutter_task/core/services/cache_service.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
 import 'package:flutter_task/features/admin/profile/presentation/admin_profile_screen.dart';
+import 'package:flutter_task/features/announcement/data/repositories/announcement_repository.dart';
+import 'package:flutter_task/features/announcement/domain/services/announcement_services.dart';
+import 'package:flutter_task/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:flutter_task/features/auth/presentation/pages/forget/forget_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/login/log_in_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/otp/otp_screen.dart';
@@ -12,7 +15,7 @@ import 'package:flutter_task/features/auth/presentation/pages/sign_up/sign_up_sc
 import 'package:flutter_task/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/poll/poll_screen.dart';
-import 'package:flutter_task/features/profile/add_bio_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/add_bio_screen.dart';
 import 'package:flutter_task/features/profile/add_contact_screen.dart';
 import 'package:flutter_task/features/profile/add_cv_screen.dart';
 import 'package:flutter_task/features/profile/add_education_screen.dart';
@@ -22,13 +25,13 @@ import 'package:flutter_task/features/announcement/presentation/screens/user/ann
 import 'package:flutter_task/features/announcement/presentation/screens/comon/create_announcements_screen.dart';
 import 'package:flutter_task/features/profile/data/repositories/profile_repository.dart';
 import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
-import 'package:flutter_task/features/profile/edit_profile_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:flutter_task/features/request/request_screen.dart';
 import 'package:flutter_task/features/translation/presentation/language_screen.dart';
-import 'package:flutter_task/features/profile/member_select_screen.dart';
-import 'package:flutter_task/features/profile/personal_info_screen.dart';
-import 'package:flutter_task/features/profile/profile_information_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/member_select_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/personal_info_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/profile_information_screen.dart';
 import 'package:flutter_task/features/profile/setting/change%20password/setting_change_password.dart';
 import 'package:flutter_task/features/profile/setting/privacy_policy_all_screen.dart';
 import 'package:flutter_task/features/profile/setting/setting_screen.dart';
@@ -144,6 +147,28 @@ class BottomNavBinding extends Bindings {
     Get.lazyPut<ProfileController>(
       () => ProfileController(
         service: Get.find<ProfileService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+
+    Get.lazyPut<AnnouncementRepository>(
+      () => AnnouncementRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<AnnouncementServices>(
+      () => AnnouncementServices(repository: Get.find<AnnouncementRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<AnnouncementController>(
+      () => AnnouncementController(
+        service: Get.find<AnnouncementServices>(),
         connectivityService: Get.find<ConnectivityService>(),
       ),
       fenix: true,

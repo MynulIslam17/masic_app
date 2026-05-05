@@ -66,6 +66,9 @@ class $AssetsIconsGen {
   SvgGenImage get employment =>
       const SvgGenImage('assets/icons/employment.svg');
 
+  /// File path: assets/icons/filter.svg
+  SvgGenImage get filter => const SvgGenImage('assets/icons/filter.svg');
+
   /// File path: assets/icons/gender.svg
   SvgGenImage get gender => const SvgGenImage('assets/icons/gender.svg');
 
@@ -161,6 +164,7 @@ class $AssetsIconsGen {
     education,
     email,
     employment,
+    filter,
     gender,
     home,
     language,

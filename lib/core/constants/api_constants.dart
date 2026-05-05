@@ -27,6 +27,14 @@ class ApiConstants {
   /// USER ──────────────────────────────────────────────
   static const String userProfile = '/api/v1/users/me';
   static const String userProfileUpdate = '/api/v1/users/edit-profile';
+  static const String usersProfile = '/api/v1/users';
+
+
+  /// ─── Announcement Marker ───────────────────────────
+  static  String announcements(int page, int limit) => '/api/v1/announcement/?page=$page&limit=$limit';
+  static  String announcementCreate = '/api/v1/announcement/create';
+  static  String announcementStatus(String announcementId) => '/api/v1/announcement/$announcementId';
+
 
 
 
@@ -39,6 +47,8 @@ class ApiConstants {
   /// chach inpoint ──────────────────────────────────────────────
 
   static const String cacheUserProfile = 'user/me';
+  static const String cacheUsersProfile = 'users/me';
+  static const String cacheAnnouncements = 'announcements';
 
 
 

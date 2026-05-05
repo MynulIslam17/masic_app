@@ -53,21 +53,79 @@ class ProfileRepository {
     }
   }
 
-  Future<UserModel> updateUserProfile(
-    UserModel user, {
-     File? image,
+  Future<List<UserModel>> fetchUsers({
+    int page = 1,
+    int limit = 10,
+    String? gender,
+    String? employmentStatus,
+    String? educationLevel,
+    String? searchTerm,
+    int? age,
   }) async {
     try {
+      final queryParameters = <String, dynamic>{
+        'page': page,
+        'limit': limit,
+        if (gender != null && gender.isNotEmpty) 'gender': gender,
+        if(searchTerm != null && searchTerm.isNotEmpty) 'searchTerm': searchTerm,
+        if (employmentStatus != null && employmentStatus.isNotEmpty)
+          'employmentStatus': employmentStatus,
+        if (educationLevel != null && educationLevel.isNotEmpty)
+          'educationLevel': educationLevel,
+        if (age != null && age != 0) 'age': age,
 
-      final bodyRequest = {
-        'data': jsonEncode(user.toMap()),
       };
+      final response = await _apiService.get(
+        ApiConstants.usersProfile,
+        queryParameters: queryParameters,
+      );
+
+      final users = (response.data['data'] as List)
+          .map((e) => UserModel.fromJson(e))
+          .toList();
+      await _cacheService.put(
+        ApiConstants.cacheUsersProfile,
+        users.map((e) => e.toJson()).toList(),
+      );
+      return users;
+    } on AppException {
+      final cached = getCachedUsers();
+      if (cached.isNotEmpty) return cached;
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+
+  List<UserModel> getCachedUsers() {
+    try {
+      final jsonList =
+      _cacheService.get<List>(
+        ApiConstants.cacheUsersProfile,
+        defaultValue: [],
+      ) ??
+          [];
+      return jsonList.map((json) => UserModel.fromJson(json)).toList();
+      } catch (e) {
+      return [];
+    }
+  }
+
+  Future<UserModel> updateUserProfile(UserModel user, {File? image}) async {
+    try {
+      final bodyRequest = {'data': jsonEncode(user.toMap())};
 
       final response = await _apiService.uploadFilePatch(
         ApiConstants.userProfileUpdate,
         data: bodyRequest,
         fieldName: 'image',
-        file: image == null ? null : MultipartFile.fromFileSync(image.path, filename: image.path.split('/').last),
+        file: image == null
+            ? null
+            : MultipartFile.fromFileSync(
+                image.path,
+                filename: image.path.split('/').last,
+              ),
       );
 
       final data = response.data['data'];
@@ -83,7 +141,6 @@ class ProfileRepository {
       throw UnknownException(e.toString());
     }
   }
-
 
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheUserProfile);

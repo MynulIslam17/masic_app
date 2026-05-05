@@ -10,9 +10,28 @@ class ProfileService {
   ProfileService({required ProfileRepository repository})
     : _repository = repository;
 
-  Future<void> fetchUserProfile() async {
+  Future<void> fetchUserProfile({
+    int page = 1,
+    int limit = 10,
+    String? gender,
+    String? employmentStatus,
+    String? educationLevel,
+    String? searchTerm,
+    int? age,
+  }) async {
     try {
-      await Future.wait([_repository.fetchUserProfile()]);
+      await Future.wait([
+        _repository.fetchUserProfile(),
+        _repository.fetchUsers(
+          page: page,
+          limit: limit,
+          gender: gender,
+          employmentStatus: employmentStatus,
+          educationLevel: educationLevel,
+          searchTerm: searchTerm,
+          age: age,
+        ),
+      ]);
     } on AppException {
       if (!_repository.hasCache()) {
         rethrow;
@@ -22,11 +41,27 @@ class ProfileService {
     }
   }
 
-  Future<UserModel> updateUserProfile(
-    UserModel user, {
-     File? image,
+  Future<List<UserModel>> fetchUsersMore({
+    int page = 1,
+    int limit = 10,
+    String? gender,
+    String? employmentStatus,
+    String? educationLevel,
+    String? searchTerm,
+    int? age,
   }) async {
+    return await _repository.fetchUsers(
+      page: page,
+      limit: limit,
+      gender: gender,
+      employmentStatus: employmentStatus,
+      educationLevel: educationLevel,
+      searchTerm: searchTerm,
+      age: age,
+    );
+  }
 
+  Future<UserModel> updateUserProfile(UserModel user, {File? image}) async {
     return await _repository.updateUserProfile(user, image: image);
   }
 
@@ -34,7 +69,11 @@ class ProfileService {
     return _repository.hasCache();
   }
 
-  UserModel? getCachedUserData()  {
+  UserModel? getCachedUserData() {
     return _repository.getCachedUserData();
+  }
+
+  List<UserModel> getCachedUsers() {
+    return _repository.getCachedUsers();
   }
 }

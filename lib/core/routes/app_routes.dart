@@ -1,25 +1,4 @@
-/// Route name constants for the entire application.
-///
-/// All route names are defined here as static constants. Use these constants
-/// everywhere instead of string literals to prevent typos and to get
-/// compile-time safety when navigating.
-///
-/// **Usage:**
-/// ```dart
-/// // Navigate to a named route
-/// Get.toNamed(AppRoutes.homeScreen);
-///
-/// // Navigate and remove all previous routes
-/// Get.offAllNamed(AppRoutes.loginScreen);
-///
-/// // Navigate with arguments
-/// Get.toNamed(AppRoutes.announcementsDetailsScreen, arguments: {'id': '123'});
-/// ```
-///
-/// **Adding a new route:**
-/// 1. Add the constant here: `static const String profile = '/profile';`
-/// 2. Add a [GetPage] entry in [AppPages.routes].
-/// 3. Optionally create a [Bindings] class for that page.
+
 abstract class AppRoutes {
   AppRoutes._();
 

@@ -21,30 +21,84 @@ class ProfileController extends GetxController {
   ProfileController({
     required ProfileService service,
     required ConnectivityService connectivityService,
-  })  : _service = service,
-        _connectivityService = connectivityService;
+  }) : _service = service,
+       _connectivityService = connectivityService;
 
+  // ─── Loading States ────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
-  final Rx<LoadingState> _updateLoadingState = LoadingState.initial.obs;
-
-  final _selectedImage = Rxn<File>();
-  final _userData = Rxn<UserModel>();
-  DateTime? _selectedDate;
 
   LoadingState get loadingState => _loadingState.value;
+
+  final Rx<LoadingState> _updateLoadingState = LoadingState.initial.obs;
+
   LoadingState get updateLoadingState => _updateLoadingState.value;
+
+  // ─── User Data ─────────────────────────────────────────────────────────────
+  final _selectedImage = Rxn<File>();
+
   File? get selectedImage => _selectedImage.value;
+
+  final _userData = Rxn<UserModel>();
+
   UserModel? get userData => _userData.value;
 
-  void selectImage(XFile image) {
-    _selectedImage.value = File(image.path);
+  DateTime? _selectedDate;
+
+  // ─── Users List ────────────────────────────────────────────────────────────
+  final RxList<UserModel> _usersData = <UserModel>[].obs;
+
+  List<UserModel> get usersData => _usersData;
+
+  // ─── Filters ───────────────────────────────────────────────────────────────
+  final RxString _genderFilter = ''.obs;
+  final RxString _employmentFilter = ''.obs;
+  final RxString _educationFilter = ''.obs;
+  final RxInt _ageFilter = 0.obs;
+
+  final searchController = TextEditingController();
+
+  String get genderFilter => _genderFilter.value;
+
+  String get employmentFilter => _employmentFilter.value;
+
+  String get educationFilter => _educationFilter.value;
+
+  int get ageFilter => _ageFilter.value;
+
+
+  // ─── Selection ─────────────────────────────────────────────────────────────
+  final RxList<String> selectedUserIds = <String>[].obs;
+
+  void toggleUserSelection(String userId) {
+    if (selectedUserIds.contains(userId)) {
+      selectedUserIds.remove(userId);
+      debugPrint('Deselected Users: $userId');
+    } else {
+      selectedUserIds.add(userId);
+      debugPrint('Selected Users: $userId');
+    }
+
+    debugPrint('Selected Users: $selectedUserIds');
   }
 
-  void setSelectedDate(DateTime date) {
-    _selectedDate = date;
-    dateOfBirthController.text = TimeFormatHelper.formatDateTime(date.toString());
-  }
+  bool isUserSelected(String userId) => selectedUserIds.contains(userId);
 
+  // ─── Pagination (HomeController pattern) ──────────────────────────────────
+  int _currentPage = 1;
+  final int _limit = 10;
+  final RxBool _isLoadingMore = false.obs;
+
+  bool get isLoadingMore => _isLoadingMore.value;
+
+  final RxBool _hasMore = true.obs;
+
+  bool get hasMoreUsers => _hasMore.value && !_isLoadingMore.value;
+  // ─── Scroll Controller ─────────────────────────────────────────────────────
+  ScrollController? _scrollController;
+
+  ScrollController? get scrollController => _scrollController;
+
+  // ─── Text Controllers ──────────────────────────────────────────────────────
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
@@ -54,15 +108,47 @@ class ProfileController extends GetxController {
   final educationController = TextEditingController();
   final universityController = TextEditingController();
 
+  // ─── Lifecycle ─────────────────────────────────────────────────────────────
   @override
   void onInit() {
     super.onInit();
+    _initScrollController();
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) loadData();
     });
     loadData();
   }
 
+  void _initScrollController() {
+    _scrollController = ScrollController();
+    _scrollController!.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController == null) return;
+
+    final position = _scrollController!.position;
+
+    if (position.pixels >= position.maxScrollExtent - 200 &&
+        !_isLoadingMore.value &&
+        hasMoreUsers) {
+      loadMoreUsers();
+    }
+  }
+
+  // ─── Image & Date ──────────────────────────────────────────────────────────
+  void selectImage(XFile image) {
+    _selectedImage.value = File(image.path);
+  }
+
+  void setSelectedDate(DateTime date) {
+    _selectedDate = date;
+    dateOfBirthController.text = TimeFormatHelper.formatDateTime(
+      date.toString(),
+    );
+  }
+
+  // ─── Load Data (initial) ───────────────────────────────────────────────────
   Future<void> loadData() async {
     try {
       final hasCache = _service.hasCache();
@@ -78,23 +164,85 @@ class ProfileController extends GetxController {
       if (!isOnline) return;
 
       try {
-        await _service.fetchUserProfile();
+        await _service.fetchUserProfile(
+          page: _currentPage,
+          limit: _limit,
+          gender: genderFilter,
+          employmentStatus: employmentFilter,
+          educationLevel: educationFilter,
+          searchTerm: searchController.text,
+          age: ageFilter,
+        );
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
+        if (!hasCache) {
+          _loadingState.value = LoadingState.error;
+        }
         if (kDebugMode) debugPrint('Fetch error: $e');
       }
     } catch (e) {
-      _loadingState.value = LoadingState.error;
+      if (_service.hasCache()) {
+        _loadFromCache();
+        _loadingState.value = LoadingState.loaded;
+      } else {
+        _loadingState.value = LoadingState.error;
+      }
       if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
     }
   }
 
+  // ─── Load More (pagination) ────────────────────────────────────────────────
+  Future<void> loadMoreUsers() async {
+    if (_isLoadingMore.value || !hasMoreUsers) return;
+
+    try {
+      _isLoadingMore.value = true;
+      _currentPage++;
+
+      final newUsers = await _service.fetchUsersMore(
+        page: _currentPage,
+        limit: _limit,
+        gender: genderFilter,
+        employmentStatus: employmentFilter,
+        educationLevel: educationFilter,
+        age: ageFilter,
+      );
+
+      if (newUsers.isNotEmpty) {
+        _usersData.addAll(newUsers);
+        if (newUsers.length < _limit) {
+          _hasMore.value = false;
+        }
+      } else {
+        _hasMore.value = false;
+      }
+    } on AppException catch (e) {
+      _currentPage--;
+      if (kDebugMode) debugPrint('Load more error: $e');
+    } catch (e) {
+      _currentPage--;
+      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+    } finally {
+      _isLoadingMore.value = false;
+    }
+  }
+  // ─── Cache ─────────────────────────────────────────────────────────────────
   void _loadFromCache() {
     _populateControllers(_service.getCachedUserData());
     _userData.value = _service.getCachedUserData();
+    _usersData.value = _service.getCachedUsers();
+
+    assert(() {
+      if (kDebugMode) {
+        print('📦 Loaded from cache:');
+        print('   Users: ${_usersData.length}');
+      }
+      return true;
+    }());
   }
 
+  // ─── Update Profile ────────────────────────────────────────────────────────
   Future<void> updateUserProfile() async {
     final user = _userData.value;
     if (user == null) {
@@ -141,12 +289,15 @@ class ProfileController extends GetxController {
     }
   }
 
+  // ─── Helpers ───────────────────────────────────────────────────────────────
   void _populateControllers(UserModel? data) {
     if (data == null) return;
     nameController.text = data.name ?? '';
     emailController.text = data.email ?? '';
     phoneController.text = data.spousePhone ?? '';
-    dateOfBirthController.text = TimeFormatHelper.formatDateTime(data.dateOfBirth ?? '');
+    dateOfBirthController.text = TimeFormatHelper.formatDateTime(
+      data.dateOfBirth ?? '',
+    );
     genderController.text = data.gender ?? '';
     employmentController.text = data.employmentStatus ?? '';
     educationController.text = data.education ?? '';
@@ -157,6 +308,8 @@ class ProfileController extends GetxController {
 
   @override
   Future<void> refresh() async {
+    _currentPage = 1;
+    _usersData.clear();
     _userData.value = null;
     _selectedDate = null;
     await loadData();
@@ -164,7 +317,9 @@ class ProfileController extends GetxController {
 
   @override
   void onClose() {
-    super.onClose();
+    _scrollController?.removeListener(_onScroll);
+    _scrollController?.dispose();
+    _scrollController = null;
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
@@ -173,5 +328,6 @@ class ProfileController extends GetxController {
     employmentController.dispose();
     educationController.dispose();
     universityController.dispose();
+    super.onClose();
   }
 }

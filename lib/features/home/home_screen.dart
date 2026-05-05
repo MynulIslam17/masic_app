@@ -95,8 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: CustomNetworkImage(
                         height: 110.h,
                         width: double.infinity,
+                        fit: BoxFit.cover,
                         imageUrl: '',
-                        fallbackAsset: Assets.images.homeBanner.image(),
+                        fallbackAsset: Assets.images.homeBanner.image(fit: BoxFit.cover),
                       ),
                     ),
                     Positioned(

@@ -41,7 +41,8 @@ class HomePage extends StatelessWidget {
                 case LoadingState.loaded:
                   return HomeContent(controller: controller);
               }
-            }),
+            }
+            ),
           ),
 
           // Animated AppBar
