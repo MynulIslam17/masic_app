@@ -67,21 +67,22 @@ class ProfileController extends GetxController {
 
 
   // ─── Selection ─────────────────────────────────────────────────────────────
-  final RxList<String> selectedUserIds = <String>[].obs;
+  final RxList<String> _selectedUserIds = <String>[].obs;
+   List<String> get selectedUserIds => _selectedUserIds;
 
   void toggleUserSelection(String userId) {
-    if (selectedUserIds.contains(userId)) {
-      selectedUserIds.remove(userId);
+    if (_selectedUserIds.contains(userId)) {
+      _selectedUserIds.remove(userId);
       debugPrint('Deselected Users: $userId');
     } else {
-      selectedUserIds.add(userId);
+      _selectedUserIds.add(userId);
       debugPrint('Selected Users: $userId');
     }
 
-    debugPrint('Selected Users: $selectedUserIds');
+    debugPrint('Selected Users: $_selectedUserIds');
   }
 
-  bool isUserSelected(String userId) => selectedUserIds.contains(userId);
+  bool isUserSelected(String userId) => _selectedUserIds.contains(userId);
 
   // ─── Pagination (HomeController pattern) ──────────────────────────────────
   int _currentPage = 1;

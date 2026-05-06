@@ -42,7 +42,7 @@ class AnnouncementServices {
   }
 
 
-  Future<void> createAnnouncement(File image, CreateRequestModel model) async {
+  Future<void> createAnnouncement(File? image, CreateRequestModel model) async {
     return await _repository.createAnnouncement(image, model);
   }
 

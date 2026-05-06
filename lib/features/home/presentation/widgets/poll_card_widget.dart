@@ -3,11 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/poll/data/models/poll_model.dart';
 import 'package:get/get.dart';
 
 
 class PollCardWidget extends StatelessWidget {
-  const PollCardWidget({super.key});
+  const PollCardWidget({super.key, required this.poll});
+
+  final PollModel poll;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,7 @@ class PollCardWidget extends StatelessWidget {
             top: 10.h,
             maxline: 1,
             textAlign: TextAlign.start,
-            text: 'Rate your overall event experience.',
+            text: poll.title ?? '',
             fontSize: 16.sp,
             color: AppColors.primaryColor,
           ),
@@ -33,8 +36,7 @@ class PollCardWidget extends StatelessWidget {
           CustomText(
             maxline: 2,
             textAlign: TextAlign.start,
-            text:
-                'Poll create by organizer, Anthony Ciobanu 10 responses ggdsfsd',
+            text: poll.tagline ?? '',
             fontSize: 10.sp,
           ),
           SizedBox(height: 14.h),
@@ -46,7 +48,7 @@ class PollCardWidget extends StatelessWidget {
             height: 38.h,
             fontSize: 12.sp,
             onPressed: () {
-              Get.toNamed(AppRoutes.pollScreen);
+              Get.toNamed(AppRoutes.pollScreen, arguments: poll.sId);
             },
             label: 'Answer poll',
           ),

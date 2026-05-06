@@ -67,7 +67,7 @@ class AnnouncementCard extends StatelessWidget {
           SizedBox(height: 12.h),
           CustomButton(
             onPressed: () {
-              Get.toNamed(AppRoutes.announcementsDetailsScreen);
+              Get.toNamed(AppRoutes.announcementsDetailsScreen,arguments: announcement);
             },
             bordersColor: AppColors.primaryColor,
             foregroundColor: AppColors.primaryColor,

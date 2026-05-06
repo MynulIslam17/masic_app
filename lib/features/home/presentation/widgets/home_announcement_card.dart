@@ -4,11 +4,14 @@ import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
 import 'package:get/get.dart';
 
 
 class HomeAnnouncementCard extends StatelessWidget {
-  const HomeAnnouncementCard({super.key});
+  const HomeAnnouncementCard({super.key, required this.announcement});
+
+  final AnnouncementModel announcement;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +39,14 @@ class HomeAnnouncementCard extends StatelessWidget {
                   SizedBox(height: 12.h),
                   CustomText(
                     textAlign: TextAlign.start,
-                    text: 'Announcements & Updates',
+                    text: announcement.title ?? '',
                     fontSize: 16.sp,
                   ),
                   SizedBox(height: 12.h),
                   CustomText(
                     maxline: 2,
                     textAlign: TextAlign.start,
-                    text: 'Post your announcement here for your users for bettercommunication about users.',
+                    text: announcement.description ?? '',
                     fontSize: 10.sp,
                   ),
                   SizedBox(height: 12.h),
@@ -53,7 +56,7 @@ class HomeAnnouncementCard extends StatelessWidget {
                     height: 32.h,
                     fontSize: 12.sp,
                     onPressed: (){
-                      Get.toNamed(AppRoutes.announcementsDetailsScreen);
+                      Get.toNamed(AppRoutes.announcementsDetailsScreen,arguments: announcement);
                     },label: 'View details',)
                 ],
               ),

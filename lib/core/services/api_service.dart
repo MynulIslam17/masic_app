@@ -306,15 +306,18 @@ class ApiService {
   /// );
   /// ```
   Future<Response> uploadFile(
-    String path, {
-    required MultipartFile file,
-    String fieldName = 'file',
-    Map<String, dynamic>? data,
-    Options? options,
-    CancelToken? cancelToken,
-  }) async {
+      String path, {
+        MultipartFile? file,
+        String? fieldName,
+        Map<String, dynamic>? data,
+        Options? options,
+        CancelToken? cancelToken,
+      }) async {
     try {
-      final formData = FormData.fromMap({fieldName: file, ...?data});
+      final formData = FormData.fromMap({
+        if (file != null) ?fieldName: file,
+        ...?data,
+      });
 
       return await _dio.post(
         path,

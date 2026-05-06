@@ -2,21 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
 import 'package:get/get.dart';
 
 
-class AnnouncementsDetailsScreen extends StatefulWidget {
+class AnnouncementsDetailsScreen extends StatelessWidget {
   const AnnouncementsDetailsScreen({super.key});
 
   @override
-  State<AnnouncementsDetailsScreen> createState() =>
-      _AnnouncementsDetailsScreenState();
-}
-
-class _AnnouncementsDetailsScreenState
-    extends State<AnnouncementsDetailsScreen> {
-  @override
   Widget build(BuildContext context) {
+
+    final announcement = Get.arguments as AnnouncementModel;
     return CustomScaffold(
       appBar: CustomAppBar(title: 'Announcements details'),
       body: SingleChildScrollView(
@@ -30,33 +26,22 @@ class _AnnouncementsDetailsScreenState
                   borderRadius: 12.r,
                   height: 225.h,
                   width: double.infinity,
-                  imageUrl:
-                      'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg' ??
-                      '',
+                  imageUrl: announcement.bannerUrl,
                 ),
 
                 CustomText(
                   top: 10.h,
                   textAlign: TextAlign.start,
-                  text: 'Event title here. . .' ?? 'N/A',
+                  text: announcement.title ?? 'N/A',
+                  maxline: 2,
+                  textOverflow: TextOverflow.ellipsis,
                   fontSize: 16.sp,
                 ),
 
                 CustomText(
                   top: 12.h,
                   textAlign: TextAlign.start,
-                  text:
-                      'Post your announcement here for your users for'
-                          ' communication about users. Post your announcement '
-                          'here for your users for better communication about '
-                          'users. Post your announcement here for your users for '
-                          'better communication about users. Post your '
-                          'announcement here for your users for better '
-                          'communication about users. Post your announcement here'
-                          ' for your users for better communication about users. '
-                          'Post your announcement here for your users for better '
-                          'communication about users.' ??
-                      'N/A',
+                  text: announcement.description ?? 'N/A',
                   fontSize: 10.sp,
                 ),
 

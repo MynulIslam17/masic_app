@@ -4,9 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/exceptions/app_exceptions.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
+import 'package:flutter_task/core/helpers/toast_message_helper.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
+import 'package:flutter_task/features/announcement/data/models/create_request_model.dart';
 import 'package:flutter_task/features/announcement/domain/services/announcement_services.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -21,8 +25,6 @@ class AnnouncementController extends GetxController {
     required ConnectivityService connectivityService,
   }) : _service = service,
        _connectivityService = connectivityService;
-
-
 
   final searchController = TextEditingController();
 
@@ -41,11 +43,14 @@ class AnnouncementController extends GetxController {
 
   LoadingState get createLoadingState => _createLoadingState.value;
 
+  final titleTEController = TextEditingController();
+  final decTEController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
   final RxList<AnnouncementModel> _announcements = <AnnouncementModel>[].obs;
 
   List<AnnouncementModel> get announcements => _announcements;
 
-  // ─── Pagination (HomeController pattern) ──────────────────────────────────
   int _currentPage = 1;
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
@@ -54,7 +59,7 @@ class AnnouncementController extends GetxController {
 
   final RxBool _hasMore = true.obs;
 
-  bool get hasMoreUsers => _hasMore.value && !_isLoadingMore.value;
+  bool get hasMore => _hasMore.value && !_isLoadingMore.value;
 
   // ─── Scroll Controller ─────────────────────────────────────────────────────
   ScrollController? _scrollController;
@@ -66,9 +71,9 @@ class AnnouncementController extends GetxController {
     super.onInit();
     _initScrollController();
     ever(_connectivityService.isConnected, (isConnected) {
-      if (isConnected) loadData();
+      if (isConnected) _loadData();
     });
-    loadData();
+    _loadData();
   }
 
   void selectImage(XFile image) {
@@ -87,12 +92,12 @@ class AnnouncementController extends GetxController {
 
     if (position.pixels >= position.maxScrollExtent - 200 &&
         !_isLoadingMore.value &&
-        hasMoreUsers) {
-      /// loadMoreUsers();
+        hasMore) {
+      _loadMore();
     }
   }
 
-  Future<void> loadData() async {
+  Future<void> _loadData() async {
     try {
       final hasCache = _service.hasCache();
       final isOnline = _connectivityService.isConnected.value;
@@ -107,7 +112,11 @@ class AnnouncementController extends GetxController {
       if (!isOnline) return;
 
       try {
-        await _service.fetchAnnouncements(_currentPage, _limit, search: searchController.text);
+        await _service.fetchAnnouncements(
+          1,
+          10,
+          search: searchController.text,
+        );
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
@@ -127,8 +136,8 @@ class AnnouncementController extends GetxController {
     }
   }
 
-  Future<void> loadMore() async {
-    if (_isLoadingMore.value || !hasMoreUsers) return;
+  Future<void> _loadMore() async {
+    if (_isLoadingMore.value || !hasMore) return;
 
     try {
       _isLoadingMore.value = true;
@@ -170,20 +179,49 @@ class AnnouncementController extends GetxController {
     }());
   }
 
-  Future<void> retry() => loadData();
+  Future<void> retry() async => await _loadData();
 
-  @override
-  Future<void> refresh() async {
-    _currentPage = 1;
-    _announcements.clear();
-    await loadData();
+  Future<void> createAnnouncement() async {
+    if (!formKey.currentState!.validate()) return;
+
+    _createLoadingState.value = LoadingState.loading;
+
+    try {
+      final users = ProfileController.to.selectedUserIds;
+
+      await _service.createAnnouncement(
+        selectedImage,
+        CreateRequestModel(
+          title: titleTEController.text.trim(),
+          description: decTEController.text.trim(),
+          targetUsers: users.isEmpty ? null : users,
+        ),
+      );
+
+      _createLoadingState.value = LoadingState.loaded;
+      if(users.isNotEmpty) Get.back(canPop: true);
+      Get.back(canPop: true);
+      titleTEController.clear();
+      decTEController.clear();
+      _selectedImage.value = null;
+      users.clear();
+      ToastMessageHelper.show('Created! Pending admin approval.');
+    } on AppException catch (e) {
+      _createLoadingState.value = LoadingState.error;
+      ToastMessageHelper.show(e.errorMessage);
+
+      if (kDebugMode) {
+        debugPrint('Create announcement error: $e');
+      }
+    }
   }
-
   @override
   void onClose() {
     _scrollController?.removeListener(_onScroll);
     _scrollController?.dispose();
     _scrollController = null;
+    titleTEController.dispose();
+    decTEController.dispose();
     super.onClose();
   }
 }

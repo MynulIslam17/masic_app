@@ -8,8 +8,6 @@ import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/profile/presentation/widgets/member_card.dart';
-import 'package:flutter_task/features/demo_home/presentation/widgets/retry_widget.dart';
-import 'package:flutter_task/features/demo_home/presentation/widgets/shimmer_widgets.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
@@ -74,15 +72,11 @@ class MemberSelectScreen extends StatelessWidget {
               switch (controller.loadingState) {
                 case LoadingState.initial:
                 case LoadingState.loading:
-                  return ShimmerWidgets.buildLoadingShimmer();
+                  return Center(child: CustomLoader());
 
                 case LoadingState.offline:
                 case LoadingState.error:
-                  return RetryWidget(
-                    message: 'Something went wrong',
-                    onRetry: controller.retry,
-                    isOffline: controller.loadingState.isError,
-                  );
+                  return CustomText(text: '');
 
                 case LoadingState.loaded:
                   return ListView.separated(

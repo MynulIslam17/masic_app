@@ -7,6 +7,10 @@ abstract class AppTheme {
 
   // ─── Light Theme ──────────────────────────────────────────────────────
   static ThemeData get light => ThemeData(
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: AppColors.primary,
+      refreshBackgroundColor: Colors.white,
+    ),
     useMaterial3: true,
     brightness: Brightness.light,
     primaryColor: AppColors.primary,

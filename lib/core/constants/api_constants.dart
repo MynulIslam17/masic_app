@@ -38,6 +38,16 @@ class ApiConstants {
 
 
 
+  /// ─── poll Marker ───────────────────────────
+  static  String polls(int page, int limit) => '/api/v1/poll/?page=$page&limit=$limit';
+  static String pollAns(String pollId) => '/api/v1/poll/$pollId/answer';
+  static String pollDetails(String pollId) => '/api/v1/poll/$pollId/answers';
+  static const String pollCreate = '/api/v1/poll/create';
+
+
+
+
+
 
 
 
@@ -49,6 +59,7 @@ class ApiConstants {
   static const String cacheUserProfile = 'user/me';
   static const String cacheUsersProfile = 'users/me';
   static const String cacheAnnouncements = 'announcements';
+  static const String cachePolls = 'poll';
 
 
 

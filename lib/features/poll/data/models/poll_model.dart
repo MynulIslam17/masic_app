@@ -1,33 +1,100 @@
-class QuestionModel {
-  final String title;
-  final String description;
-  final List<OptionModel> options;
+class PollModel {
+  String? sId;
+  CreatedBy? createdBy;
+  String? title;
+  String? tagline;
+  String? answerType;
+  List<Options>? options;
+  int? totalResponses;
+  String? createdAt;
+  String? updatedAt;
 
-  const QuestionModel({
-    required this.title,
-    required this.description,
-    required this.options,
-  });
+  PollModel(
+      {this.sId,
+        this.createdBy,
+        this.title,
+        this.tagline,
+        this.answerType,
+        this.options,
+        this.totalResponses,
+        this.createdAt,
+        this.updatedAt});
 
-  static final QuestionModel question = QuestionModel(
-    title: "Rate your overall event experience.",
-    description: "Poll create by organizer, Anthony Ciobanu. Poll create by organizer, Anthony Ciobanu",
-    options: [
-      OptionModel(label: "Very good", pct: 100),
-      OptionModel(label: "Good", pct: 20),
-      OptionModel(label: "Bad", pct: 15),
-    ],
-  );
+  PollModel.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    createdBy = json['createdBy'] != null
+        ? CreatedBy.fromJson(json['createdBy'])
+        : null;
+    title = json['title'];
+    tagline = json['tagline'];
+    answerType = json['answerType'];
+    if (json['options'] != null) {
+      options = <Options>[];
+      json['options'].forEach((v) {
+        options!.add(Options.fromJson(v));
+      });
+    }
+    totalResponses = json['totalResponses'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    if (createdBy != null) {
+      data['createdBy'] = createdBy!.toJson();
+    }
+    data['title'] = title;
+    data['tagline'] = tagline;
+    data['answerType'] = answerType;
+    if (options != null) {
+      data['options'] = options!.map((v) => v.toJson()).toList();
+    }
+    data['totalResponses'] = totalResponses;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
+    return data;
+  }
 }
 
+class CreatedBy {
+  String? profileImage;
+  String? sId;
 
-class OptionModel {
-  final String label;
-  final int pct;
+  CreatedBy({this.profileImage, this.sId});
 
-  const OptionModel({
-    required this.label,
-    required this.pct,
-  });
+  CreatedBy.fromJson(Map<String, dynamic> json) {
+    profileImage = json['profileImage'];
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['profileImage'] = profileImage;
+    data['_id'] = sId;
+    return data;
+  }
 }
 
+class Options {
+  String? text;
+  int? count;
+  String? sId;
+
+  Options({this.text, this.count, this.sId});
+
+  Options.fromJson(Map<String, dynamic> json) {
+    text = json['text'];
+    count = json['count'];
+    sId = json['_id'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['text'] = text;
+    data['count'] = count;
+    data['_id'] = sId;
+    return data;
+  }
+}

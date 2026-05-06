@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -72,12 +73,13 @@ class AnnouncementRepository {
     return response;
   }
 
-  Future<void> createAnnouncement(File image, CreateRequestModel model) async {
+  Future<void> createAnnouncement(File? image, CreateRequestModel model) async {
     try {
       await _apiService.uploadFile(
         ApiConstants.announcementCreate,
-        data: model.toJson(),
-        file: MultipartFile.fromFileSync(
+        data: {'data' : jsonEncode(model.toJson())},
+        fieldName: image == null ? null : 'image',
+        file: image == null ? null : MultipartFile.fromFileSync(
           image.path,
           filename: image.path.split('/').last,
         ),
