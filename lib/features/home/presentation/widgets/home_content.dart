@@ -21,7 +21,7 @@ class HomeContent extends StatelessWidget {
     final  controller = HomeController.to;
     return Obx(() => RefreshIndicator(
       onRefresh: ()async {
-        controller.retry();
+        controller.refresh();
       },
       child: CustomScrollView(
         physics: AlwaysScrollableScrollPhysics(

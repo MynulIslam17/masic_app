@@ -115,13 +115,12 @@ class HomeController extends GetxController {
     }());
   }
 
-  Future<void> retry() async {
-    await _loadData();
-  }
-
   @override
   Future<void> refresh() async {
     _announcements.clear();
+    _polls.clear();
+    _currentAnnouncementPage.value = 0;
+    _currentPollPage.value = 0;
     await _loadData();
   }
 }

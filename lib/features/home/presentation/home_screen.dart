@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
 import 'package:flutter_task/features/home/presentation/widgets/home_content.dart';
@@ -152,7 +153,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
             case LoadingState.offline:
             case LoadingState.error:
-              return CustomText(text: controller.errorMessage);
+              return EmptyDataWidget(
+                message: 'Failed to load data. Please try again.',
+                onRefresh: () async => await controller.refresh(),
+              );
 
             case LoadingState.loaded:
               return HomeContent();

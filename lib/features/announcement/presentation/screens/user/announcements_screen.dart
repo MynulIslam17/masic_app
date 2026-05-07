@@ -4,6 +4,7 @@ import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_card.dart';
@@ -19,7 +20,7 @@ class AnnouncementsScreen extends StatelessWidget {
     return CustomScaffold(
       appBar: CustomAppBar(title: 'Announcements'),
       body: RefreshIndicator(
-        onRefresh: controller.retry,
+        onRefresh: controller.refresh,
         child: SingleChildScrollView(
           controller: controller.scrollController,
           physics: AlwaysScrollableScrollPhysics(
@@ -97,7 +98,10 @@ class AnnouncementsScreen extends StatelessWidget {
 
                   case LoadingState.offline:
                   case LoadingState.error:
-                    return CustomText(text: '');
+                       return EmptyDataWidget(
+                      message: 'Failed to load announcements. Please try again.',
+                      onRefresh: () async => await controller.refresh(),
+                    );
 
                   case LoadingState.loaded:
                     return ListView.builder(

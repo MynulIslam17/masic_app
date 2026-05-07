@@ -179,7 +179,15 @@ class AnnouncementController extends GetxController {
     }());
   }
 
-  Future<void> retry() async => await _loadData();
+  @override
+  Future<void> refresh() async {
+    _announcements.clear();
+    _currentPage = 1;
+    _hasMore.value = true;
+    _isLoadingMore.value = false;
+    await _loadData();
+  }
+
 
   Future<void> createAnnouncement() async {
     if (!formKey.currentState!.validate()) return;
