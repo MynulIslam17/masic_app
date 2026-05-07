@@ -9,16 +9,17 @@ class PollModel {
   String? createdAt;
   String? updatedAt;
 
-  PollModel(
-      {this.sId,
-        this.createdBy,
-        this.title,
-        this.tagline,
-        this.answerType,
-        this.options,
-        this.totalResponses,
-        this.createdAt,
-        this.updatedAt});
+  PollModel({
+    this.sId,
+    this.createdBy,
+    this.title,
+    this.tagline,
+    this.answerType,
+    this.options,
+    this.totalResponses,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   PollModel.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -59,7 +60,7 @@ class PollModel {
 }
 
 class CreatedBy {
-  String? profileImage;
+  Null? profileImage;
   String? sId;
 
   CreatedBy({this.profileImage, this.sId});

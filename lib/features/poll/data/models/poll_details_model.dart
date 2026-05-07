@@ -1,77 +1,114 @@
+
 class PollDetailsModel {
-  String? sId;
-  String? title;
-  String? tagline;
-  String? createdBy;
-  String? answerType;
-  int? totalResponses;
-  List<Options>? options;
-  String? myAnswer;
+  final String? id;
+  final String? title;
+  final String? tagline;
+  final String? answerType;
+  final int? totalResponses;
+  final List<PollOption>? options;
+  final bool? answered;
+
+  // selector type
+  final MyAnswer? myAnswer;
+
+  // write-in type
+  final String? answer;
 
   PollDetailsModel({
-    this.sId,
+    this.id,
     this.title,
     this.tagline,
-    this.createdBy,
     this.answerType,
     this.totalResponses,
     this.options,
+    this.answered,
     this.myAnswer,
+    this.answer,
   });
 
-  PollDetailsModel.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    title = json['title'];
-    tagline = json['tagline'];
-    createdBy = json['createdBy'];
-    answerType = json['answerType'];
-    totalResponses = json['totalResponses'];
-    if (json['options'] != null) {
-      options = <Options>[];
-      json['options'].forEach((v) {
-        options!.add(Options.fromJson(v));
-      });
-    }
-    myAnswer = json['myAnswer'];
+  factory PollDetailsModel.fromJson(Map<String, dynamic> json) {
+    return PollDetailsModel(
+      id: json['_id'],
+      title: json['title'],
+      tagline: json['tagline'],
+      answerType: json['answerType'],
+      totalResponses: json['totalResponses'],
+      options: json['options'] != null
+          ? List<PollOption>.from(
+        json['options'].map((x) => PollOption.fromJson(x)),
+      )
+          : [],
+      answered: json['answered'],
+      myAnswer: json['myAnswer'] != null
+          ? MyAnswer.fromJson(json['myAnswer'])
+          : null,
+      answer: json['answer'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = sId;
-    data['title'] = title;
-    data['tagline'] = tagline;
-    data['createdBy'] = createdBy;
-    data['answerType'] = answerType;
-    data['totalResponses'] = totalResponses;
-    if (options != null) {
-      data['options'] = options!.map((v) => v.toJson()).toList();
-    }
-    data['myAnswer'] = myAnswer;
-    return data;
+    return {
+      '_id': id,
+      'title': title,
+      'tagline': tagline,
+      'answerType': answerType,
+      'totalResponses': totalResponses,
+      'options': options?.map((e) => e.toJson()).toList(),
+      'answered': answered,
+      'myAnswer': myAnswer?.toJson(),
+      'answer': answer,
+    };
   }
 }
 
-class Options {
-  String? sId;
-  String? text;
-  int? count;
-  int? percentage;
+class PollOption {
+  final String? id;
+  final String? text;
+  final int? count;
+  final num? percentage;
 
-  Options({this.sId, this.text, this.count, this.percentage});
+  PollOption({
+    this.id,
+    this.text,
+    this.count,
+    this.percentage,
+  });
 
-  Options.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    text = json['text'];
-    count = json['count'];
-    percentage = json['percentage'];
+  factory PollOption.fromJson(Map<String, dynamic> json) {
+    return PollOption(
+      id: json['_id'],
+      text: json['text'],
+      count: json['count'],
+      percentage: json['percentage'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['_id'] = sId;
-    data['text'] = text;
-    data['count'] = count;
-    data['percentage'] = percentage;
-    return data;
+    return {
+      '_id': id,
+      'text': text,
+      'count': count,
+      'percentage': percentage,
+    };
+  }
+}
+
+class MyAnswer {
+  final String? optionId;
+
+  MyAnswer({
+    this.optionId,
+  });
+
+  factory MyAnswer.fromJson(Map<String, dynamic> json) {
+    return MyAnswer(
+      optionId: json['optionId'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'optionId': optionId,
+    };
   }
 }
