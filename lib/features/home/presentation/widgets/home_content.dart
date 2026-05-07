@@ -2,13 +2,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
 import 'package:flutter_task/features/home/presentation/widgets/home_announcement_card.dart';
 import 'package:flutter_task/features/home/presentation/widgets/poll_card_widget.dart';
-import 'package:flutter_task/features/poll/presentation/widgets/request_card_widget.dart';
 import 'package:get/get.dart';
 
 
@@ -75,8 +73,41 @@ class HomeContent extends StatelessWidget {
             ),
           ),
           SliverToBoxAdapter(
-            child: RequestCardWidget(
-              onTap: () => Get.toNamed(AppRoutes.requestScreen),
+            child: CustomContainer(
+              horizontalMargin: 16.w,
+              bordersColor: AppColors.color8A8A8A,
+              radiusAll: 20.r,
+              height: 158.h,
+              width: double.infinity,
+              paddingHorizontal: 44.r,
+              paddingVertical: 20.r,
+              child: Column(
+                children: [
+                  CustomText(
+                    maxline: 1,
+                    text: 'Request for opportunities',
+                    fontSize: 16.sp,
+                    color: AppColors.primaryColor,
+                  ),
+                  SizedBox(height: 12.h),
+                  CustomText(
+                    maxline: 2,
+                    text:
+                    'Submit requests for jobs, volunteering opportunities, workshops',
+                    fontSize: 10.sp,
+                  ),
+                  SizedBox(height: 14.h),
+
+                  CustomButton(
+                    height: 38.h,
+                    fontSize: 12.sp,
+                    onPressed: (){
+                     // Get.toNamed(AppRoutes.requestScreen);
+                    },
+                    label: 'Request',
+                  ),
+                ],
+              ),
             ),
           ),
 

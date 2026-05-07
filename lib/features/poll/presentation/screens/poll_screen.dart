@@ -7,6 +7,7 @@ import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/poll/presentation/controllers/poll_controller.dart';
 import 'package:flutter_task/features/poll/presentation/widgets/option_tile.dart';
+import 'package:flutter_task/features/poll/presentation/widgets/poll_simmer.dart';
 import 'package:get/get.dart';
 
 class PollScreen extends StatelessWidget {
@@ -26,7 +27,7 @@ class PollScreen extends StatelessWidget {
         switch (controller.detailsLoadingState) {
           case LoadingState.initial:
           case LoadingState.loading:
-            return Center(child: CustomLoader());
+            return PollShimmer();
 
           case LoadingState.offline:
           case LoadingState.error:

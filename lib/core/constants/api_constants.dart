@@ -45,6 +45,11 @@ class ApiConstants {
   static const String pollCreate = '/api/v1/poll/create';
 
 
+  /// request ──────────────────────────────────────────────
+  static const  String requests = '/api/v1/request';
+
+
+
 
 
 
@@ -60,6 +65,7 @@ class ApiConstants {
   static const String cacheUsersProfile = 'users/me';
   static const String cacheAnnouncements = 'announcements';
   static const String cachePolls = 'poll';
+  static const String cacheRequests = 'requests';
 
 
 

@@ -5,8 +5,10 @@ import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
 import 'package:flutter_task/features/home/presentation/widgets/home_content.dart';
+import 'package:flutter_task/features/home/presentation/widgets/home_simmer.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
@@ -44,42 +46,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   final isCollapsed = settings?.isScrolledUnder ?? false;
                   return Obx(() {
                     final userData = ProfileController.to.userData;
-                    return Row(
-                      children: [
-                        CustomNetworkImage(
-                          boxShape: BoxShape.circle,
-                          height: 42.r,
-                          width: 42.r,
-                          imageUrl: userData?.profileImage,
-                          fallbackAsset: Assets.images.profile.image(),
-                        ),
-                        SizedBox(width: 8.w),
-                        Flexible(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CustomText(
-                                enableAutoTranslate: false,
-                                fontSize: 14.sp,
-                                color: isCollapsed
-                                    ? AppColors.primaryColor
-                                    : Colors.white,
-                                textAlign: TextAlign.start,
-                                text: userData?.name ?? '',
-                              ),
-                              CustomText(
-                                color: isCollapsed
-                                    ? AppColors.primaryColor
-                                    : Colors.white,
-                                textAlign: TextAlign.start,
-                                text: 'welcome to MASIC generation',
-                                fontSize: 10.sp,
-                              ),
-                            ],
+                    return GestureDetector(
+                      onTap: () {
+                        BottomNavBarController.to.onChange(2);
+                      },
+                      child: Row(
+                        children: [
+                          CustomNetworkImage(
+                            boxShape: BoxShape.circle,
+                            height: 42.r,
+                            width: 42.r,
+                            imageUrl: userData?.profileImage,
+                            fallbackAsset: Assets.images.profile.image(),
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 8.w),
+                          Flexible(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  enableAutoTranslate: false,
+                                  fontSize: 14.sp,
+                                  color: isCollapsed
+                                      ? AppColors.primaryColor
+                                      : Colors.white,
+                                  textAlign: TextAlign.start,
+                                  text: userData?.name ?? '',
+                                ),
+                                CustomText(
+                                  color: isCollapsed
+                                      ? AppColors.primaryColor
+                                      : Colors.white,
+                                  textAlign: TextAlign.start,
+                                  text: 'welcome to MASIC generation',
+                                  fontSize: 10.sp,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   });
                 },
@@ -149,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
           switch (controller.loadingState) {
             case LoadingState.initial:
             case LoadingState.loading:
-              return Center(child: CustomLoader());
+              return HomeShimmer();
 
             case LoadingState.offline:
             case LoadingState.error:

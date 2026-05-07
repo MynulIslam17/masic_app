@@ -40,7 +40,7 @@ class ProfileScreen extends StatelessWidget {
             icon: Assets.icons.requested.path,
             title: "Requested",
             onTap: () {
-              Get.toNamed(AppRoutes.personalInfoScreen);
+              Get.toNamed(AppRoutes.requestScreen);
             },
           ),ProfileListTile(
             icon: Assets.icons.personal.path,

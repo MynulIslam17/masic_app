@@ -32,7 +32,10 @@ import 'package:flutter_task/features/profile/data/repositories/profile_reposito
 import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
 import 'package:flutter_task/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:flutter_task/features/request/request_screen.dart';
+import 'package:flutter_task/features/request/data/repositories/request_repository.dart';
+import 'package:flutter_task/features/request/domain/services/request_services.dart';
+import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
+import 'package:flutter_task/features/request/presentation/screens/request_screen.dart';
 import 'package:flutter_task/features/translation/presentation/language_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/member_select_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/personal_info_screen.dart';
@@ -211,6 +214,27 @@ class BottomNavBinding extends Bindings {
     Get.lazyPut<PollController>(
       () => PollController(
         service: Get.find<PollServices>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<RequestRepository>(
+      () => RequestRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<RequestServices>(
+      () => RequestServices(repository: Get.find<RequestRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<RequestController>(
+      () => RequestController(
+        service: Get.find<RequestServices>(),
         connectivityService: Get.find<ConnectivityService>(),
       ),
       fenix: true,

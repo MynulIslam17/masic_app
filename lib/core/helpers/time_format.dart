@@ -44,7 +44,7 @@ class TimeFormatHelper {
 
    static String getDate(String dateString) {
       DateTime dateTime = DateTime.parse(dateString).toLocal(); // Local timezone
-      return DateFormat('dd').format(dateTime); // Only day (date)
+      return DateFormat('dd MMMM').format(dateTime); // Only day (date)
   }
 
   static String getMonth(String dateString) {

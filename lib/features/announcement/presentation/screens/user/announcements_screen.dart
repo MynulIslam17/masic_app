@@ -8,6 +8,7 @@ import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_card.dart';
+import 'package:flutter_task/features/announcement/presentation/widgets/announcement_simmer.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
@@ -94,7 +95,7 @@ class AnnouncementsScreen extends StatelessWidget {
                 switch (controller.loadingState) {
                   case LoadingState.initial:
                   case LoadingState.loading:
-                    return CustomLoader();
+                    return AnnouncementShimmer();
 
                   case LoadingState.offline:
                   case LoadingState.error:
