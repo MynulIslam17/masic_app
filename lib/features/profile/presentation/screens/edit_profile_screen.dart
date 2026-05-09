@@ -40,7 +40,7 @@ class EditProfileScreen extends StatelessWidget {
             Obx(() {
               return GestureDetector(
                 onTap: () {
-                  PhotoPickerHelper.showPicker(
+                  PhotoPickerHelper.showPhotoPicker(
                     context: context,
                     onImagePicked: (image) => controller.selectImage(image),
                   );

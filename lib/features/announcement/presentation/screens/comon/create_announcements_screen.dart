@@ -43,7 +43,7 @@ class CreateAnnouncementsScreen extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                     radius: 16.r,
                     onPressed: () {
-                      PhotoPickerHelper.showPicker(
+                      PhotoPickerHelper.showPhotoPicker(
                         context: context,
                         onImagePicked: (file) => controller.selectImage(file),
                       );

@@ -4,47 +4,26 @@ import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/time_format.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
-class AddEducationScreen extends StatefulWidget {
+class AddEducationScreen extends StatelessWidget {
   const AddEducationScreen({super.key});
 
   @override
-  State<AddEducationScreen> createState() => _AddEducationScreenState();
-}
-
-class _AddEducationScreenState extends State<AddEducationScreen> {
-  final controller = ProfileController.to;
-
-  @override
-  void initState() {
-    super.initState();
-    final EducationHistory? education = Get.arguments;
-
-    if (education != null) {
-      controller.prepareEducationForEdit(education);
-    } else {
-      controller.clearEducationControllers();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = ProfileController.to;
     return CustomScaffold(
       appBar: CustomAppBar(title: "Education"),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16.r),
-        child: Obx(() {
-          return CustomButton(
+        child: Obx(
+              () => CustomButton(
             label: "Save",
             isLoading: controller.updateLoadingState.isLoading,
-            onPressed: () {
-              controller.updateUserProfile();
-            },
-          );
-        }),
+            onPressed: () => controller.updateUserProfile(),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -52,7 +31,6 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
           children: [
             SizedBox(height: 24.h),
 
-            // ── Fields ─────────────────────────────────────────────────────
             CustomTextField(
               labelText: 'School or university name',
               showShadow: false,
@@ -106,8 +84,8 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
                   ),
                 ),
                 SizedBox(width: 16.r),
-                Obx(() {
-                  return Expanded(
+                Obx(
+                      () => Expanded(
                     child: CustomTextField(
                       labelText: 'To',
                       labelColor: controller.isEducationOngoings
@@ -136,25 +114,24 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
                         }
                       },
                     ),
-                  );
-                }),
+                  ),
+                ),
               ],
             ),
 
             Row(
               children: [
-                Obx(() {
-                  return Transform.scale(
+                Obx(
+                      () => Transform.scale(
                     scale: 0.8,
                     child: Checkbox(
                       activeColor: AppColors.primaryColor,
                       checkColor: AppColors.white,
                       value: controller.isEducationOngoings,
-                      onChanged: (value) =>
-                          controller.onChangedEducation(value),
+                      onChanged: controller.onChangedEducation,
                     ),
-                  );
-                }),
+                  ),
+                ),
                 CustomText(
                   textAlign: TextAlign.start,
                   text: 'Current Education',

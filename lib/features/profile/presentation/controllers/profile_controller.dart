@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
@@ -36,13 +37,10 @@ class ProfileController extends GetxController {
   // ─── User Data ─────────────────────────────────────────────────────────────
   final _selectedImage = Rxn<File>();
   final _selectedCV = Rxn<File>();
-  final _selectedCertificate = Rxn<File>();
 
   File? get selectedImage => _selectedImage.value;
 
   File? get selectedCV => _selectedCV.value;
-
-  File? get selectedCertificate => _selectedCertificate.value;
 
   final _userData = Rxn<UserModel>();
 
@@ -72,7 +70,9 @@ class ProfileController extends GetxController {
   String get educationFilter => _educationFilter.value;
 
   int get ageFilter => _ageFilter.value;
+
   bool get isJobOngoings => _isJobOngoings.value;
+
   bool get isEducationOngoings => _isEducationOngoings.value;
 
   // ─── Selection ─────────────────────────────────────────────────────────────
@@ -80,21 +80,11 @@ class ProfileController extends GetxController {
 
   List<String> get selectedUserIds => _selectedUserIds;
 
-  void toggleUserSelection(String userId) {
-    if (_selectedUserIds.contains(userId)) {
-      _selectedUserIds.remove(userId);
-      debugPrint('Deselected Users: $userId');
-    } else {
-      _selectedUserIds.add(userId);
-      debugPrint('Selected Users: $userId');
-    }
+  // ─── Edit Tracking ─────────────────────────────────────────────────────────
+  int? _editingEducationIndex;
+  int? _editingExperienceIndex;
 
-    debugPrint('Selected Users: $_selectedUserIds');
-  }
-
-  bool isUserSelected(String userId) => _selectedUserIds.contains(userId);
-
-  // ─── Pagination (HomeController pattern) ──────────────────────────────────
+  // ─── Pagination ────────────────────────────────────────────────────────────
   int _currentPage = 1;
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
@@ -150,9 +140,7 @@ class ProfileController extends GetxController {
 
   void _onScroll() {
     if (_scrollController == null) return;
-
     final position = _scrollController!.position;
-
     if (position.pixels >= position.maxScrollExtent - 200 &&
         !_isLoadingMore.value &&
         hasMoreUsers) {
@@ -160,11 +148,29 @@ class ProfileController extends GetxController {
     }
   }
 
-  // ─── Image & Date ──────────────────────────────────────────────────────────
+  // ─── File & Image ──────────────────────────────────────────────────────────
+  void onFilePicked(PlatformFile value) {
+    if (value.path != null) {
+      _selectedCV.value = File(value.path!);
+    }
+  }
+
   void selectImage(XFile image) {
     _selectedImage.value = File(image.path);
   }
 
+  // ─── Selection ─────────────────────────────────────────────────────────────
+  void toggleUserSelection(String userId) {
+    if (_selectedUserIds.contains(userId)) {
+      _selectedUserIds.remove(userId);
+    } else {
+      _selectedUserIds.add(userId);
+    }
+  }
+
+  bool isUserSelected(String userId) => _selectedUserIds.contains(userId);
+
+  // ─── Date ──────────────────────────────────────────────────────────────────
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
     dateOfBirthController.text = TimeFormatHelper.formatDateTime(
@@ -172,15 +178,11 @@ class ProfileController extends GetxController {
     );
   }
 
-  void onChangedJob (value) {
-  _isJobOngoings.value = value!;
-  }
+  void onChangedJob(value) => _isJobOngoings.value = value!;
 
-  void onChangedEducation (value) {
-  _isEducationOngoings.value = value!;
-  }
+  void onChangedEducation(value) => _isEducationOngoings.value = value!;
 
-  // ─── Load Data (initial) ───────────────────────────────────────────────────
+  // ─── Load Data ─────────────────────────────────────────────────────────────
   Future<void> loadData() async {
     try {
       final hasCache = _service.hasCache();
@@ -208,9 +210,7 @@ class ProfileController extends GetxController {
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
-        if (!hasCache) {
-          _loadingState.value = LoadingState.error;
-        }
+        if (!hasCache) _loadingState.value = LoadingState.error;
         if (kDebugMode) debugPrint('Fetch error: $e');
       }
     } catch (e) {
@@ -220,11 +220,11 @@ class ProfileController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) debugPrint('Unexpected error: $e');
     }
   }
 
-  // ─── Load More (pagination) ────────────────────────────────────────────────
+  // ─── Load More ─────────────────────────────────────────────────────────────
   Future<void> loadMoreUsers() async {
     if (_isLoadingMore.value || !hasMoreUsers) return;
 
@@ -243,9 +243,7 @@ class ProfileController extends GetxController {
 
       if (newUsers.isNotEmpty) {
         _usersData.addAll(newUsers);
-        if (newUsers.length < _limit) {
-          _hasMore.value = false;
-        }
+        if (newUsers.length < _limit) _hasMore.value = false;
       } else {
         _hasMore.value = false;
       }
@@ -254,7 +252,7 @@ class ProfileController extends GetxController {
       if (kDebugMode) debugPrint('Load more error: $e');
     } catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) debugPrint('Unexpected error: $e');
     } finally {
       _isLoadingMore.value = false;
     }
@@ -285,10 +283,78 @@ class ProfileController extends GetxController {
 
     try {
       _updateLoadingState.value = LoadingState.loading;
+
       final dateOfBirth = _selectedDate != null
           ? _selectedDate!.toUtc().toIso8601String()
           : user.dateOfBirth;
 
+      // ── Education list ────────────────────────────────────────────────────
+      final currentEducation = List<EducationHistory>.from(
+        user.educationHistory ?? [],
+      );
+
+      final hasEducationData =
+          schoolController.text.trim().isNotEmpty ||
+          degreeController.text.trim().isNotEmpty ||
+          majorController.text.trim().isNotEmpty;
+
+      if (hasEducationData) {
+        final newEdu = EducationHistory(
+          school: schoolController.text.trim(),
+          degree: degreeController.text.trim(),
+          major: majorController.text.trim(),
+          from: fromDateController.text.trim().isNotEmpty
+              ? TimeFormatHelper.parseToIso(fromDateController.text.trim())
+              : null,
+          to: toDateController.text.trim().isNotEmpty
+              ? TimeFormatHelper.parseToIso(toDateController.text.trim())
+              : null,
+          isCurrent: _isEducationOngoings.value,
+        );
+
+        // Edit
+        if (_editingEducationIndex != null &&
+            _editingEducationIndex! < currentEducation.length) {
+          currentEducation[_editingEducationIndex!] = newEdu;
+        }
+        // Add
+        else {
+          currentEducation.add(newEdu);
+        }
+      }
+
+      // ── Experience list ───────────────────────────────────────────────────
+      final currentExperience = List<Experience>.from(user.experience ?? []);
+
+      final hasExperienceData =
+          jobnameController.text.trim().isNotEmpty ||
+          positionController.text.trim().isNotEmpty;
+
+      if (hasExperienceData) {
+        final newExp = Experience(
+          company: jobnameController.text.trim(),
+          position: positionController.text.trim(),
+          isCurrent: _isJobOngoings.value,
+          from: fromJobDateController.text.trim().isNotEmpty
+              ? TimeFormatHelper.parseToIso(fromJobDateController.text.trim())
+              : null,
+          to: toJobDateController.text.trim().isNotEmpty
+              ? TimeFormatHelper.parseToIso(toJobDateController.text.trim())
+              : null,
+        );
+
+        // Edit
+        if (_editingExperienceIndex != null &&
+            _editingExperienceIndex! < currentExperience.length) {
+          currentExperience[_editingExperienceIndex!] = newExp;
+        }
+        // Add
+        else {
+          currentExperience.add(newExp);
+        }
+      }
+
+      // ── API call ──────────────────────────────────────────────────────────
       final updatedUser = await _service.updateUserProfile(
         UserModel(
           name: nameController.text.trim(),
@@ -313,37 +379,19 @@ class ProfileController extends GetxController {
             phone: numberController.text.trim(),
             linkedin: linkedinController.text.trim(),
           ),
-          educationHistory: [
-            ...?user.educationHistory,
-            EducationHistory(
-              school: schoolController.text.trim(),
-              degree: degreeController.text.trim(),
-              major: majorController.text.trim(),
-              from: TimeFormatHelper.parseToIso(fromDateController.text.trim()),
-              to: TimeFormatHelper.parseToIso(toDateController.text.trim()),
-              isCurrent: _isEducationOngoings.value,
-            ),
-          ],
-          experience: [
-            ...?user.experience,
-            Experience(
-              company: jobnameController.text.trim(),
-              position: positionController.text.trim(),
-              isCurrent: _isJobOngoings.value,
-              to: TimeFormatHelper.parseToIso(toDateController.text.trim()),
-              from: TimeFormatHelper.parseToIso(
-                fromJobDateController.text.trim(),
-              ),
-            ),
-          ],
+          educationHistory: currentEducation,
+          experience: currentExperience,
         ),
         image: selectedImage,
-        cv: selectedImage,
-        certificate: selectedImage,
+        cv: selectedCV,
       );
-
-      _userData.value = updatedUser;
       _selectedDate = null;
+      _editingEducationIndex = null;
+      _editingExperienceIndex = null;
+
+      clearEducationControllers();
+      clearJobControllers();
+
       _populateControllers(updatedUser);
       _updateLoadingState.value = LoadingState.loaded;
     } catch (e) {
@@ -354,7 +402,6 @@ class ProfileController extends GetxController {
   }
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
-
   void _populateControllers(UserModel? data) {
     if (data == null) return;
     nameController.text = data.name ?? '';
@@ -383,7 +430,9 @@ class ProfileController extends GetxController {
     await loadData();
   }
 
-  void prepareEducationForEdit(EducationHistory education) {
+  // ─── Education Helpers ─────────────────────────────────────────────────────
+  void prepareEducationForEdit(EducationHistory education, int index) {
+    _editingEducationIndex = index;
     schoolController.text = education.school ?? '';
     degreeController.text = education.degree ?? '';
     majorController.text = education.major ?? '';
@@ -396,7 +445,19 @@ class ProfileController extends GetxController {
     _isEducationOngoings.value = education.isCurrent ?? false;
   }
 
-  void prepareJobForEdit(Experience job) {
+  void clearEducationControllers() {
+    _editingEducationIndex = null;
+    schoolController.clear();
+    degreeController.clear();
+    majorController.clear();
+    fromDateController.clear();
+    toDateController.clear();
+    _isEducationOngoings.value = false;
+  }
+
+  // ─── Job Helpers ───────────────────────────────────────────────────────────
+  void prepareJobForEdit(Experience job, int index) {
+    _editingExperienceIndex = index;
     jobnameController.text = job.company ?? '';
     positionController.text = job.position ?? '';
     fromJobDateController.text = TimeFormatHelper.formatDate(
@@ -408,16 +469,8 @@ class ProfileController extends GetxController {
     _isJobOngoings.value = job.isCurrent ?? false;
   }
 
-  void clearEducationControllers() {
-    schoolController.clear();
-    degreeController.clear();
-    majorController.clear();
-    fromDateController.clear();
-    toDateController.clear();
-    _isEducationOngoings.value = false;
-  }
-
   void clearJobControllers() {
+    _editingExperienceIndex = null;
     jobnameController.clear();
     positionController.clear();
     fromJobDateController.clear();
@@ -425,6 +478,7 @@ class ProfileController extends GetxController {
     _isJobOngoings.value = false;
   }
 
+  // ─── Dispose ───────────────────────────────────────────────────────────────
   @override
   void onClose() {
     _scrollController?.removeListener(_onScroll);

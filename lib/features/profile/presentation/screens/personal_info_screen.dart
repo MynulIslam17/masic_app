@@ -15,9 +15,10 @@ class PersonalInfoScreen extends StatefulWidget {
 }
 
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
+  final controller = ProfileController.to;
+
   @override
   Widget build(BuildContext context) {
-    final controller = ProfileController.to;
     return CustomScaffold(
       paddingSide: 24.w,
       appBar: CustomAppBar(title: 'Personal information'),
@@ -27,75 +28,80 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ── Short Bio ──────────────────────────────────────────
+              // ── Short Bio ──────────────────────────────────────────────────
               CustomText(text: 'Short Bio', bottom: 10.h, top: 10.h),
               if (user?.bio != null && user!.bio!.isNotEmpty)
                 ItemCard(
                   subtitle: user.bio!,
-                  onUpdate: () {
-                    Get.toNamed(AppRoutes.addBioScreen);
-                  },
+                  onUpdate: () => Get.toNamed(AppRoutes.addBioScreen),
                 )
               else
                 _addOutlineButton(
                   label: 'Add bio',
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.addBioScreen);
-                  },
+                  onPressed: () => Get.toNamed(AppRoutes.addBioScreen),
                 ),
 
-              // ── Contact Information ────────────────────────────────
-              CustomText(text: 'Contact information', bottom: 10.h, top: 10.h),
+              // ── Contact Information ────────────────────────────────────────
+              CustomText(
+                text: 'Contact information',
+                bottom: 10.h,
+                top: 10.h,
+              ),
               if (user?.contact != null)
                 ItemCard(
                   title: user?.contact?.phone ?? '',
                   subtitle: user?.contact?.linkedin ?? '',
-                  onUpdate: () {
-                    Get.toNamed(AppRoutes.addContactScreen);
-                  },
+                  onUpdate: () => Get.toNamed(AppRoutes.addContactScreen),
                 )
               else
                 _addOutlineButton(
                   label: 'Add contact information',
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.addContactScreen);
-                  },
+                  onPressed: () => Get.toNamed(AppRoutes.addContactScreen),
                 ),
 
-              // ── Education ──────────────────────────────────────────
+              // ── Education ──────────────────────────────────────────────────
               CustomText(text: 'Education', bottom: 10.h, top: 10.h),
               if (user?.educationHistory != null &&
                   user!.educationHistory!.isNotEmpty)
                 ...user.educationHistory!.asMap().entries.map(
-                  (e) => Padding(
-                    padding:  EdgeInsets.only(bottom: 10.h),
+                      (e) => Padding(
+                    padding: EdgeInsets.only(bottom: 10.h),
                     child: ItemCard(
                       title: e.value.degree ?? '',
                       subtitle: e.value.school ?? '',
                       onUpdate: () {
-                        Get.toNamed(AppRoutes.addEducationScreen, arguments: e.value);
+                        controller.prepareEducationForEdit(e.value, e.key);
+                        Get.toNamed(
+                          AppRoutes.addEducationScreen,
+                          arguments: e.value,
+                        );
                       },
                     ),
                   ),
                 ),
-                _addOutlineButton(
-                  label: 'Add education',
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.addEducationScreen,arguments: null);
-                  },
-                ),
+              _addOutlineButton(
+                label: 'Add education',
+                onPressed: () {
+                  controller.clearEducationControllers();
+                  Get.toNamed(AppRoutes.addEducationScreen);
+                },
+              ),
 
-              // ── Job Experience ─────────────────────────────────────
+              // ── Job Experience ─────────────────────────────────────────────
               CustomText(text: 'Job experience', bottom: 10.h, top: 10.h),
               if (user?.experience != null && user!.experience!.isNotEmpty)
                 ...user.experience!.asMap().entries.map(
-                  (e) => Padding(
-                    padding:  EdgeInsets.only(bottom: 10.h),
+                      (e) => Padding(
+                    padding: EdgeInsets.only(bottom: 10.h),
                     child: ItemCard(
                       title: e.value.position ?? '',
                       subtitle: e.value.company ?? '',
                       onUpdate: () {
-                        Get.toNamed(AppRoutes.addJobScreen,arguments: e.value);
+                        controller.prepareJobForEdit(e.value, e.key);
+                        Get.toNamed(
+                          AppRoutes.addJobScreen,
+                          arguments: e.value,
+                        );
                       },
                     ),
                   ),
@@ -103,25 +109,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               _addOutlineButton(
                 label: 'Add job experience',
                 onPressed: () {
-                  Get.toNamed(AppRoutes.addJobScreen,arguments: null);
+                  controller.clearJobControllers();
+                  Get.toNamed(AppRoutes.addJobScreen);
                 },
               ),
 
-              // ── CV ─────────────────────────────────────────────────
+              // ── CV ─────────────────────────────────────────────────────────
               CustomText(text: 'CV', bottom: 10.h, top: 10.h),
               if (user?.cvUrl != null)
                 ItemCard(
                   subtitle: user!.cvUrl!.split('/').last,
-                  onUpdate: () {
-                    Get.toNamed(AppRoutes.addCvScreen);
-                  },
+                  onUpdate: () => Get.toNamed(AppRoutes.addCvScreen),
                 )
               else
                 _addOutlineButton(
                   label: 'Upload CV',
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.addCvScreen);
-                  },
+                  onPressed: () => Get.toNamed(AppRoutes.addCvScreen),
                 ),
 
               SizedBox(height: 40.h),

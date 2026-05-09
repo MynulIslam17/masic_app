@@ -23,8 +23,8 @@ import 'package:flutter_task/features/poll/presentation/screens/poll_screen.dart
 import 'package:flutter_task/features/profile/presentation/screens/add_bio_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/add_contact_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/add_cv_screen.dart';
-import 'package:flutter_task/features/profile/add_education_screen.dart';
-import 'package:flutter_task/features/profile/add_job_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/add_education_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/add_job_screen.dart';
 import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_details_screen.dart';
 import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_screen.dart';
 import 'package:flutter_task/features/announcement/presentation/screens/comon/create_announcements_screen.dart';
@@ -32,6 +32,7 @@ import 'package:flutter_task/features/profile/data/repositories/profile_reposito
 import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
 import 'package:flutter_task/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:flutter_task/features/profile/presentation/screens/support_screen.dart';
 import 'package:flutter_task/features/request/data/repositories/request_repository.dart';
 import 'package:flutter_task/features/request/domain/services/request_services.dart';
 import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
@@ -43,7 +44,6 @@ import 'package:flutter_task/features/profile/presentation/screens/profile_infor
 import 'package:flutter_task/features/profile/setting/change%20password/setting_change_password.dart';
 import 'package:flutter_task/features/profile/setting/privacy_policy_all_screen.dart';
 import 'package:flutter_task/features/profile/setting/setting_screen.dart';
-import 'package:flutter_task/features/profile/support_screen.dart';
 import 'package:flutter_task/features/splash/splash_screen.dart';
 import 'package:get/get.dart';
 
