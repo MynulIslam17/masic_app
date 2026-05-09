@@ -67,13 +67,13 @@ class ProfileRepository {
         'page': page,
         'limit': limit,
         if (gender != null && gender.isNotEmpty) 'gender': gender,
-        if(searchTerm != null && searchTerm.isNotEmpty) 'searchTerm': searchTerm,
+        if (searchTerm != null && searchTerm.isNotEmpty)
+          'searchTerm': searchTerm,
         if (employmentStatus != null && employmentStatus.isNotEmpty)
           'employmentStatus': employmentStatus,
         if (educationLevel != null && educationLevel.isNotEmpty)
           'educationLevel': educationLevel,
         if (age != null && age != 0) 'age': age,
-
       };
       final response = await _apiService.get(
         ApiConstants.usersProfile,
@@ -97,35 +97,46 @@ class ProfileRepository {
     }
   }
 
-
   List<UserModel> getCachedUsers() {
     try {
       final jsonList =
-      _cacheService.get<List>(
-        ApiConstants.cacheUsersProfile,
-        defaultValue: [],
-      ) ??
+          _cacheService.get<List>(
+            ApiConstants.cacheUsersProfile,
+            defaultValue: [],
+          ) ??
           [];
       return jsonList.map((json) => UserModel.fromJson(json)).toList();
-      } catch (e) {
+    } catch (e) {
       return [];
     }
   }
 
-  Future<UserModel> updateUserProfile(UserModel user, {File? image}) async {
+  Future<UserModel> updateUserProfile(UserModel user, {File? image,File? cv,File? certificate}) async {
     try {
       final bodyRequest = {'data': jsonEncode(user.toMap())};
 
-      final response = await _apiService.uploadFilePatch(
+      final files = <MultipartFile>[
+        if (image != null)
+          MultipartFile.fromFileSync(
+            image.path,
+            filename: image.path.split('/').last,
+          ),
+        if (cv != null)
+          MultipartFile.fromFileSync(
+            cv.path,
+            filename: cv.path.split('/').last,
+          ),
+        if (certificate != null)
+          MultipartFile.fromFileSync(
+            certificate.path,
+            filename: certificate.path.split('/').last,
+          ),
+      ];
+
+      final response = await _apiService.uploadMultipleFilesPatch(
         ApiConstants.userProfileUpdate,
         data: bodyRequest,
-        fieldName: 'image',
-        file: image == null
-            ? null
-            : MultipartFile.fromFileSync(
-                image.path,
-                filename: image.path.split('/').last,
-              ),
+        files: files,
       );
 
       final data = response.data['data'];

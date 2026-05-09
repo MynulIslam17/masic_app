@@ -35,8 +35,14 @@ class ProfileController extends GetxController {
 
   // ─── User Data ─────────────────────────────────────────────────────────────
   final _selectedImage = Rxn<File>();
+  final _selectedCV = Rxn<File>();
+  final _selectedCertificate = Rxn<File>();
 
   File? get selectedImage => _selectedImage.value;
+
+  File? get selectedCV => _selectedCV.value;
+
+  File? get selectedCertificate => _selectedCertificate.value;
 
   final _userData = Rxn<UserModel>();
 
@@ -54,6 +60,8 @@ class ProfileController extends GetxController {
   final RxString _employmentFilter = ''.obs;
   final RxString _educationFilter = ''.obs;
   final RxInt _ageFilter = 0.obs;
+  final RxBool _isJobOngoings = false.obs;
+  final RxBool _isEducationOngoings = false.obs;
 
   final searchController = TextEditingController();
 
@@ -64,11 +72,13 @@ class ProfileController extends GetxController {
   String get educationFilter => _educationFilter.value;
 
   int get ageFilter => _ageFilter.value;
-
+  bool get isJobOngoings => _isJobOngoings.value;
+  bool get isEducationOngoings => _isEducationOngoings.value;
 
   // ─── Selection ─────────────────────────────────────────────────────────────
   final RxList<String> _selectedUserIds = <String>[].obs;
-   List<String> get selectedUserIds => _selectedUserIds;
+
+  List<String> get selectedUserIds => _selectedUserIds;
 
   void toggleUserSelection(String userId) {
     if (_selectedUserIds.contains(userId)) {
@@ -94,6 +104,7 @@ class ProfileController extends GetxController {
   final RxBool _hasMore = true.obs;
 
   bool get hasMoreUsers => _hasMore.value && !_isLoadingMore.value;
+
   // ─── Scroll Controller ─────────────────────────────────────────────────────
   ScrollController? _scrollController;
 
@@ -108,6 +119,18 @@ class ProfileController extends GetxController {
   final employmentController = TextEditingController();
   final educationController = TextEditingController();
   final universityController = TextEditingController();
+  final bioController = TextEditingController();
+  final numberController = TextEditingController();
+  final linkedinController = TextEditingController();
+  final schoolController = TextEditingController();
+  final degreeController = TextEditingController();
+  final majorController = TextEditingController();
+  final fromDateController = TextEditingController();
+  final toDateController = TextEditingController();
+  final jobnameController = TextEditingController();
+  final positionController = TextEditingController();
+  final fromJobDateController = TextEditingController();
+  final toJobDateController = TextEditingController();
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
   @override
@@ -147,6 +170,14 @@ class ProfileController extends GetxController {
     dateOfBirthController.text = TimeFormatHelper.formatDateTime(
       date.toString(),
     );
+  }
+
+  void onChangedJob (value) {
+  _isJobOngoings.value = value!;
+  }
+
+  void onChangedEducation (value) {
+  _isEducationOngoings.value = value!;
   }
 
   // ─── Load Data (initial) ───────────────────────────────────────────────────
@@ -228,6 +259,7 @@ class ProfileController extends GetxController {
       _isLoadingMore.value = false;
     }
   }
+
   // ─── Cache ─────────────────────────────────────────────────────────────────
   void _loadFromCache() {
     _populateControllers(_service.getCachedUserData());
@@ -276,8 +308,38 @@ class ProfileController extends GetxController {
           fieldOfWork: user.fieldOfWork,
           spouseName: user.spouseName,
           linkedinLink: user.linkedinLink,
+          bio: bioController.text.trim(),
+          contact: Contact(
+            phone: numberController.text.trim(),
+            linkedin: linkedinController.text.trim(),
+          ),
+          educationHistory: [
+            ...?user.educationHistory,
+            EducationHistory(
+              school: schoolController.text.trim(),
+              degree: degreeController.text.trim(),
+              major: majorController.text.trim(),
+              from: TimeFormatHelper.parseToIso(fromDateController.text.trim()),
+              to: TimeFormatHelper.parseToIso(toDateController.text.trim()),
+              isCurrent: _isEducationOngoings.value,
+            ),
+          ],
+          experience: [
+            ...?user.experience,
+            Experience(
+              company: jobnameController.text.trim(),
+              position: positionController.text.trim(),
+              isCurrent: _isJobOngoings.value,
+              to: TimeFormatHelper.parseToIso(toDateController.text.trim()),
+              from: TimeFormatHelper.parseToIso(
+                fromJobDateController.text.trim(),
+              ),
+            ),
+          ],
         ),
         image: selectedImage,
+        cv: selectedImage,
+        certificate: selectedImage,
       );
 
       _userData.value = updatedUser;
@@ -286,11 +348,13 @@ class ProfileController extends GetxController {
       _updateLoadingState.value = LoadingState.loaded;
     } catch (e) {
       _updateLoadingState.value = LoadingState.error;
+      debugPrint('❌ Update error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
+
   void _populateControllers(UserModel? data) {
     if (data == null) return;
     nameController.text = data.name ?? '';
@@ -303,6 +367,9 @@ class ProfileController extends GetxController {
     employmentController.text = data.employmentStatus ?? '';
     educationController.text = data.education ?? '';
     universityController.text = data.universityName ?? '';
+    bioController.text = data.bio ?? '';
+    numberController.text = data.contact?.phone ?? '';
+    linkedinController.text = data.contact?.linkedin ?? '';
   }
 
   Future<void> retry() => loadData();
@@ -314,6 +381,48 @@ class ProfileController extends GetxController {
     _userData.value = null;
     _selectedDate = null;
     await loadData();
+  }
+
+  void prepareEducationForEdit(EducationHistory education) {
+    schoolController.text = education.school ?? '';
+    degreeController.text = education.degree ?? '';
+    majorController.text = education.major ?? '';
+    fromDateController.text = TimeFormatHelper.formatDate(
+      DateTime.parse(education.from ?? ''),
+    );
+    toDateController.text = TimeFormatHelper.formatDate(
+      DateTime.parse(education.to ?? ''),
+    );
+    _isEducationOngoings.value = education.isCurrent ?? false;
+  }
+
+  void prepareJobForEdit(Experience job) {
+    jobnameController.text = job.company ?? '';
+    positionController.text = job.position ?? '';
+    fromJobDateController.text = TimeFormatHelper.formatDate(
+      DateTime.parse(job.from ?? ''),
+    );
+    toJobDateController.text = TimeFormatHelper.formatDate(
+      DateTime.parse(job.to ?? ''),
+    );
+    _isJobOngoings.value = job.isCurrent ?? false;
+  }
+
+  void clearEducationControllers() {
+    schoolController.clear();
+    degreeController.clear();
+    majorController.clear();
+    fromDateController.clear();
+    toDateController.clear();
+    _isEducationOngoings.value = false;
+  }
+
+  void clearJobControllers() {
+    jobnameController.clear();
+    positionController.clear();
+    fromJobDateController.clear();
+    toJobDateController.clear();
+    _isJobOngoings.value = false;
   }
 
   @override
@@ -329,6 +438,18 @@ class ProfileController extends GetxController {
     employmentController.dispose();
     educationController.dispose();
     universityController.dispose();
+    bioController.dispose();
+    numberController.dispose();
+    linkedinController.dispose();
+    schoolController.dispose();
+    degreeController.dispose();
+    majorController.dispose();
+    fromDateController.dispose();
+    toDateController.dispose();
+    jobnameController.dispose();
+    positionController.dispose();
+    fromJobDateController.dispose();
+    toJobDateController.dispose();
     super.onClose();
   }
 }

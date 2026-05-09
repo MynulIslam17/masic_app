@@ -61,7 +61,7 @@ class ProfileService {
     );
   }
 
-  Future<UserModel> updateUserProfile(UserModel user, {File? image}) async {
+  Future<UserModel> updateUserProfile(UserModel user, {File? image, File? cv,File? certificate}) async {
     return await _repository.updateUserProfile(user, image: image);
   }
 

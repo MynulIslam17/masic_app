@@ -6,6 +6,7 @@ import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/core/widgets/profile_list_tile.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -13,19 +14,26 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = ProfileController.to;
     return CustomScaffold(
       appBar: CustomAppBar(),
       body: Column(
         children: [
-          CustomNetworkImage(
-              boxShape: BoxShape.circle,
-              height: 80.r, width: 80.r ,imageUrl: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg'),
-          CustomText(
-            text: "Tanvir Hridoy",
-            fontSize: 24.sp,
-            fontWeight: FontWeight.w600,
-            top: 6.h,
-            color: Color(0xFF591716),
+          Obx(
+            () {
+              return CustomNetworkImage(
+                  boxShape: BoxShape.circle,
+                  height: 80.r, width: 80.r ,imageUrl: controller.userData?.profileImage);
+            }
+          ),
+          Obx(() {
+              return CustomText(
+                text: controller.userData?.name ?? '',
+                fontSize: 24.sp,
+                fontWeight: FontWeight.w600,
+                top: 6.h,
+              );
+            }
           ),
 
           SizedBox(height: 20.h),

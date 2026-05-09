@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
+import 'package:flutter_task/core/helpers/time_format.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/profile/data/models/user_model.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
-
 
 class AddEducationScreen extends StatefulWidget {
   const AddEducationScreen({super.key});
@@ -13,23 +16,18 @@ class AddEducationScreen extends StatefulWidget {
 }
 
 class _AddEducationScreenState extends State<AddEducationScreen> {
-
-
-  // Controllers
-  final TextEditingController _schoolController = TextEditingController();
-  final TextEditingController _degreeController = TextEditingController();
-  final TextEditingController _majorController = TextEditingController();
-  final TextEditingController _fromDateController = TextEditingController();
-  final TextEditingController _toDateController = TextEditingController();
+  final controller = ProfileController.to;
 
   @override
-  void dispose() {
-    _schoolController.dispose();
-    _degreeController.dispose();
-    _majorController.dispose();
-    _fromDateController.dispose();
-    _toDateController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    final EducationHistory? education = Get.arguments;
+
+    if (education != null) {
+      controller.prepareEducationForEdit(education);
+    } else {
+      controller.clearEducationControllers();
+    }
   }
 
   @override
@@ -38,12 +36,15 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
       appBar: CustomAppBar(title: "Education"),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16.r),
-        child: CustomButton(
-          label: "Save",
-          onPressed: () {
-            // TODO: call update API
-          },
-        ),
+        child: Obx(() {
+          return CustomButton(
+            label: "Save",
+            isLoading: controller.updateLoadingState.isLoading,
+            onPressed: () {
+              controller.updateUserProfile();
+            },
+          );
+        }),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -57,7 +58,7 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _schoolController,
+              controller: controller.schoolController,
               hintText: "Write here...",
             ),
 
@@ -66,7 +67,7 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _degreeController,
+              controller: controller.degreeController,
               hintText: "Write here...",
             ),
 
@@ -75,11 +76,9 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _majorController,
+              controller: controller.majorController,
               hintText: "Write here...",
             ),
-
-
 
             Row(
               children: [
@@ -89,7 +88,7 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
                     showShadow: false,
                     borderColor: AppColors.colorE6E6E6,
                     filColor: AppColors.bgColor,
-                    controller: _fromDateController,
+                    controller: controller.fromDateController,
                     hintText: "00/00/0000",
                     readOnly: true,
                     onTap: () async {
@@ -100,38 +99,70 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
                         lastDate: DateTime.now(),
                       );
                       if (picked != null) {
-                        _fromDateController.text =
-                        "${picked.day}/${picked.month}/${picked.year}";
+                        controller.fromDateController.text =
+                            TimeFormatHelper.formatDate(picked);
                       }
                     },
                   ),
                 ),
                 SizedBox(width: 16.r),
-                Expanded(
-                  child: CustomTextField(
-                    labelText: 'To',
-                    showShadow: false,
-                    borderColor: AppColors.colorE6E6E6,
-                    filColor: AppColors.bgColor,
-                    controller: _toDateController,
-                    hintText: "00/00/0000",
-                    readOnly: true,
-                    onTap: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: DateTime(2000),
-                        firstDate: DateTime(1950),
-                        lastDate: DateTime.now(),
-                      );
-                      if (picked != null) {
-                        _toDateController.text =
-                        "${picked.day}/${picked.month}/${picked.year}";
-                      }
-                    },
-                  ),
-                ),
-                ]
+                Obx(() {
+                  return Expanded(
+                    child: CustomTextField(
+                      labelText: 'To',
+                      labelColor: controller.isEducationOngoings
+                          ? AppColors.colorE6E6E6
+                          : null,
+                      showShadow: false,
+                      borderColor: AppColors.colorE6E6E6,
+                      filColor: AppColors.bgColor,
+                      controller: controller.toDateController,
+                      hintText: "00/00/0000",
+                      readOnly: true,
+                      onTap: () async {
+                        if (controller.isEducationOngoings) {
+                          controller.toDateController.text = '';
+                          return;
+                        }
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime(2000),
+                          firstDate: DateTime(1950),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null) {
+                          controller.toDateController.text =
+                              TimeFormatHelper.formatDate(picked);
+                        }
+                      },
+                    ),
+                  );
+                }),
+              ],
             ),
+
+            Row(
+              children: [
+                Obx(() {
+                  return Transform.scale(
+                    scale: 0.8,
+                    child: Checkbox(
+                      activeColor: AppColors.primaryColor,
+                      checkColor: AppColors.white,
+                      value: controller.isEducationOngoings,
+                      onChanged: (value) =>
+                          controller.onChangedEducation(value),
+                    ),
+                  );
+                }),
+                CustomText(
+                  textAlign: TextAlign.start,
+                  text: 'Current Education',
+                  fontSize: 13.sp,
+                ),
+              ],
+            ),
+
             SizedBox(height: 32.h),
           ],
         ),

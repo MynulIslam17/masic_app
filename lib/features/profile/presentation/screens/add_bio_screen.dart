@@ -1,38 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 
-class AddBioScreen extends StatefulWidget {
+class AddBioScreen extends StatelessWidget {
   const AddBioScreen({super.key});
 
   @override
-  State<AddBioScreen> createState() => _AddBioScreenState();
-}
-
-class _AddBioScreenState extends State<AddBioScreen> {
-  final TextEditingController _bioController = TextEditingController();
-
-  @override
-  void dispose() {
-    _bioController.dispose();
-
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final controller = ProfileController.to;
     return CustomScaffold(
       appBar: CustomAppBar(title: "Bio"),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16.r),
-        child: CustomButton(
-          label: "Save",
-          onPressed: () {
-            // TODO: call update API
-          },
+        child: Obx(() {
+            return CustomButton(
+              label: "Save",
+              isLoading: controller.updateLoadingState.isLoading,
+              onPressed: () {
+                controller.updateUserProfile();
+              },
+            );
+          }
         ),
       ),
       body: SingleChildScrollView(
@@ -48,7 +41,7 @@ class _AddBioScreenState extends State<AddBioScreen> {
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: _bioController,
+              controller: controller.bioController,
               maxLines: 20,
               minLines: 20,
               hintText: "Write here...",

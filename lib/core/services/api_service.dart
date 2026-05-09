@@ -400,6 +400,31 @@ class ApiService {
     }
   }
 
+
+  Future<Response> uploadMultipleFilesPatch(
+    String path, {
+    required List<MultipartFile> files,
+    String fieldName = 'files',
+    Map<String, dynamic>? data,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
+    try {
+      final formData = FormData.fromMap({fieldName: files, ...?data});
+
+      return await _dio.patch(
+        path,
+        data: formData,
+        options: options,
+        cancelToken: cancelToken,
+      );
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
   /// Uploads a file with progress tracking
   ///
   /// Example usage:

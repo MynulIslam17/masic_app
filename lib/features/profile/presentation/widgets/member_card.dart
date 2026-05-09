@@ -14,7 +14,7 @@ class MemberCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isSelected = ProfileController.to.isUserSelected(user.id ?? '');
+      final isSelected = ProfileController.to.isUserSelected(user.sId ?? '');
 
       return ListTile(
         selected: isSelected,
@@ -45,9 +45,9 @@ class MemberCard extends StatelessWidget {
           fontSize: 10.sp,
           label: isSelected ? 'Selected' : 'Select',
           onPressed: () =>
-              ProfileController.to.toggleUserSelection(user.id ?? ''),
+              ProfileController.to.toggleUserSelection(user.sId ?? ''),
         ),
-        onTap: () => ProfileController.to.toggleUserSelection(user.id ?? ''),
+        onTap: () => ProfileController.to.toggleUserSelection(user.sId ?? ''),
         shape: RoundedRectangleBorder(
           side: BorderSide(color: AppColors.colorE6E6E6),
           borderRadius: BorderRadius.circular(100.r),

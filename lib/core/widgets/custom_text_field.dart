@@ -16,6 +16,7 @@ class CustomTextField extends StatefulWidget {
   final Color? filColor;
   final Color? borderColor;
   final Color? hintextColor;
+  final Color? labelColor;
   final Widget? prefixIcon;
   final String? labelText;
   final String? hintText;
@@ -79,7 +80,7 @@ class CustomTextField extends StatefulWidget {
     this.minLines,
     this.maxLines,
     this.showShadow = true,
-    this.onFieldSubmitted,
+    this.onFieldSubmitted, this.labelColor,
   });
 
   @override
@@ -194,6 +195,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         children: [
           if (widget.labelText != null)
             CustomText(
+              color: widget.labelColor,
               left: 6.r,
               text: widget.labelText ?? '',
               bottom: 6.h,
