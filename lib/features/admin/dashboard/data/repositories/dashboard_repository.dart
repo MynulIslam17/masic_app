@@ -1,0 +1,54 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_task/core/constants/api_constants.dart';
+import 'package:flutter_task/core/exceptions/app_exceptions.dart';
+import 'package:flutter_task/core/services/api_service.dart';
+import 'package:flutter_task/core/services/cache_service.dart';
+import 'package:flutter_task/features/admin/dashboard/data/models/dashboard_model.dart';
+
+class DashboardRepository {
+  final ApiService _apiService;
+  final CacheService _cacheService;
+
+  DashboardRepository({
+    required ApiService apiService,
+    required CacheService cacheService,
+  }) : _apiService = apiService,
+       _cacheService = cacheService;
+
+  Future<DashboardModel> fetchDashboard() async {
+    try {
+      final response = await _apiService.get(ApiConstants.dashboard);
+      final data = response.data['data'];
+      final dashboard = DashboardModel.fromJson(data);
+
+      await _cacheService.put(ApiConstants.cacheDashboard, dashboard.toJson());
+
+      return dashboard;
+    } on AppException {
+      final cached = getCachedDashboard();
+      if (cached != null) return cached;
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+  DashboardModel? getCachedDashboard() {
+    try {
+      final json = _cacheService.get<Map<String, dynamic>>(
+        ApiConstants.cacheDashboard,
+        defaultValue: null,
+      );
+
+      if (json == null) return null;
+      return DashboardModel.fromJson(json);
+    } catch (e) {
+      debugPrint('❌ Error getting cached user data: $e');
+      return null;
+    }
+  }
+
+  bool hasCache() {
+    return _cacheService.containsKey(ApiConstants.cacheDashboard);
+  }
+}

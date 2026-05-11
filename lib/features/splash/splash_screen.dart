@@ -20,7 +20,11 @@ class _SplashScreenState extends State<SplashScreen> {
   void _goNextScreen()async {
     Future.delayed(const Duration(seconds: 2), () async {
       if (AuthController.to.isLoggedIn()){
-        Get.offAllNamed(AppRoutes.bottomNavUserBar);
+        if( AuthController.to.isAdmin()){
+          Get.offAllNamed(AppRoutes.adminDashboardScreen);
+        }else{
+          Get.offAllNamed(AppRoutes.bottomNavUserBar);
+        }
       }else{
         Get.offAllNamed(AppRoutes.loginScreen);
       }

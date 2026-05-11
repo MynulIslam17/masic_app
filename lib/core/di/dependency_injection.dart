@@ -3,11 +3,34 @@ import 'package:flutter_task/core/services/cache_service.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/core/services/storage_service.dart';
 import 'package:flutter_task/core/services/translation_service.dart';
+import 'package:flutter_task/features/admin/dashboard/data/repositories/dashboard_repository.dart';
+import 'package:flutter_task/features/admin/dashboard/domain/services/dashboard_service.dart';
+import 'package:flutter_task/features/admin/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:flutter_task/features/announcement/data/repositories/announcement_repository.dart';
+import 'package:flutter_task/features/announcement/domain/services/announcement_services.dart';
+import 'package:flutter_task/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:flutter_task/features/auth/data/repositories/auth_repository.dart';
 import 'package:flutter_task/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:flutter_task/features/auth/domain/services/auth_services.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:flutter_task/features/banner/data/repositories/banner_repository.dart';
+import 'package:flutter_task/features/banner/domain/services/banner_services.dart';
+import 'package:flutter_task/features/banner/presentation/controllers/banner_controller.dart';
+import 'package:flutter_task/features/home/domain/services/home_service.dart';
+import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
+import 'package:flutter_task/features/poll/data/repositories/poll_repository.dart';
+import 'package:flutter_task/features/poll/domain/services/poll_services.dart';
+import 'package:flutter_task/features/poll/presentation/controllers/poll_controller.dart';
+import 'package:flutter_task/features/profile/data/repositories/profile_repository.dart';
+import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:flutter_task/features/request/data/repositories/request_repository.dart';
+import 'package:flutter_task/features/request/domain/services/request_services.dart';
+import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
 import 'package:flutter_task/features/translation/presentation/controller/translation_controller.dart';
+import 'package:flutter_task/features/tree/data/repositories/tree_repository.dart';
+import 'package:flutter_task/features/tree/domain/services/tree_service.dart';
+import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
 import 'package:get/get.dart';
 
 class DependencyInjection {
@@ -57,6 +80,173 @@ class DependencyInjection {
     Get.put<AuthController>(
       AuthController(authService: Get.find<AuthService>()),
       permanent: true,
+    );
+
+    Get.lazyPut<TreeRepository>(
+      () => TreeRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<TreeService>(
+      () => TreeService(repository: Get.find<TreeRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<TreeController>(
+      () => TreeController(
+        service: Get.find<TreeService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<HomeService>(
+      () => HomeService(
+        repository: Get.find<AnnouncementRepository>(),
+        pollRepository: Get.find<PollRepository>(),
+        bannerRepository: Get.find<BannerRepository>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<HomeController>(
+      () => HomeController(
+        service: Get.find<HomeService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<ProfileRepository>(
+      () => ProfileRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<ProfileService>(
+      () => ProfileService(repository: Get.find<ProfileRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<ProfileController>(
+      () => ProfileController(
+        service: Get.find<ProfileService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<AnnouncementRepository>(
+      () => AnnouncementRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<AnnouncementServices>(
+      () =>
+          AnnouncementServices(repository: Get.find<AnnouncementRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<AnnouncementController>(
+      () => AnnouncementController(
+        service: Get.find<AnnouncementServices>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<PollRepository>(
+      () => PollRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<PollServices>(
+      () => PollServices(repository: Get.find<PollRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<PollController>(
+      () => PollController(
+        service: Get.find<PollServices>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<RequestRepository>(
+      () => RequestRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<RequestServices>(
+      () => RequestServices(repository: Get.find<RequestRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<RequestController>(
+      () => RequestController(
+        service: Get.find<RequestServices>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<BannerRepository>(
+      () => BannerRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<BannerServices>(
+      () => BannerServices(repository: Get.find<BannerRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<BannerController>(
+      () => BannerController(
+        service: Get.find<BannerServices>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+
+
+    Get.lazyPut<DashboardRepository>(
+      () => DashboardRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<DashboardService>(
+      () => DashboardService(repository: Get.find<DashboardRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<DashboardController>(
+      () => DashboardController(
+        service: Get.find<DashboardService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
     );
   }
 

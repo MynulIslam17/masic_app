@@ -19,21 +19,30 @@ class AnnouncementRepository {
   }) : _apiService = apiService,
        _cacheService = cacheService;
 
-  Future<List<AnnouncementModel>> getAnnouncements(int page, int limit,{String? search}) async {
+  Future<List<AnnouncementModel>> getAnnouncements(int page, int limit,{String? search,String? type}) async {
     try {
       final response = await _apiService.get(
         ApiConstants.announcements(page, limit),
-        queryParameters: {'searchTerm': search},
+        queryParameters: {'searchTerm': search,'type': type},
       );
 
       final announcements = (response.data['data'] as List)
           .map((e) => AnnouncementModel.fromJson(e))
           .toList();
 
-      await _cacheService.put(
-        ApiConstants.cacheAnnouncements,
-        announcements.map((e) => e.toJson()).toList(),
-      );
+
+      if(type == 'my'){
+        await _cacheService.put(
+          ApiConstants.cacheMyAnnouncements,
+          announcements.map((e) => e.toJson()).toList(),
+        );
+      }else{
+        await _cacheService.put(
+          ApiConstants.cacheAnnouncements,
+          announcements.map((e) => e.toJson()).toList(),
+        );
+      }
+
 
       return announcements;
     } on AppException {

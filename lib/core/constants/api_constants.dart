@@ -27,7 +27,7 @@ class ApiConstants {
 
 
   /// ─── Announcement Marker ───────────────────────────
-  static String announcements(int page, int limit) => '/api/v1/announcement/?page=$page&limit=$limit';
+  static String announcements(int page, int limit) => '/api/v1/announcement/all?page=$page&limit=$limit';
   static String announcementCreate = '/api/v1/announcement/create';
   static String announcementStatus(String announcementId) => '/api/v1/announcement/$announcementId';
 
@@ -64,6 +64,13 @@ class ApiConstants {
 
 
 
+  /// Dashboard ──────────────────────────────────────────────
+
+  static const String dashboard = '/api/v1/super-admin/stats';
+
+
+
+
 
 
 
@@ -76,8 +83,10 @@ class ApiConstants {
   static const String cacheUserProfile = 'user/me';
   static const String cacheUsersProfile = 'users/me';
   static const String cacheAnnouncements = 'announcements';
+  static const String cacheMyAnnouncements = 'announcements_my';
   static const String cachePolls = 'poll';
   static const String cacheRequests = 'requests';
   static const String cacheBanner = 'banner';
   static const String cacheTree = 'tree';
+  static const String cacheDashboard = 'dashboard';
 }

@@ -4,6 +4,7 @@ import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/core/widgets/profile_list_tile.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:get/get.dart';
 
 class AdminProfileScreen extends StatelessWidget {
@@ -107,10 +108,9 @@ class AdminProfileScreen extends StatelessWidget {
                   onTapLeftButton: () {
                     Get.back();
                   },
-                  onTapRightButton: () {
-                    //  PrefsHelper.remove(AppConstants.bearerToken);
-                    Get.back();
-                    // Get.offAllNamed(AppRoutes.customBottomNavUserBar);
+                  onTapRightButton: () async {
+                    await AuthController.to.logout();
+                    Get.offAllNamed(AppRoutes.loginScreen);
                   },
                 ),
               );

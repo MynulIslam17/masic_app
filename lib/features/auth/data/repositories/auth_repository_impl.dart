@@ -171,4 +171,5 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout() {
     return _cacheService.clear();
   }
+
 }

@@ -26,11 +26,28 @@ class CacheService {
     debugPrint('Saved to cache: ----------------------->>>  $key: $value');
   }
 
+  // T? get<T>(String key, {T? defaultValue}) {
+  //   try {
+  //
+  //     return box.get(key, defaultValue: defaultValue) as T?;
+  //
+  //   } catch (_) {
+  //     return defaultValue;
+  //   }
+  // }
+
   T? get<T>(String key, {T? defaultValue}) {
     try {
+      final value = box.get(key, defaultValue: defaultValue);
 
-      return box.get(key, defaultValue: defaultValue) as T?;
+      if (value == null) return defaultValue;
+      if (value is Map && T == Map<String, dynamic>) {
+        return value.map(
+              (k, v) => MapEntry(k.toString(), v),
+        ) as T;
+      }
 
+      return value as T?;
     } catch (_) {
       return defaultValue;
     }

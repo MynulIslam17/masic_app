@@ -77,7 +77,10 @@ class AuthController extends GetxController {
       _loginState = LoadingState.loaded;
       update();
       if(userModel.isVerified == true){
-        Get.offAllNamed(AppRoutes.bottomNavUserBar);
+        if(userModel.role == 'superAdmin'){
+          Get.offAllNamed(AppRoutes.adminDashboardScreen);
+        }else{
+        Get.offAllNamed(AppRoutes.bottomNavUserBar);}
       }else{
         Get.toNamed(AppRoutes.otpScreen, arguments: 'signup');
       }
@@ -184,6 +187,14 @@ class AuthController extends GetxController {
 
   /// ─── IS LOGGED IN ──────────────────────
   bool isLoggedIn() => _authService.isLoggedIn();
+
+  bool isAdmin() {
+    final user = _authService.getCachedUser();
+    if (user != null) {
+      return user.role == 'superAdmin';
+    }
+    return false;
+  }
 
 
 
