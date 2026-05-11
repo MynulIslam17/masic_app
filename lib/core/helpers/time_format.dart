@@ -3,29 +3,39 @@ import 'package:intl/intl.dart';
 
 class TimeFormatHelper {
   static String formatDate(DateTime date) {
-    return DateFormat('MMM dd, yyyy').format(date); //western date format
+    return DateFormat('MMM dd, yyyy').format(date);
   }
 
-  static DateTime parseDate(String formattedDate) {
-    return DateFormat('MMM dd, yyyy').parse(formattedDate);
-  }
-
-  static String formatDateTime(String date) {
-    DateTime dt;
+  static DateTime? parseDate(String? formattedDate) {
+    if (formattedDate == null || formattedDate.trim().isEmpty) return null;
     try {
-      dt = DateTime.parse(date);
-    } catch (_) {
-      dt = DateFormat('dd/MMM/yyyy').parse(date);
-    }
-    return DateFormat('dd/MMM/yyyy').format(dt);
-  }
-
-  static String? parseToIso(String text) {
-    if (text.trim().isEmpty) return null;
-    try {
-      return TimeFormatHelper.parseDate(text.trim()).toUtc().toIso8601String();
+      return DateFormat('MMM dd, yyyy').tryParse(formattedDate.trim());
     } catch (e) {
-      debugPrint('❌ Date parse error: $e');
+      debugPrint('❌ parseDate error: $e');
+      return null;
+    }
+  }
+
+  static String formatDateTime(String? date) {
+    if (date == null || date.trim().isEmpty) return '-';
+    try {
+      final dt = DateTime.tryParse(date) ??
+          DateFormat('dd/MMM/yyyy').tryParse(date.trim()) ??
+          DateFormat('MMM dd, yyyy').tryParse(date.trim());
+      if (dt == null) return '-';
+      return DateFormat('dd/MMM/yyyy').format(dt);
+    } catch (e) {
+      debugPrint('❌ formatDateTime error for "$date": $e');
+      return '-';
+    }
+  }
+
+  static String? parseToIso(String? text) {
+    if (text == null || text.trim().isEmpty) return null;
+    try {
+      return parseDate(text.trim())?.toUtc().toIso8601String();
+    } catch (e) {
+      debugPrint('❌ parseToIso error: $e');
       return null;
     }
   }
@@ -47,54 +57,46 @@ class TimeFormatHelper {
   }
 
   static String timeWithAMPM(DateTime time) {
-    // DateTime parsedTime = DateFormat('HH:mm:ss').parse(time);
-
-    String formattedTime = DateFormat(
-      'h:mm a',
-    ).format(time.add(const Duration(hours: 6)));
-    return formattedTime;
+    return DateFormat('h:mm a').format(time.add(const Duration(hours: 6)));
   }
 
-  static String getDayName(String dateString) {
-    DateTime dateTime = DateTime.parse(dateString).toLocal(); // Local timezone
-    return DateFormat('EEEE').format(dateTime); // Full day name
+  static String getDayName(String? dateString) {
+    if (dateString == null || dateString.trim().isEmpty) return '-';
+    try {
+      return DateFormat('EEEE').format(DateTime.parse(dateString).toLocal());
+    } catch (e) {
+      debugPrint('❌ getDayName error: $e');
+      return '-';
+    }
   }
 
-  static String getDate(String dateString) {
-    DateTime dateTime = DateTime.parse(dateString).toLocal(); // Local timezone
-    return DateFormat('dd MMMM').format(dateTime); // Only day (date)
+  static String getDate(String? dateString) {
+    if (dateString == null || dateString.trim().isEmpty) return '-';
+    try {
+      return DateFormat('dd MMMM').format(DateTime.parse(dateString).toLocal());
+    } catch (e) {
+      debugPrint('❌ getDate error: $e');
+      return '-';
+    }
   }
 
-  static String getMonth(String dateString) {
-    DateTime dateTime = DateTime.parse(dateString).toLocal(); // Local timezone
-    return DateFormat('MMMM').format(dateTime); // Only day (date)
+  static String getMonth(String? dateString) {
+    if (dateString == null || dateString.trim().isEmpty) return '-';
+    try {
+      return DateFormat('MMMM').format(DateTime.parse(dateString).toLocal());
+    } catch (e) {
+      debugPrint('❌ getMonth error: $e');
+      return '-';
+    }
   }
 
-  static String formatMonthOrDate(String date) {
-    DateTime dateTime = DateTime.parse(date).toLocal(); // Local timezone
-
-    return DateFormat('MMM d').format(dateTime);
+  static String formatMonthOrDate(String? date) {
+    if (date == null || date.trim().isEmpty) return '-';
+    try {
+      return DateFormat('MMM d').format(DateTime.parse(date).toLocal());
+    } catch (e) {
+      debugPrint('❌ formatMonthOrDate error: $e');
+      return '-';
+    }
   }
-
-  // static String getTimeAgo(DateTime postTime) {
-  //   String time = timeago.format(postTime);
-  //   return time
-  //       .replaceAll('seconds', 'sec')
-  //       .replaceAll('second', 'sec')
-  //       .replaceAll('minutes', 'min')
-  //       .replaceAll('minute', 'min')
-  //       .replaceAll('hours', 'hr')
-  //       .replaceAll('hour', 'hr');
-  // }
-
-  // static Future<void> isFutureDate(String input) async {
-  //   try {
-  //     DateTime date = DateTime.parse(input);
-  //     DateTime now = DateTime.now();
-  //     await PrefsHelper.setBool(AppConstants.isFutureDate, date.isAfter(now));
-  //   } catch (e) {
-  //     PrefsHelper.setBool(AppConstants.isFutureDate, false);
-  //   }
-  // }
-  //
 }

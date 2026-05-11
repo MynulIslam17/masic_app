@@ -12,6 +12,9 @@ import 'package:flutter_task/features/auth/presentation/pages/login/log_in_scree
 import 'package:flutter_task/features/auth/presentation/pages/otp/otp_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/reset_pass/reset_password_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/sign_up/sign_up_screen.dart';
+import 'package:flutter_task/features/banner/data/repositories/banner_repository.dart';
+import 'package:flutter_task/features/banner/domain/services/banner_services.dart';
+import 'package:flutter_task/features/banner/presentation/controllers/banner_controller.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/home/domain/services/home_service.dart';
@@ -45,6 +48,10 @@ import 'package:flutter_task/features/profile/setting/change%20password/setting_
 import 'package:flutter_task/features/profile/setting/privacy_policy_all_screen.dart';
 import 'package:flutter_task/features/profile/setting/setting_screen.dart';
 import 'package:flutter_task/features/splash/splash_screen.dart';
+import 'package:flutter_task/features/tree/data/repositories/tree_repository.dart';
+import 'package:flutter_task/features/tree/domain/services/tree_service.dart';
+import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
+import 'package:flutter_task/features/tree/presentation/screens/tree_details_screen.dart';
 import 'package:get/get.dart';
 
 abstract class AppPages {
@@ -130,6 +137,7 @@ abstract class AppPages {
     ),
 
     GetPage(name: AppRoutes.pollScreen, page: () => PollScreen()),
+    GetPage(name: AppRoutes.treeDetailsScreen, page: () => TreeDetailsScreen()),
   ];
 }
 
@@ -139,10 +147,33 @@ class BottomNavBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<BottomNavBarController>(() => BottomNavBarController());
 
+
+    Get.lazyPut<TreeRepository>(
+          () => TreeRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<TreeService>(
+          () => TreeService(repository: Get.find<TreeRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<TreeController>(
+          () => TreeController(
+        service: Get.find<TreeService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
     Get.lazyPut<HomeService>(
       () => HomeService(
         repository: Get.find<AnnouncementRepository>(),
         pollRepository: Get.find<PollRepository>(),
+        bannerRepository: Get.find<BannerRepository>(),
       ),
       fenix: true,
     );
@@ -235,6 +266,27 @@ class BottomNavBinding extends Bindings {
     Get.lazyPut<RequestController>(
       () => RequestController(
         service: Get.find<RequestServices>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<BannerRepository>(
+      () => BannerRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<BannerServices>(
+      () => BannerServices(repository: Get.find<BannerRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<BannerController>(
+      () => BannerController(
+        service: Get.find<BannerServices>(),
         connectivityService: Get.find<ConnectivityService>(),
       ),
       fenix: true,

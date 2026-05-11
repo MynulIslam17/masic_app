@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/features/home/presentation/home_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/profile_screen.dart';
-import 'package:flutter_task/features/tree/tree_screen.dart';
+import 'package:flutter_task/features/tree/presentation/screens/tree_screen.dart';
 
 class NavItemModel {
   final String icon;

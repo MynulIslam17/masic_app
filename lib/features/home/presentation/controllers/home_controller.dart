@@ -35,10 +35,13 @@ class HomeController extends GetxController {
   final RxList<AnnouncementModel> _announcements = <AnnouncementModel>[].obs;
 
   final RxList<PollModel> _polls = <PollModel>[].obs;
+  
+  final RxString _bannerUrl = ''.obs;
 
 
   List<AnnouncementModel> get announcements => _announcements;
   List<PollModel> get polls => _polls;
+  String get bannerUrl => _bannerUrl.value;
 
 
   final RxInt _currentAnnouncementPage = 0.obs;
@@ -103,12 +106,14 @@ class HomeController extends GetxController {
     final homeData = _service.getCachedHomeData();
     _announcements.value = homeData.announcements;
     _polls.value = homeData.polls;
+    _bannerUrl.value = homeData.banner?.imageUrl ?? '';
     // Debug logging
     assert(() {
       if (kDebugMode) {
         print('📦 Loaded from cache:');
         print('   Announcements home: ${_announcements.length}');
         print('   Polls home: ${_polls.length}');
+        print('   Banner home: ${homeData.banner?.imageUrl}');
       }
 
       return true;
