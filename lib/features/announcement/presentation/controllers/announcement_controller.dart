@@ -26,7 +26,6 @@ class AnnouncementController extends GetxController {
         _connectivityService = connectivityService;
 
   final searchController = TextEditingController();
-  final searchFocusNode = FocusNode();
 
   final _selectedImage = Rxn<File>();
 
