@@ -23,7 +23,7 @@ class TimeFormatHelper {
           DateFormat('dd/MMM/yyyy').tryParse(date.trim()) ??
           DateFormat('MMM dd, yyyy').tryParse(date.trim());
       if (dt == null) return '-';
-      return DateFormat('dd/MMM/yyyy').format(dt);
+      return DateFormat('dd-MMM-yyyy').format(dt);
     } catch (e) {
       debugPrint('❌ formatDateTime error for "$date": $e');
       return '-';
