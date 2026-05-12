@@ -19,135 +19,201 @@ class AnnouncementsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = AnnouncementController.to;
+    final bool isRtl = Directionality.of(context) == TextDirection.rtl;
     return CustomScaffold(
-      appBar: CustomAppBar(title: 'Announcements'),
+      paddingSide: 0,
       body: RefreshIndicator(
-        onRefresh: controller.refresh,
-        child: SingleChildScrollView(
+        edgeOffset: kToolbarHeight * 3.h,
+        onRefresh: () async => await controller.refresh(),
+        child: CustomScrollView(
           controller: controller.scrollController,
           physics: const AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
           ),
-          child: Column(
-            children: [
-              CustomTextField(
-                validator: (_) => null,
-                prefixIcon: Assets.icons.search.svg(),
-                borderRadio: 100.r,
-                borderColor: AppColors.colorE6E6E6,
-                showShadow: false,
-                controller: controller.searchController,
-                hintText: 'Search here . . .',
+          slivers: [
+            SliverAppBar(
+              backgroundColor: AppColors.bgColor,
+              pinned: true,
+              floating: false,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              expandedHeight: 150.h,
+
+              leading: IconButton(
+                icon: isRtl
+                    ? Assets.icons.backButton
+                          .svg(height: 24.h, width: 24.w)
+                          .flipped
+                    : Assets.icons.backButton.svg(height: 24.h, width: 24.w),
+                onPressed: () => Navigator.pop(context),
               ),
 
-              SizedBox(height: 10.h),
-
-              Row(
-                children: [
-                  TabItem(
-                    label: 'All announce',
-                    index: 0,
-                    selectedTab: controller.selectedTab,
-                    onTap: controller.onTabChanged,
-                  ),
-                  TabItem(
-                    label: 'My announce',
-                    index: 1,
-                    selectedTab: controller.selectedTab,
-                    onTap: controller.onTabChanged,
-                  ),
-                ],
+              title: CustomText(
+                text: 'Announcements',
+                fontSize: 16.sp,
+                color: AppColors.appBarTitleColor,
               ),
-              SizedBox(height: 16.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: Obx(
-                      () => CustomText(
-                        textAlign: TextAlign.start,
-                        fontSize: 12.sp,
-                        text:
-                            'Total events : ${controller.announcements.length}',
+
+              centerTitle: true,
+
+              flexibleSpace: FlexibleSpaceBar(
+                background: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 16.w,
+                      right: 16.w,
+                      top: kToolbarHeight,
+                    ),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: CustomTextField(
+                        validator: (_) => null,
+                        prefixIcon: Assets.icons.search.svg(),
+                        borderRadio: 100.r,
+                        borderColor: AppColors.colorE6E6E6,
+                        showShadow: false,
+                        controller: controller.searchController,
+                        hintText: 'Search here . . .',
                       ),
                     ),
                   ),
-                  CustomButton(
-                    height: 38.h,
-                    elevation: true,
-                    borderWidth: 3,
-                    bordersColor: const Color(0xffB0B0B0),
-                    foregroundColor: AppColors.primaryColor,
-                    backgroundColor: Colors.white,
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    width: 174.w,
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => CustomDialog(
-                          title: "Select announcement type",
-                          rightButtonLabel: 'For all',
-                          leftButtonLabel: 'Group',
-                          leftButtonBgColor: AppColors.primaryColor,
-                          leftButtonLabelColor: Colors.white,
-                          rightButtonLabelColor: AppColors.primaryColor,
-                          titleColor: AppColors.primaryColor,
-                          onTapLeftButton: () {
-                            Get.back();
-                            Get.toNamed(AppRoutes.memberSelectScreen);
-                          },
-                          onTapRightButton: () {
-                            Get.back();
-                            ProfileController.to.selectedUserIds.clear();
-                            Get.toNamed(AppRoutes.createAnnouncementsScreen);
-                          },
-                          description:
-                              'Please select one which type of announcement you want to upload',
-                        ),
-                      );
-                    },
-                    label: 'Create announcements',
-                  ),
-                ],
+                ),
               ),
 
-              SizedBox(height: 16.h),
-              Obx(() {
-                switch (controller.loadingState) {
-                  case LoadingState.initial:
-                  case LoadingState.loading:
-                    return const AnnouncementShimmer();
-                  case LoadingState.offline:
-                  case LoadingState.error:
-                    return EmptyDataWidget(
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(26.h),
+                child: Row(
+                  children: [
+                    TabItem(
+                      label: 'All announce',
+                      index: 0,
+                      selectedTab: controller.selectedTab,
+                      onTap: controller.onTabChanged,
+                    ),
+                    TabItem(
+                      label: 'My announce',
+                      index: 1,
+                      selectedTab: controller.selectedTab,
+                      onTap: controller.onTabChanged,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    SizedBox(height: 16.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Obx(
+                            () => CustomText(
+                              textAlign: TextAlign.start,
+                              fontSize: 12.sp,
+                              text:
+                                  'Total events : ${controller.announcements.length}',
+                            ),
+                          ),
+                        ),
+                        CustomButton(
+                          height: 38.h,
+                          elevation: true,
+                          borderWidth: 3,
+                          bordersColor: const Color(0xffB0B0B0),
+                          foregroundColor: AppColors.primaryColor,
+                          backgroundColor: Colors.white,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400,
+                          width: 174.w,
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => CustomDialog(
+                                title: "Select announcement type",
+                                rightButtonLabel: 'For all',
+                                leftButtonLabel: 'Group',
+                                leftButtonBgColor: AppColors.primaryColor,
+                                leftButtonLabelColor: Colors.white,
+                                rightButtonLabelColor: AppColors.primaryColor,
+                                titleColor: AppColors.primaryColor,
+                                onTapLeftButton: () {
+                                  Get.back();
+                                  Get.toNamed(AppRoutes.memberSelectScreen);
+                                },
+                                onTapRightButton: () {
+                                  Get.back();
+                                  ProfileController.to.selectedUserIds.clear();
+                                  Get.toNamed(
+                                    AppRoutes.createAnnouncementsScreen,
+                                  );
+                                },
+                                description:
+                                    'Please select one which type of announcement you want to upload',
+                              ),
+                            );
+                          },
+                          label: 'Create announcements',
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.h),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── List / shimmer / error ──
+            Obx(() {
+              switch (controller.loadingState) {
+                case LoadingState.initial:
+                case LoadingState.loading:
+                  return const SliverToBoxAdapter(child: AnnouncementShimmer());
+
+                case LoadingState.offline:
+                case LoadingState.error:
+                  return SliverToBoxAdapter(
+                    child: EmptyDataWidget(
                       message:
                           'Failed to load announcements. Please try again.',
                       onRefresh: () async => await controller.refresh(),
-                    );
-                  case LoadingState.loaded:
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: controller.announcements.length,
-                      itemBuilder: (context, index) {
-                        final announcement = controller.announcements[index];
-                        return AnnouncementCard(announcement: announcement);
-                      },
-                    );
-                }
-              }),
-              Obx(
-                () => controller.isLoadingMore
+                    ),
+                  );
+
+                case LoadingState.loaded:
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => AnnouncementCard(
+                        announcement: controller.announcements[index],
+                      ),
+                      childCount: controller.announcements.length,
+                    ),
+                  );
+              }
+            }),
+
+            // ── Load more indicator ──
+            Obx(
+              () => SliverToBoxAdapter(
+                child: controller.isLoadingMore
                     ? Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.h),
                         child: const Center(child: CustomLoader()),
                       )
                     : const SizedBox.shrink(),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+  }
+}
+
+extension on Widget {
+  Widget get flipped {
+    return Transform.flip(flipX: true, child: this);
   }
 }

@@ -26,6 +26,8 @@ class AnnouncementController extends GetxController {
         _connectivityService = connectivityService;
 
   final searchController = TextEditingController();
+  final searchFocusNode = FocusNode();
+
   final _selectedImage = Rxn<File>();
 
   File? get selectedImage => _selectedImage.value;
@@ -213,7 +215,8 @@ class AnnouncementController extends GetxController {
     try {
       await _service.updateStatus(announcementId, status);
       _updateLoadingState.value = LoadingState.loaded;
-      ToastMessageHelper.show('Status updated!');
+      refresh();
+      Get.back(canPop: true);
     } on AppException catch (e) {
       _updateLoadingState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
