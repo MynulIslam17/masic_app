@@ -8,6 +8,7 @@ import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/profile/presentation/widgets/info_row.dart';
 import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
+import 'package:flutter_task/features/request/presentation/widgets/details_bottom_nav.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -52,9 +53,9 @@ class RequestDetailsScreen extends StatelessWidget {
                   paddingVertical: 10.h,
                   color: AppColors.errorColor.withValues(alpha: 0.1),
                   width: double.infinity,
-                    border: Border(
-                      left: BorderSide(color: AppColors.errorColor, width: 5.w),
-                    ),
+                  border: Border(
+                    left: BorderSide(color: AppColors.errorColor, width: 5.w),
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -68,17 +69,16 @@ class RequestDetailsScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            CustomText(text:
-                              'DECLINE REASON',
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.errorColor,
-
+                            CustomText(
+                              text: 'DECLINE REASON',
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.errorColor,
                             ),
                             SizedBox(height: 4.h),
-                            CustomText(text:
-                              request.declineReason!,
-                                fontSize: 13.sp,
+                            CustomText(
+                              text: request.declineReason!,
+                              fontSize: 13.sp,
                             ),
                           ],
                         ),
@@ -232,7 +232,25 @@ class RequestDetailsScreen extends StatelessWidget {
                         label: 'CV',
                         valueWidget: CustomButton(
                           height: 24.h,
-                          onPressed: () {},
+                          onPressed: () {
+                            showModalBottomSheet(
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (context) {
+                                return CustomContainer(
+                                  paddingAll: 16.r,
+                                  child: CustomNetworkImage(
+                                    borderRadius: 10.r,
+                                    imageUrl: request.cvUrl,
+                                    height: 500.h,
+                                    width: double.infinity,
+                                    fit: BoxFit.contain,
+                                  ),
+                                );
+                              },
+                            );
+                          },
+
                           fontSize: 12.sp,
                           label: request.cvUrl?.split('/').last ?? '',
                         ),
@@ -242,7 +260,24 @@ class RequestDetailsScreen extends StatelessWidget {
                         label: 'certificate',
                         valueWidget: CustomButton(
                           height: 24.h,
-                          onPressed: () {},
+                          onPressed: () {
+                            showModalBottomSheet(
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (context) {
+                                return CustomContainer(
+                                  paddingAll: 16.r,
+                                  child: CustomNetworkImage(
+                                    borderRadius: 10.r,
+                                    imageUrl: request.certificateUrl,
+                                    height: 500.h,
+                                    width: double.infinity,
+                                    fit: BoxFit.contain,
+                                  ),
+                                );
+                              },
+                            );
+                          },
                           fontSize: 12.sp,
                           label: request.certificateUrl?.split('/').last ?? '',
                         ),
@@ -254,65 +289,7 @@ class RequestDetailsScreen extends StatelessWidget {
         );
       }),
 
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(16.r),
-          child: Obx(() {
-            final request = controller.requests.firstWhereOrNull(
-              (e) => e.sId == requestId,
-            );
-            if (request == null) return const SizedBox.shrink();
-            final status = request.status ?? '';
-            final isAdmin = AuthController.to.isAdmin();
-            if (isAdmin && status == 'pending') {
-              return Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => Obx(() {
-                            return CustomDialog(
-                              title: "Approve Request",
-                              titleColor: AppColors.primaryColor,
-                              rightButtonLabel: 'Yes, Approve',
-                              rightButtonBgColor: AppColors.primaryColor,
-                              rightButtonLabelColor: Colors.white,
-                              onTapLeftButton: () => Get.back(),
-                              isLoading: controller.updateState.isLoading,
-                              onTapRightButton: () => controller.updateStatus(
-                                requestId: requestId,
-                                status: 'approved',
-                              ),
-                              description:
-                                  'Are you sure want to approve your Request?',
-                            );
-                          }),
-                        );
-                      },
-                      label: 'Approved',
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: CustomButton(
-                      bordersColor: AppColors.errorColor,
-                      foregroundColor: AppColors.errorColor,
-                      backgroundColor: AppColors.bgColor,
-                      label: 'Rejected',
-                      onPressed: (){
-                        Get.toNamed(AppRoutes.reasonScreen,arguments: requestId);
-                      },
-                    ),
-                  ),
-                ],
-              );
-            }
-            return const SizedBox.shrink();
-          }),
-        ),
-      ),
+      bottomNavigationBar: DetailsBottomNav(requestId: requestId),
     );
   }
 
@@ -339,3 +316,4 @@ class RequestDetailsScreen extends StatelessWidget {
     );
   }
 }
+
