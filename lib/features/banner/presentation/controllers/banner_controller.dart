@@ -10,6 +10,7 @@ import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
 import 'package:flutter_task/features/announcement/data/models/create_request_model.dart';
 import 'package:flutter_task/features/announcement/domain/services/announcement_services.dart';
+import 'package:flutter_task/features/banner/data/models/banner_model.dart';
 import 'package:flutter_task/features/banner/domain/services/banner_services.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
@@ -27,210 +28,98 @@ class BannerController extends GetxController {
   }) : _service = service,
        _connectivityService = connectivityService;
 
-  // final searchController = TextEditingController();
-  //
-  // final _selectedImage = Rxn<File>();
-  //
-  // File? get selectedImage => _selectedImage.value;
-  //
-  // // ─── Loading States ────────────────────────────────────────────────────────
-  // final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
-  // final Rx<LoadingState> _updateLoadingState = LoadingState.initial.obs;
-  // final Rx<LoadingState> _createLoadingState = LoadingState.initial.obs;
-  //
-  // LoadingState get updateLoadingState => _updateLoadingState.value;
-  //
-  // LoadingState get loadingState => _loadingState.value;
-  //
-  // LoadingState get createLoadingState => _createLoadingState.value;
-  //
-  // final titleTEController = TextEditingController();
-  // final decTEController = TextEditingController();
-  // final formKey = GlobalKey<FormState>();
-  //
-  // final RxList<AnnouncementModel> _announcements = <AnnouncementModel>[].obs;
-  //
-  // List<AnnouncementModel> get announcements => _announcements;
-  //
-  // int _currentPage = 1;
-  // final int _limit = 10;
-  // final RxBool _isLoadingMore = false.obs;
-  //
-  // bool get isLoadingMore => _isLoadingMore.value;
-  //
-  // final RxBool _hasMore = true.obs;
-  //
-  // bool get hasMore => _hasMore.value && !_isLoadingMore.value;
-  //
-  // // ─── Scroll Controller ─────────────────────────────────────────────────────
-  // ScrollController? _scrollController;
-  //
-  // ScrollController? get scrollController => _scrollController;
-  //
-  // @override
-  // void onInit() {
-  //   super.onInit();
-  //   _initScrollController();
-  //   ever(_connectivityService.isConnected, (isConnected) {
-  //     if (isConnected) _loadData();
-  //   });
-  //   _loadData();
-  // }
-  //
-  // void selectImage(XFile image) {
-  //   _selectedImage.value = File(image.path);
-  // }
-  //
-  // void _initScrollController() {
-  //   _scrollController = ScrollController();
-  //   _scrollController!.addListener(_onScroll);
-  // }
-  //
-  // void _onScroll() {
-  //   if (_scrollController == null) return;
-  //
-  //   final position = _scrollController!.position;
-  //
-  //   if (position.pixels >= position.maxScrollExtent - 200 &&
-  //       !_isLoadingMore.value &&
-  //       hasMore) {
-  //     _loadMore();
-  //   }
-  // }
-  //
-  // Future<void> _loadData() async {
-  //   try {
-  //     final hasCache = _service.hasCache();
-  //     final isOnline = _connectivityService.isConnected.value;
-  //
-  //     if (hasCache) {
-  //       _loadFromCache();
-  //       _loadingState.value = LoadingState.loaded;
-  //     } else {
-  //       _loadingState.value = LoadingState.loading;
-  //     }
-  //
-  //     if (!isOnline) return;
-  //
-  //     try {
-  //       await _service.fetchAnnouncements(
-  //         1,
-  //         10,
-  //         search: searchController.text,
-  //       );
-  //       _loadFromCache();
-  //       _loadingState.value = LoadingState.loaded;
-  //     } on AppException catch (e) {
-  //       if (!hasCache) {
-  //         _loadingState.value = LoadingState.error;
-  //       }
-  //       if (kDebugMode) debugPrint('Fetch error: $e');
-  //     }
-  //   } catch (e) {
-  //     if (_service.hasCache()) {
-  //       _loadFromCache();
-  //       _loadingState.value = LoadingState.loaded;
-  //     } else {
-  //       _loadingState.value = LoadingState.error;
-  //     }
-  //     if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
-  //   }
-  // }
-  //
-  // Future<void> _loadMore() async {
-  //   if (_isLoadingMore.value || !hasMore) return;
-  //
-  //   try {
-  //     _isLoadingMore.value = true;
-  //     _currentPage++;
-  //
-  //     final newAnnouncements = await _service.fetchMoreAnnouncements(
-  //       _currentPage,
-  //       _limit,
-  //     );
-  //
-  //     if (newAnnouncements.isNotEmpty) {
-  //       _announcements.addAll(newAnnouncements);
-  //       if (newAnnouncements.length < _limit) {
-  //         _hasMore.value = false;
-  //       }
-  //     } else {
-  //       _hasMore.value = false;
-  //     }
-  //   } on AppException catch (e) {
-  //     _currentPage--;
-  //     if (kDebugMode) debugPrint('Load more error: $e');
-  //   } catch (e) {
-  //     _currentPage--;
-  //     if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
-  //   } finally {
-  //     _isLoadingMore.value = false;
-  //   }
-  // }
-  //
-  // void _loadFromCache() {
-  //   _announcements.value = _service.getCachedAnnouncements();
-  //
-  //   assert(() {
-  //     if (kDebugMode) {
-  //       print('📦 Loaded from cache:');
-  //       print('   Announcements: ${_announcements.length}');
-  //     }
-  //     return true;
-  //   }());
-  // }
-  //
-  // @override
-  // Future<void> refresh() async {
-  //   _announcements.clear();
-  //   _currentPage = 1;
-  //   _hasMore.value = true;
-  //   _isLoadingMore.value = false;
-  //   await _loadData();
-  // }
-  //
-  //
-  // Future<void> createAnnouncement() async {
-  //   if (!formKey.currentState!.validate()) return;
-  //
-  //   _createLoadingState.value = LoadingState.loading;
-  //
-  //   try {
-  //     final users = ProfileController.to.selectedUserIds;
-  //
-  //     await _service.createAnnouncement(
-  //       selectedImage,
-  //       CreateRequestModel(
-  //         title: titleTEController.text.trim(),
-  //         description: decTEController.text.trim(),
-  //         targetUsers: users.isEmpty ? null : users,
-  //       ),
-  //     );
-  //
-  //     _createLoadingState.value = LoadingState.loaded;
-  //     if(users.isNotEmpty) Get.back(canPop: true);
-  //     Get.back(canPop: true);
-  //     titleTEController.clear();
-  //     decTEController.clear();
-  //     _selectedImage.value = null;
-  //     users.clear();
-  //     ToastMessageHelper.show('Created! Pending admin approval.');
-  //   } on AppException catch (e) {
-  //     _createLoadingState.value = LoadingState.error;
-  //     ToastMessageHelper.show(e.errorMessage);
-  //
-  //     if (kDebugMode) {
-  //       debugPrint('Create announcement error: $e');
-  //     }
-  //   }
-  // }
-  // @override
-  // void onClose() {
-  //   _scrollController?.removeListener(_onScroll);
-  //   _scrollController?.dispose();
-  //   _scrollController = null;
-  //   titleTEController.dispose();
-  //   decTEController.dispose();
-  //   super.onClose();
-  // }
+  final _selectedImage = Rxn<File>();
+
+  File? get selectedImage => _selectedImage.value;
+
+  // ─── Loading States ────────────────────────────────────────────────────────
+  final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
+
+  LoadingState get loadingState => _loadingState.value;
+
+  final RxList<BannerModel> _banners = <BannerModel>[].obs;
+
+  List<BannerModel> get banners => _banners;
+
+  @override
+  void onInit() {
+    super.onInit();
+    ever(_connectivityService.isConnected, (isConnected) {
+      if (isConnected) _loadData();
+    });
+    _loadData();
+  }
+
+  Future<void> selectImage(XFile image) async {
+    _selectedImage.value = File(image.path);
+    await createBanner();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final hasCache = _service.hasCache();
+      final isOnline = _connectivityService.isConnected.value;
+
+      if (hasCache) {
+        _loadFromCache();
+        _loadingState.value = LoadingState.loaded;
+      } else {
+        _loadingState.value = LoadingState.loading;
+      }
+
+      if (!isOnline) return;
+
+      try {
+        await _service.fetchBanner(1, 10);
+        _loadFromCache();
+        _loadingState.value = LoadingState.loaded;
+      } on AppException catch (e) {
+        if (!hasCache) {
+          _loadingState.value = LoadingState.error;
+        }
+        if (kDebugMode) debugPrint('Fetch error: $e');
+      }
+    } catch (e) {
+      if (_service.hasCache()) {
+        _loadFromCache();
+        _loadingState.value = LoadingState.loaded;
+      } else {
+        _loadingState.value = LoadingState.error;
+      }
+      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+    }
+  }
+
+  void _loadFromCache() {
+    _banners.value = _service.getCachedBanner();
+
+    assert(() {
+      if (kDebugMode) {
+        print('📦 Loaded from cache:');
+        print('   Banner: ${_banners.length}');
+      }
+      return true;
+    }());
+  }
+
+  @override
+  Future<void> refresh() async {
+    await _loadData();
+  }
+
+  Future<void> createBanner() async {
+    if (_selectedImage.value == null) return;
+    ToastMessageHelper.show('Please wait...');
+
+    try {
+      await _service.createBanner(selectedImage!);
+      _selectedImage.value = null;
+      _loadData();
+    } on AppException catch (e) {
+      ToastMessageHelper.show(e.errorMessage);
+      if (kDebugMode) {
+        debugPrint('Create announcement error: $e');
+      }
+    }
+  }
 }

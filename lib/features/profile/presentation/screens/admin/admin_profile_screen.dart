@@ -82,7 +82,7 @@ class AdminProfileScreen extends StatelessWidget {
               icon: Assets.icons.banner.path,
               title: "Banner images",
               onTap: () {
-                // Get.toNamed(AppRoutes.settingScreen);
+                 Get.toNamed(AppRoutes.bannerScreen);
               },
             ),
         

@@ -9,7 +9,7 @@ class BannerServices {
   BannerServices({required BannerRepository repository})
     : _repository = repository;
 
-  Future<void> fetchAnnouncements(int currentPage, int limit, {String? search}) async {
+  Future<void> fetchBanner(int currentPage, int limit, {String? search}) async {
     try {
       await Future.wait([_repository.fetchBanner()]);
     } on AppException {
@@ -22,10 +22,7 @@ class BannerServices {
   }
 
 
-
-
-
-  BannerModel? getCachedAnnouncements() {
+  List<BannerModel> getCachedBanner() {
     return _repository.getCachedBanner();
   }
 
@@ -33,7 +30,7 @@ class BannerServices {
 
 
 
-  Future<void> createBanner(File? image) async {
+  Future<void> createBanner(File image) async {
     return await _repository.createBanner(image);
   }
 

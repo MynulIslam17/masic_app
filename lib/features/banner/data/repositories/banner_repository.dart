@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_task/core/constants/api_constants.dart';
 import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/core/services/api_service.dart';
@@ -15,51 +14,68 @@ class BannerRepository {
     required ApiService apiService,
     required CacheService cacheService,
   }) : _apiService = apiService,
-       _cacheService = cacheService;
+        _cacheService = cacheService;
 
-  Future<BannerModel> fetchBanner() async {
+  Future<List<BannerModel>> fetchBanner() async {
     try {
       final response = await _apiService.get(ApiConstants.banner);
       final data = response.data['data'];
-      final banner = BannerModel.fromJson(data);
 
-      await _cacheService.put(ApiConstants.cacheBanner, banner.toJson());
+      final banners = _parseBanners(data);
 
-      return banner;
-    } on AppException {
-      final cached = getCachedBanner();
-      if (cached != null) return cached;
-      rethrow;
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
-  }
-
-  BannerModel? getCachedBanner() {
-    try {
-      final json = _cacheService.get<Map<String, dynamic>>(
+      await _cacheService.put(
         ApiConstants.cacheBanner,
-        defaultValue: null,
+        banners.map((b) => b.toJson()).toList(),
       );
 
-      if (json == null) return null;
-      return BannerModel.fromJson(json);
+      return banners;
+    } on AppException {
+      return getCachedBanner();
     } catch (e) {
-      debugPrint('❌ Error getting cached banner data: $e');
-      return null;
+      throw UnknownException(e.toString());
     }
   }
 
-  Future<void> createBanner(File? image) async {
+  List<BannerModel> _parseBanners(dynamic data) {
+    if (data == null) return [];
+
+    if (data is List) {
+      return data
+          .map((item) => BannerModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+
+    if (data is Map<String, dynamic>) {
+      return [BannerModel.fromJson(data)];
+    }
+
+    return [];
+  }
+
+
+  List<BannerModel> getCachedBanner() {
     try {
-      await _apiService.uploadFile(
+      final jsonList =
+          _cacheService.get<List>(ApiConstants.cacheBanner, defaultValue: []) ??
+              [];
+      return jsonList.map((json) => BannerModel.fromJson(json)).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> createBanner(File image) async {
+    try {
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split('/').last,
+        ),
+      });
+
+      await _apiService.post(
         ApiConstants.bannerCreate,
-        file: image == null
-            ? null
-            : MultipartFile.fromFileSync(
-                image.path,
-                filename: image.path.split('/').last,
-              ),
+        data: formData,
       );
     } on AppException {
       rethrow;
@@ -67,7 +83,6 @@ class BannerRepository {
       throw UnknownException(e.toString());
     }
   }
-
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheBanner);
   }

@@ -106,14 +106,14 @@ class HomeController extends GetxController {
     final homeData = _service.getCachedHomeData();
     _announcements.value = homeData.announcements;
     _polls.value = homeData.polls;
-    _bannerUrl.value = homeData.banner?.imageUrl ?? '';
+    _bannerUrl.value = homeData.banner?.first.imageUrl ?? '';
     // Debug logging
     assert(() {
       if (kDebugMode) {
         print('📦 Loaded from cache:');
         print('   Announcements home: ${_announcements.length}');
         print('   Polls home: ${_polls.length}');
-        print('   Banner home: ${homeData.banner?.imageUrl}');
+        print('   Banner home: ${homeData.banner?.first.imageUrl}');
       }
 
       return true;

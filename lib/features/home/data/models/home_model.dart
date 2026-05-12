@@ -5,7 +5,7 @@ import 'package:flutter_task/features/poll/data/models/poll_model.dart';
 class HomeModel {
   final List<AnnouncementModel> announcements;
   final List<PollModel> polls;
-  final BannerModel? banner;
+  final List<BannerModel>? banner;
 
 
   HomeModel( {required this.announcements , required this.polls, required this.banner});

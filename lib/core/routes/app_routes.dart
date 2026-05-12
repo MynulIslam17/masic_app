@@ -50,4 +50,8 @@ abstract class AppRoutes {
 
   // tree ──────────────────────────────────────────────────────────────
   static const String treeDetailsScreen = '/home/tree';
+
+  // banner ──────────────────────────────────────────────────────────────
+  static const String bannerScreen = '/home/banner';
+
 }
