@@ -10,7 +10,7 @@ class AnnouncementShimmer extends StatelessWidget {
     return ListView.builder(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
-        itemCount: 4,
+        itemCount: 2,
         itemBuilder: (context, index) => AppShimmer.wrap(
       child: Container(
         margin: EdgeInsets.only(bottom: 10.h),

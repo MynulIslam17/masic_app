@@ -1,6 +1,6 @@
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
-import 'package:flutter_task/features/profile/presentation/screens/admin_profile_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/admin/admin_profile_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/forget/forget_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/login/log_in_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/otp/otp_screen.dart';
@@ -22,7 +22,8 @@ import 'package:flutter_task/features/profile/presentation/screens/user/member_s
 import 'package:flutter_task/features/profile/presentation/screens/user/personal_info_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/profile_information_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/support_screen.dart';
-import 'package:flutter_task/features/request/presentation/screens/request_screen.dart';
+import 'package:flutter_task/features/request/presentation/screens/comon/request_details_screen.dart';
+import 'package:flutter_task/features/request/presentation/screens/comon/request_screen.dart';
 import 'package:flutter_task/features/translation/presentation/language_screen.dart';
 import 'package:flutter_task/features/profile/setting/change%20password/setting_change_password.dart';
 import 'package:flutter_task/features/profile/setting/privacy_policy_all_screen.dart';
@@ -114,6 +115,7 @@ abstract class AppPages {
     ),
 
     GetPage(name: AppRoutes.pollScreen, page: () => PollScreen()),
+    GetPage(name: AppRoutes.requestDetailsScreen, page: () => RequestDetailsScreen()),
     GetPage(name: AppRoutes.treeDetailsScreen, page: () => TreeDetailsScreen()),
   ];
 }

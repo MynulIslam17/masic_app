@@ -6,6 +6,7 @@ import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:flutter_task/features/profile/presentation/widgets/info_row.dart';
 import 'package:get/get.dart';
 
 class ProfileInformationScreen extends StatelessWidget {
@@ -48,44 +49,46 @@ class ProfileInformationScreen extends StatelessWidget {
                 bordersColor: AppColors.borderColor,
                 radiusAll: 12.r,
                 child: Column(
-                  spacing: 16.h,
+                 // spacing: 16.h,
                   children: [
-                    _buildInfoRow(label: 'Name', value: user?.name ?? 'N/A'),
-                    _buildInfoRow(label: 'Email', value: user?.email ?? 'N/A'),
-                    _buildInfoRow(
+                    InfoRow(label: 'Name', value: user?.name ?? 'N/A'),
+                    InfoRow(label: 'Email', value: user?.email ?? 'N/A'),
+                    InfoRow(
                       label: 'Phone no',
-                      value: user?.spousePhone ?? 'N/A',
+                      value: user?.phone ?? 'N/A',
                     ),
-                    _buildInfoRow(
+                    InfoRow(
                       label: 'Date of birth',
-                      value: TimeFormatHelper.formatDateTime(user?.dateOfBirth ?? ''),
+                      value: TimeFormatHelper.formatDateTime(
+                        user?.dateOfBirth ?? '',
+                      ),
                     ),
-                    _buildInfoRow(
-                      label: 'Gender',
-                      value: user?.gender ?? 'N/A',
-                    ),
-                    _buildInfoRow(
+                    InfoRow(label: 'Gender', value: user?.gender ?? 'N/A'),
+                    InfoRow(
                       label: 'Employment status',
                       value: user?.employmentStatus ?? 'N/A',
                     ),
-                    _buildInfoRow(
+                    InfoRow(
                       label: 'Education',
                       value: user?.education ?? 'N/A',
                     ),
-                    _buildInfoRow(
+                    InfoRow(
                       label: 'University name',
                       value: user?.universityName ?? 'N/A',
                     ),
-                    _buildInfoRow(
+                    InfoRow(
                       label: 'Field of work',
                       value: user?.fieldOfWork ?? 'N/A',
                     ),
-                    _buildInfoRow(
+                    InfoRow(
                       label: 'Spouse name',
                       value: user?.spouseName ?? 'N/A',
                     ),
-                    //_buildInfoRow(label: 'Spouse number',     value: user?.spousePhone     ?? 'N/A'),
-                    _buildInfoRow(
+                    InfoRow(
+                      label: 'Spouse number',
+                      value: user?.spousePhone ?? 'N/A',
+                    ),
+                    InfoRow(
                       label: 'Linkedin link',
                       value: user?.linkedinLink ?? 'N/A',
                     ),
@@ -97,39 +100,6 @@ class ProfileInformationScreen extends StatelessWidget {
           );
         }),
       ),
-    );
-  }
-
-  // ── Row Helpers ────────────────────────────────────────────────────────────
-  Widget _buildInfoRow({
-    required String label,
-    String? value,
-    Widget? valueWidget,
-  }) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 100.w,
-          child: CustomText(
-            text: label,
-            fontSize: 12.sp,
-            textAlign: TextAlign.start,
-          ),
-        ),
-        SizedBox(width: 24.w),
-        CustomText(text: ':', fontSize: 12.sp),
-        SizedBox(width: 32.w),
-        Expanded(
-          child:
-              valueWidget ??
-              CustomText(
-                enableAutoTranslate: false,
-                text: value ?? '',
-                fontSize: 12.sp,
-                textAlign: TextAlign.start,
-              ),
-        ),
-      ],
     );
   }
 }

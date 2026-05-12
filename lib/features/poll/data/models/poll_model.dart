@@ -60,20 +60,23 @@ class PollModel {
 }
 
 class CreatedBy {
-  Null? profileImage;
+  String? profileImage;
   String? sId;
+  String? name;
 
-  CreatedBy({this.profileImage, this.sId});
+  CreatedBy({this.profileImage, this.sId, this.name});
 
   CreatedBy.fromJson(Map<String, dynamic> json) {
     profileImage = json['profileImage'];
     sId = json['_id'];
+    name = json['name'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['profileImage'] = profileImage;
     data['_id'] = sId;
+    data['name'] = name;
     return data;
   }
 }

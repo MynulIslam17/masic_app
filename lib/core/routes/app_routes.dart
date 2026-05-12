@@ -36,6 +36,8 @@ abstract class AppRoutes {
 
   // ─── Request ──────────────────────────────────────────────────────────────
   static const String requestScreen = '/home/request';
+  static const String requestDetailsScreen = '/home/request/details';
+
 
   // ─── Admin ──────────────────────────────────────────────────────────────
   static const String adminDashboardScreen = '/admin/home';

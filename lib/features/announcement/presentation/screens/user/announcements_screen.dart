@@ -171,7 +171,6 @@ class AnnouncementsScreen extends StatelessWidget {
                 case LoadingState.initial:
                 case LoadingState.loading:
                   return const SliverToBoxAdapter(child: AnnouncementShimmer());
-
                 case LoadingState.offline:
                 case LoadingState.error:
                   return SliverToBoxAdapter(
@@ -185,8 +184,11 @@ class AnnouncementsScreen extends StatelessWidget {
                 case LoadingState.loaded:
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) => AnnouncementCard(
-                        announcement: controller.announcements[index],
+                      (context, index) => Padding(
+                        padding:  EdgeInsets.symmetric(horizontal: 16.w),
+                        child: AnnouncementCard(
+                          announcement: controller.announcements[index],
+                        ),
                       ),
                       childCount: controller.announcements.length,
                     ),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/helpers/time_format.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/request/data/models/request_model.dart';
+import 'package:get/get.dart';
 
 class RequestCardWidget extends StatelessWidget {
   const RequestCardWidget({super.key, required this.request});
@@ -13,6 +15,9 @@ class RequestCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
+      onTap: () {
+        Get.toNamed(AppRoutes.requestDetailsScreen,arguments: request.sId);
+      },
       horizontalMargin: 16.w,
       bordersColor: AppColors.primaryColor,
       radiusAll: 20.r,
@@ -34,7 +39,6 @@ class RequestCardWidget extends StatelessWidget {
                   color: AppColors.primaryColor,
                 ),
               ),
-
               CustomContainer(
                 horizontalMargin: 0,
                 bordersColor: getColor(request.status ?? 'N/A'),
