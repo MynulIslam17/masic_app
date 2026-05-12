@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
@@ -23,24 +22,26 @@ class AnnouncementController extends GetxController {
   AnnouncementController({
     required AnnouncementServices service,
     required ConnectivityService connectivityService,
-  }) : _service = service,
-       _connectivityService = connectivityService;
+  })  : _service = service,
+        _connectivityService = connectivityService;
 
   final searchController = TextEditingController();
-
   final _selectedImage = Rxn<File>();
 
   File? get selectedImage => _selectedImage.value;
+
+  // ─── Tab ───────────────────────────────────────────────────────────────────
+  final RxInt selectedTab = 0.obs;
+
+  String get _currentType => selectedTab.value == 1 ? 'my' : '';
 
   // ─── Loading States ────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _updateLoadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _createLoadingState = LoadingState.initial.obs;
 
-  LoadingState get updateLoadingState => _updateLoadingState.value;
-
   LoadingState get loadingState => _loadingState.value;
-
+  LoadingState get updateLoadingState => _updateLoadingState.value;
   LoadingState get createLoadingState => _createLoadingState.value;
 
   final titleTEController = TextEditingController();
@@ -54,16 +55,12 @@ class AnnouncementController extends GetxController {
   int _currentPage = 1;
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
-
-  bool get isLoadingMore => _isLoadingMore.value;
-
   final RxBool _hasMore = true.obs;
 
+  bool get isLoadingMore => _isLoadingMore.value;
   bool get hasMore => _hasMore.value && !_isLoadingMore.value;
 
-  // ─── Scroll Controller ─────────────────────────────────────────────────────
   ScrollController? _scrollController;
-
   ScrollController? get scrollController => _scrollController;
 
   @override
@@ -73,7 +70,13 @@ class AnnouncementController extends GetxController {
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) _loadData();
     });
+    ever(selectedTab, (_) => refresh());
     _loadData();
+  }
+
+  void onTabChanged(int index) {
+    if (selectedTab.value == index) return;
+    selectedTab.value = index;
   }
 
   void selectImage(XFile image) {
@@ -87,9 +90,7 @@ class AnnouncementController extends GetxController {
 
   void _onScroll() {
     if (_scrollController == null) return;
-
     final position = _scrollController!.position;
-
     if (position.pixels >= position.maxScrollExtent - 200 &&
         !_isLoadingMore.value &&
         hasMore) {
@@ -99,7 +100,8 @@ class AnnouncementController extends GetxController {
 
   Future<void> _loadData() async {
     try {
-      final hasCache = _service.hasCache();
+      final type = _currentType;
+      final hasCache = _service.hasCache(type);
       final isOnline = _connectivityService.isConnected.value;
 
       if (hasCache) {
@@ -114,31 +116,29 @@ class AnnouncementController extends GetxController {
       try {
         await _service.fetchAnnouncements(
           1,
-          10,
+          _limit,
           search: searchController.text,
+          type: type, // ✅ type pass
         );
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
-        if (!hasCache) {
-          _loadingState.value = LoadingState.error;
-        }
+        if (!hasCache) _loadingState.value = LoadingState.error;
         if (kDebugMode) debugPrint('Fetch error: $e');
       }
     } catch (e) {
-      if (_service.hasCache()) {
+      if (_service.hasCache(_currentType)) {
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) debugPrint('Unexpected error: $e');
     }
   }
 
   Future<void> _loadMore() async {
     if (_isLoadingMore.value || !hasMore) return;
-
     try {
       _isLoadingMore.value = true;
       _currentPage++;
@@ -146,13 +146,12 @@ class AnnouncementController extends GetxController {
       final newAnnouncements = await _service.fetchMoreAnnouncements(
         _currentPage,
         _limit,
+        _currentType,
       );
 
       if (newAnnouncements.isNotEmpty) {
         _announcements.addAll(newAnnouncements);
-        if (newAnnouncements.length < _limit) {
-          _hasMore.value = false;
-        }
+        if (newAnnouncements.length < _limit) _hasMore.value = false;
       } else {
         _hasMore.value = false;
       }
@@ -161,22 +160,14 @@ class AnnouncementController extends GetxController {
       if (kDebugMode) debugPrint('Load more error: $e');
     } catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) debugPrint('Unexpected error: $e');
     } finally {
       _isLoadingMore.value = false;
     }
   }
 
   void _loadFromCache() {
-    _announcements.value = _service.getCachedAnnouncements();
-
-    assert(() {
-      if (kDebugMode) {
-        print('📦 Loaded from cache:');
-        print('   Announcements: ${_announcements.length}');
-      }
-      return true;
-    }());
+    _announcements.value = _service.getCachedAnnouncements(_currentType);
   }
 
   @override
@@ -188,15 +179,11 @@ class AnnouncementController extends GetxController {
     await _loadData();
   }
 
-
   Future<void> createAnnouncement() async {
     if (!formKey.currentState!.validate()) return;
-
     _createLoadingState.value = LoadingState.loading;
-
     try {
       final users = ProfileController.to.selectedUserIds;
-
       await _service.createAnnouncement(
         selectedImage,
         CreateRequestModel(
@@ -205,9 +192,8 @@ class AnnouncementController extends GetxController {
           targetUsers: users.isEmpty ? null : users,
         ),
       );
-
       _createLoadingState.value = LoadingState.loaded;
-      if(users.isNotEmpty) Get.back(canPop: true);
+      if (users.isNotEmpty) Get.back(canPop: true);
       Get.back(canPop: true);
       titleTEController.clear();
       decTEController.clear();
@@ -217,12 +203,24 @@ class AnnouncementController extends GetxController {
     } on AppException catch (e) {
       _createLoadingState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
-
-      if (kDebugMode) {
-        debugPrint('Create announcement error: $e');
-      }
+      if (kDebugMode) debugPrint('Create announcement error: $e');
     }
   }
+
+
+  Future<void> updateStatus(String announcementId, String status) async {
+    _updateLoadingState.value = LoadingState.loading;
+    try {
+      await _service.updateStatus(announcementId, status);
+      _updateLoadingState.value = LoadingState.loaded;
+      ToastMessageHelper.show('Status updated!');
+    } on AppException catch (e) {
+      _updateLoadingState.value = LoadingState.error;
+      ToastMessageHelper.show(e.errorMessage);
+      if (kDebugMode) debugPrint('Update status error: $e');
+    }
+  }
+
   @override
   void onClose() {
     _scrollController?.removeListener(_onScroll);

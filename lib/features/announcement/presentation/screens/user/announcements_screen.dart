@@ -9,6 +9,7 @@ import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_card.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_simmer.dart';
+import 'package:flutter_task/features/announcement/presentation/widgets/tap_bar.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
@@ -24,7 +25,7 @@ class AnnouncementsScreen extends StatelessWidget {
         onRefresh: controller.refresh,
         child: SingleChildScrollView(
           controller: controller.scrollController,
-          physics: AlwaysScrollableScrollPhysics(
+          physics: const AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
           ),
           child: Column(
@@ -40,20 +41,41 @@ class AnnouncementsScreen extends StatelessWidget {
               ),
 
               SizedBox(height: 10.h),
+
+              Row(
+                children: [
+                  TabItem(
+                    label: 'All announce',
+                    index: 0,
+                    selectedTab: controller.selectedTab,
+                    onTap: controller.onTabChanged,
+                  ),
+                  TabItem(
+                    label: 'My announce',
+                    index: 1,
+                    selectedTab: controller.selectedTab,
+                    onTap: controller.onTabChanged,
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.h),
               Row(
                 children: [
                   Expanded(
-                    child: CustomText(
-                      textAlign: TextAlign.start,
-                      fontSize: 12.sp,
-                      text: 'Total events : ${controller.announcements.length}',
+                    child: Obx(
+                      () => CustomText(
+                        textAlign: TextAlign.start,
+                        fontSize: 12.sp,
+                        text:
+                            'Total events : ${controller.announcements.length}',
+                      ),
                     ),
                   ),
                   CustomButton(
                     height: 38.h,
                     elevation: true,
                     borderWidth: 3,
-                    bordersColor: Color(0xffB0B0B0),
+                    bordersColor: const Color(0xffB0B0B0),
                     foregroundColor: AppColors.primaryColor,
                     backgroundColor: Colors.white,
                     fontSize: 12.sp,
@@ -89,25 +111,23 @@ class AnnouncementsScreen extends StatelessWidget {
                 ],
               ),
 
-              /// ============ > Events List < ============
-              SizedBox(height: 24.h),
+              SizedBox(height: 16.h),
               Obx(() {
                 switch (controller.loadingState) {
                   case LoadingState.initial:
                   case LoadingState.loading:
-                    return AnnouncementShimmer();
-
+                    return const AnnouncementShimmer();
                   case LoadingState.offline:
                   case LoadingState.error:
-                       return EmptyDataWidget(
-                      message: 'Failed to load announcements. Please try again.',
+                    return EmptyDataWidget(
+                      message:
+                          'Failed to load announcements. Please try again.',
                       onRefresh: () async => await controller.refresh(),
                     );
-
                   case LoadingState.loaded:
                     return ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: controller.announcements.length,
                       itemBuilder: (context, index) {
                         final announcement = controller.announcements[index];
@@ -120,9 +140,9 @@ class AnnouncementsScreen extends StatelessWidget {
                 () => controller.isLoadingMore
                     ? Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.h),
-                        child: Center(child: CustomLoader()),
+                        child: const Center(child: CustomLoader()),
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink(),
               ),
             ],
           ),

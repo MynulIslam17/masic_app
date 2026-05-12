@@ -11,11 +11,11 @@ class AnnouncementServices {
   AnnouncementServices({required AnnouncementRepository repository})
     : _repository = repository;
 
-  Future<void> fetchAnnouncements(int currentPage, int limit, {String? search}) async {
+  Future<void> fetchAnnouncements(int currentPage, int limit, {String? search,String? type}) async {
     try {
-      await Future.wait([_repository.getAnnouncements(currentPage, limit, search: search)]);
+      await Future.wait([_repository.getAnnouncements(currentPage, limit, search: search,type: type)]);
     } on AppException {
-      if (!_repository.hasCache()) {
+      if (!_repository.hasCache(type ?? '')) {
         rethrow;
       }
     } catch (e) {
@@ -26,14 +26,15 @@ class AnnouncementServices {
   Future<List<AnnouncementModel>> fetchMoreAnnouncements(
     int offset,
     int limit,
+      String? type,
   ) async {
-    return await _repository.fetchMoreAnnouncements(offset, limit);
+    return await _repository.fetchMoreAnnouncements(offset, limit, type);
   }
 
 
 
-  List<AnnouncementModel> getCachedAnnouncements() {
-    return _repository.getCachedAnnouncements();
+  List<AnnouncementModel> getCachedAnnouncements(String type) {
+    return _repository.getCachedAnnouncements(type);
   }
 
 
@@ -47,7 +48,7 @@ class AnnouncementServices {
   }
 
 
-  bool hasCache() {
-    return _repository.hasCache();
+  bool hasCache(String type) {
+    return _repository.hasCache(type);
   }
 }

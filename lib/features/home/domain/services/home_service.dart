@@ -36,12 +36,12 @@ class HomeService {
   }
 
   bool hasCache() {
-    return _announcementRepository.hasCache() || _pollRepository.hasCache() || _bannerRepository.hasCache();
+    return _announcementRepository.hasCache('') || _pollRepository.hasCache() || _bannerRepository.hasCache();
   }
 
   HomeModel getCachedHomeData() {
     return HomeModel(
-      announcements: _announcementRepository.getCachedAnnouncements(),
+      announcements: _announcementRepository.getCachedAnnouncements(''),
       polls: _pollRepository.getCachedPolls(),
       banner: _bannerRepository.getCachedBanner(),
     );

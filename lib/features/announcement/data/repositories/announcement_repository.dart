@@ -19,7 +19,17 @@ class AnnouncementRepository {
   }) : _apiService = apiService,
        _cacheService = cacheService;
 
+  String _cacheKey(String type) {
+    switch (type) {
+      case 'my':
+        return ApiConstants.cacheMyAnnouncements;
+      default:
+        return ApiConstants.cacheAnnouncements;
+    }
+  }
+
   Future<List<AnnouncementModel>> getAnnouncements(int page, int limit,{String? search,String? type}) async {
+    final cacheKey = _cacheKey(type ?? '');
     try {
       final response = await _apiService.get(
         ApiConstants.announcements(page, limit),
@@ -31,32 +41,25 @@ class AnnouncementRepository {
           .toList();
 
 
-      if(type == 'my'){
+
         await _cacheService.put(
-          ApiConstants.cacheMyAnnouncements,
+          cacheKey,
           announcements.map((e) => e.toJson()).toList(),
         );
-      }else{
-        await _cacheService.put(
-          ApiConstants.cacheAnnouncements,
-          announcements.map((e) => e.toJson()).toList(),
-        );
-      }
-
-
       return announcements;
     } on AppException {
-      return getCachedAnnouncements();
+      return getCachedAnnouncements(cacheKey);
     } catch (e) {
       throw UnknownException(e.toString());
     }
   }
 
-  List<AnnouncementModel> getCachedAnnouncements() {
+  List<AnnouncementModel> getCachedAnnouncements(String type) {
+    final cacheKey = _cacheKey(type);
     try {
       final jsonList =
           _cacheService.get<List>(
-            ApiConstants.cacheAnnouncements,
+            cacheKey,
             defaultValue: [],
           ) ??
           [];
@@ -69,13 +72,15 @@ class AnnouncementRepository {
   Future<List<AnnouncementModel>> fetchMoreAnnouncements(
     int page,
     int limit,
+      String? type,
   ) async {
+    final cacheKey = _cacheKey(type ?? '');
     final response = await getAnnouncements(page, limit);
     if (response.isNotEmpty) {
-      final currentCached = getCachedAnnouncements();
+      final currentCached = getCachedAnnouncements(cacheKey);
       final newList = [...currentCached, ...response];
       await _cacheService.put(
-        ApiConstants.cacheAnnouncements,
+        cacheKey,
         newList.map((e) => e.toJson()).toList(),
       );
     }
@@ -100,6 +105,11 @@ class AnnouncementRepository {
     }
   }
 
+
+
+
+
+
   Future<void> updateStatus(String announcementId, String status) async {
     try {
       await _apiService.patch(ApiConstants.announcementStatus(announcementId),
@@ -112,7 +122,8 @@ class AnnouncementRepository {
     }
   }
 
-  bool hasCache() {
-    return _cacheService.containsKey(ApiConstants.cacheAnnouncements);
+  bool hasCache(String type) {
+    final cacheKey = _cacheKey(type);
+    return _cacheService.containsKey(cacheKey);
   }
 }
