@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/time_format.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
@@ -42,7 +44,50 @@ class RequestDetailsScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 12.h),
+              if (request.declineReason != null)
+                CustomContainer(
+                  marginTop: 24.h,
+                  radiusAll: 10.r,
+                  paddingHorizontal: 16.w,
+                  paddingVertical: 10.h,
+                  color: AppColors.errorColor.withValues(alpha: 0.1),
+                  width: double.infinity,
+                    border: Border(
+                      left: BorderSide(color: AppColors.errorColor, width: 5.w),
+                    ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: AppColors.errorColor,
+                        size: 20.sp,
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CustomText(text:
+                              'DECLINE REASON',
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.errorColor,
+
+                            ),
+                            SizedBox(height: 4.h),
+                            CustomText(text:
+                              request.declineReason!,
+                                fontSize: 13.sp,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              SizedBox(height: 24.h),
               _buildCard(
                 children: [
                   InfoRow(label: 'Name', value: request.user?.name ?? 'N/A'),
@@ -98,26 +143,27 @@ class RequestDetailsScreen extends StatelessWidget {
                       value: request.contact?.email ?? 'N/A',
                     ),
                     if (request.contact?.linkedin != null)
-                    InfoRow(
-                      label: 'Linkedin',
-                      valueWidget: CustomButton(
-                        height: 24.h,
-                        onPressed: () async {
-                        final Uri url = Uri.parse(
-                        request.contact?.linkedin ?? '',
-                        );
+                      InfoRow(
+                        label: 'Linkedin',
+                        valueWidget: CustomButton(
+                          height: 24.h,
+                          onPressed: () async {
+                            final Uri url = Uri.parse(
+                              request.contact?.linkedin ?? '',
+                            );
 
-                        if (await canLaunchUrl(url)) {
-                        await launchUrl(
-                        url,
-                        mode: LaunchMode.externalApplication,
-                        );
-                        }
-                        },
-                        fontSize: 12.sp,
-                        label: request.contact?.linkedin?.split('/').last ?? '',
+                            if (await canLaunchUrl(url)) {
+                              await launchUrl(
+                                url,
+                                mode: LaunchMode.externalApplication,
+                              );
+                            }
+                          },
+                          fontSize: 12.sp,
+                          label:
+                              request.contact?.linkedin?.split('/').last ?? '',
+                        ),
                       ),
-                    ),
                   ],
                 ),
 
@@ -186,7 +232,7 @@ class RequestDetailsScreen extends StatelessWidget {
                         label: 'CV',
                         valueWidget: CustomButton(
                           height: 24.h,
-                          onPressed: (){},
+                          onPressed: () {},
                           fontSize: 12.sp,
                           label: request.cvUrl?.split('/').last ?? '',
                         ),
@@ -196,7 +242,7 @@ class RequestDetailsScreen extends StatelessWidget {
                         label: 'certificate',
                         valueWidget: CustomButton(
                           height: 24.h,
-                          onPressed: (){},
+                          onPressed: () {},
                           fontSize: 12.sp,
                           label: request.certificateUrl?.split('/').last ?? '',
                         ),
@@ -228,15 +274,19 @@ class RequestDetailsScreen extends StatelessWidget {
                           context: context,
                           builder: (context) => Obx(() {
                             return CustomDialog(
-                              title: "Approve Announcements",
+                              title: "Approve Request",
                               titleColor: AppColors.primaryColor,
                               rightButtonLabel: 'Yes, Approve',
                               rightButtonBgColor: AppColors.primaryColor,
                               rightButtonLabelColor: Colors.white,
                               onTapLeftButton: () => Get.back(),
-                              onTapRightButton: () {},
+                              isLoading: controller.updateState.isLoading,
+                              onTapRightButton: () => controller.updateStatus(
+                                requestId: requestId,
+                                status: 'approved',
+                              ),
                               description:
-                                  'Are you sure want to approve your Announcements?',
+                                  'Are you sure want to approve your Request?',
                             );
                           }),
                         );
@@ -251,18 +301,8 @@ class RequestDetailsScreen extends StatelessWidget {
                       foregroundColor: AppColors.errorColor,
                       backgroundColor: AppColors.bgColor,
                       label: 'Rejected',
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => CustomDialog(
-                            title: "Reject Announcements",
-                            rightButtonLabel: 'Yes, Reject',
-                            onTapLeftButton: () => Get.back(),
-                            onTapRightButton: () {},
-                            description:
-                                'Are you sure want to reject your Announcements?',
-                          ),
-                        );
+                      onPressed: (){
+                        Get.toNamed(AppRoutes.reasonScreen,arguments: requestId);
                       },
                     ),
                   ),

@@ -31,6 +31,12 @@ class RequestServices {
     return _repository.getCachedRequests();
   }
 
+
+  Future<void> updateStatus(String requestId, String status,String? declineReason) async {
+    return await _repository.updateStatus(requestId, status,declineReason);
+  }
+
+
   bool hasCache() {
     return _repository.hasCache();
   }

@@ -45,7 +45,8 @@ class ApiConstants {
 
   /// request ──────────────────────────────────────────────
   static const String requests = '/api/v1/request';
-
+  static const String requestCreate = '/api/v1/request/create';
+  static  String requestStatus(String requestId) => '/api/v1/super-admin/requests/update/$requestId';
 
 
 

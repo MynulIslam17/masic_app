@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/exceptions/app_exceptions.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
+import 'package:flutter_task/core/helpers/toast_message_helper.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/request/data/models/request_model.dart';
 import 'package:flutter_task/features/request/domain/services/request_services.dart';
@@ -21,8 +23,11 @@ class RequestController extends GetxController {
   
   // ─── Loading States ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
+  final Rx<LoadingState> _updateState = LoadingState.initial.obs;
 
   LoadingState get loadingState => _loadingState.value;
+  LoadingState get updateState => _updateState.value;
+
 
 
   // ─── Data ────────────────────────────────────────────────────────────────────
@@ -38,6 +43,10 @@ class RequestController extends GetxController {
 
   bool get isLoadingMore => _isLoadingMore.value;
   bool get hasMore => _hasMore.value && !_isLoadingMore.value;
+
+
+  final declineReasonTEController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
   // ─── Scroll Controller ───────────────────────────────────────────────────────
   ScrollController? scrollController;
@@ -145,6 +154,23 @@ class RequestController extends GetxController {
       }
       return true;
     }());
+  }
+
+  Future<void> updateStatus({required String requestId, required String status, String? declineReason}) async {
+    if(status == 'declined'){
+      if(!formKey.currentState!.validate()) return;
+    }
+    _updateState.value = LoadingState.loading;
+    try {
+      await _service.updateStatus(requestId, status,declineReason);
+      _updateState.value = LoadingState.loaded;
+      refresh();
+      Get.back(canPop: true);
+    } on AppException catch (e) {
+      _updateState.value = LoadingState.error;
+      ToastMessageHelper.show(e.errorMessage);
+      if (kDebugMode) debugPrint('Update status error: $e');
+    }
   }
 
   @override

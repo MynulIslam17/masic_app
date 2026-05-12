@@ -19,46 +19,51 @@ class RequestScreen extends StatelessWidget {
       appBar: CustomAppBar(title: "Requested"),
       body: RefreshIndicator(
         onRefresh: controller.refresh,
-        child: Column(
-          children: [
-            Obx(() {
-              switch (controller.loadingState) {
-                case LoadingState.initial:
-                case LoadingState.loading:
-                  return RequestShimmer();
+        child: SingleChildScrollView(
+          controller: controller.scrollController,
+          physics: AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          child: Column(
+            children: [
+              Obx(() {
+                switch (controller.loadingState) {
+                  case LoadingState.initial:
+                  case LoadingState.loading:
+                    return RequestShimmer();
 
-                case LoadingState.offline:
-                case LoadingState.error:
-                  return EmptyDataWidget(
-                    message: 'Request failed to load. Please try again.',
-                    onRefresh: () async => await controller.refresh(),
-                  );
+                  case LoadingState.offline:
+                  case LoadingState.error:
+                    return EmptyDataWidget(
+                      message: 'Request failed to load. Please try again.',
+                      onRefresh: () async => await controller.refresh(),
+                    );
 
-                case LoadingState.loaded:
-                  return ListView.separated(
-                    controller: controller.scrollController,
-                    physics: BouncingScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: controller.requests.length,
-                    itemBuilder: (context, index) {
-                      final request = controller.requests[index];
-                      return RequestCardWidget(request: request);
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return SizedBox(height: 10.h);
-                    },
-                  );
-              }
-            }),
-            Obx(
-              () => controller.isLoadingMore
-                  ? Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      child: Center(child: CustomLoader()),
-                    )
-                  : SizedBox.shrink(),
-            ),
-          ],
+                  case LoadingState.loaded:
+                    return ListView.separated(
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: controller.requests.length,
+                      itemBuilder: (context, index) {
+                        final request = controller.requests[index];
+                        return RequestCardWidget(request: request);
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return SizedBox(height: 10.h);
+                      },
+                    );
+                }
+              }),
+              Obx(
+                () => controller.isLoadingMore
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                        child: Center(child: CustomLoader()),
+                      )
+                    : SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
     );

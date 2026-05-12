@@ -74,6 +74,19 @@ class RequestRepository {
     }
   }
 
+
+  Future<void> updateStatus(String requestId, String status,String? declineReason) async {
+    try {
+      await _apiService.patch(ApiConstants.requestStatus(requestId),
+        data: {'status': status, 'declineReason' : declineReason},
+      );
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheRequests);
   }
