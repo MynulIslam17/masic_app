@@ -1,6 +1,8 @@
 import 'package:flutter_task/core/exceptions/app_exceptions.dart';
+import 'package:flutter_task/features/poll/data/models/create_poll_model.dart';
 import 'package:flutter_task/features/poll/data/models/poll_details_model.dart';
 import 'package:flutter_task/features/poll/data/models/poll_model.dart';
+import 'package:flutter_task/features/poll/data/models/poll_result_model.dart';
 import 'package:flutter_task/features/poll/data/repositories/poll_repository.dart';
 
 class PollServices {
@@ -34,6 +36,11 @@ class PollServices {
     return await _repository.pollDetails(pollId);
   }
 
+  Future<PollResultModel> fetchPollResult(String pollId) async {
+    return await _repository.pollResult(pollId);
+  }
+
+
   Future<void> pollAnswer({
     required String pollId,
     String? answer,
@@ -45,6 +52,16 @@ class PollServices {
       optionId: optionId,
     );
   }
+
+  Future<void> createPoll (CreatePollBody body)async{
+    return await _repository.createPoll(body);
+  }
+
+  Future<void> deletePoll (String pollId)async{
+    return await _repository.deletePoll(pollId);
+  }
+
+
 
   bool hasCache() {
     return _repository.hasCache();

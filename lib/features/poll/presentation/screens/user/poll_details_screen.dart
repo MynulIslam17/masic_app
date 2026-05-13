@@ -10,15 +10,14 @@ import 'package:flutter_task/features/poll/presentation/widgets/option_tile.dart
 import 'package:flutter_task/features/poll/presentation/widgets/poll_simmer.dart';
 import 'package:get/get.dart';
 
-class PollScreen extends StatelessWidget {
-  const PollScreen({super.key});
+class PollDetailsScreen extends StatelessWidget {
+  const PollDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final pollId = Get.arguments as String;
     final controller = PollController.to;
     controller.fetchPollDetails(pollId);
-
     return CustomScaffold(
       appBar: CustomAppBar(title: "Polls Answers"),
       body: Obx(() {
@@ -82,7 +81,7 @@ class PollScreen extends StatelessWidget {
                         vertical: 4.h,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryColor.withOpacity(0.1),
+                        color: AppColors.primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20.r),
                       ),
                       child: Row(

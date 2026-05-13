@@ -1,6 +1,9 @@
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
-import 'package:flutter_task/features/banner/presentation/screens/user/banner_screen.dart';
+import 'package:flutter_task/features/banner/presentation/screens/admin/banner_screen.dart';
+import 'package:flutter_task/features/poll/presentation/screens/admin/poll_result_screen.dart';
+import 'package:flutter_task/features/poll/presentation/screens/comon/create_poll_screen.dart';
+import 'package:flutter_task/features/poll/presentation/screens/comon/poll_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/admin/admin_profile_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/forget/forget_screen.dart';
 import 'package:flutter_task/features/auth/presentation/pages/login/log_in_screen.dart';
@@ -9,7 +12,7 @@ import 'package:flutter_task/features/auth/presentation/pages/reset_pass/reset_p
 import 'package:flutter_task/features/auth/presentation/pages/sign_up/sign_up_screen.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
-import 'package:flutter_task/features/poll/presentation/screens/poll_screen.dart';
+import 'package:flutter_task/features/poll/presentation/screens/user/poll_details_screen.dart';
 import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_details_screen.dart';
 import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_screen.dart';
 import 'package:flutter_task/features/announcement/presentation/screens/comon/create_announcements_screen.dart';
@@ -31,6 +34,7 @@ import 'package:flutter_task/features/profile/setting/change%20password/setting_
 import 'package:flutter_task/features/profile/setting/privacy_policy_all_screen.dart';
 import 'package:flutter_task/features/profile/setting/setting_screen.dart';
 import 'package:flutter_task/features/splash/splash_screen.dart';
+import 'package:flutter_task/features/tree/presentation/screens/admin_tree_screen.dart';
 import 'package:flutter_task/features/tree/presentation/screens/tree_details_screen.dart';
 import 'package:get/get.dart';
 
@@ -116,9 +120,13 @@ abstract class AppPages {
       page: () => AdminProfileScreen(),
     ),
 
-    GetPage(name: AppRoutes.pollScreen, page: () => PollScreen()),
+    GetPage(name: AppRoutes.pollDetailsScreen, page: () => PollDetailsScreen()),
     GetPage(name: AppRoutes.reasonScreen, page: () => ReasonScreen()),
     GetPage(name: AppRoutes.bannerScreen, page: () => BannerScreen()),
+    GetPage(name: AppRoutes.pollScreen, page: () => PollScreen()),
+    GetPage(name: AppRoutes.pollResultScreen, page: () => PollResultScreen()),
+    GetPage(name: AppRoutes.createPollScreen, page: () => CreatePollScreen()),
+    GetPage(name: AppRoutes.adminTreeScreen, page: () => AdminTreeScreen()),
     GetPage(name: AppRoutes.requestDetailsScreen, page: () => RequestDetailsScreen()),
     GetPage(name: AppRoutes.treeDetailsScreen, page: () => TreeDetailsScreen()),
   ];

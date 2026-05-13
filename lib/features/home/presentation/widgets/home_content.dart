@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
@@ -143,15 +144,25 @@ class HomeContent extends StatelessWidget {
 
             if (controller.polls.isNotEmpty) ...[
               SliverToBoxAdapter(
-                child: CustomText(
-                  top: 12.h,
-                  left: 20.w,
-                  right: 20.w,
-                  bottom: 10.h,
-                  textAlign: TextAlign.start,
-                  color: AppColors.primaryColor,
-                  text: 'Poll',
-                  fontSize: 16.sp,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomText(
+                        //top: 12.h,
+                        left: 20.w,
+                        right: 20.w,
+                        //bottom: 10.h,
+                        textAlign: TextAlign.start,
+                        color: AppColors.primaryColor,
+                        text: 'Poll',
+                        fontSize: 16.sp,
+                      ),
+                    ),
+                    
+                    TextButton(onPressed: (){
+                      Get.toNamed(AppRoutes.pollScreen);
+                    }, child: CustomText(text: 'See all', color: AppColors.primaryColor))
+                  ],
                 ),
               ),
               SliverToBoxAdapter(

@@ -34,6 +34,11 @@ class BannerServices {
     return await _repository.createBanner(image);
   }
 
+  Future<void> deleteBanner(String bannerId) async {
+    return await _repository.deleteBanner(bannerId);
+  }
+
+
 
   bool hasCache() {
     return _repository.hasCache();

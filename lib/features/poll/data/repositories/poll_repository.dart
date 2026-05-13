@@ -8,8 +8,10 @@ import 'package:flutter_task/core/services/api_service.dart';
 import 'package:flutter_task/core/services/cache_service.dart';
 import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
 import 'package:flutter_task/features/announcement/data/models/create_request_model.dart';
+import 'package:flutter_task/features/poll/data/models/create_poll_model.dart';
 import 'package:flutter_task/features/poll/data/models/poll_details_model.dart';
 import 'package:flutter_task/features/poll/data/models/poll_model.dart';
+import 'package:flutter_task/features/poll/data/models/poll_result_model.dart';
 
 class PollRepository {
   final ApiService _apiService;
@@ -87,6 +89,19 @@ class PollRepository {
     }
   }
 
+  Future<PollResultModel> pollResult(String pollId) async {
+    try {
+      final response = await _apiService.get(
+        ApiConstants.pollResults(pollId),
+      );
+      return PollResultModel.fromJson(response.data['data']);
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
 
 
 
@@ -102,6 +117,32 @@ class PollRepository {
           if (optionId != null) 'optionId': optionId,
           if (answer != null) 'answer': answer,
         },
+      );
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+
+  Future<void> createPoll (CreatePollBody body)async{
+      try {
+        await _apiService.post(
+          ApiConstants.pollCreate,
+          data: body.toJson(),
+        );
+      } on AppException {
+        rethrow;
+      } catch (e) {
+        throw UnknownException(e.toString());
+      }
+  }
+
+  Future<void> deletePoll (String pollId)async{
+    try {
+      await _apiService.delete(
+        ApiConstants.pollDelete(pollId),
       );
     } on AppException {
       rethrow;

@@ -228,7 +228,7 @@ class _PollCardContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 158.h,
-      padding: EdgeInsets.all(16.r),
+      padding: EdgeInsets.all(12.r), // ← reduce padding (was 16.r)
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16.r),
@@ -236,19 +236,16 @@ class _PollCardContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Question lines
           AppShimmer.line(height: 15),
           SizedBox(height: 6.h),
           AppShimmer.line(width: 200.w, height: 15),
-          SizedBox(height: 14.h),
+          SizedBox(height: 10.h), // ← reduce (was 14.h)
 
-          // 2 option rows
           _OptionRowShimmer(width: 0.65),
           SizedBox(height: 8.h),
           _OptionRowShimmer(width: 0.45),
           const Spacer(),
 
-          // Footer: vote count + button
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -261,7 +258,6 @@ class _PollCardContent extends StatelessWidget {
     );
   }
 }
-
 class _OptionRowShimmer extends StatelessWidget {
   const _OptionRowShimmer({required this.width});
   final double width; // 0..1 fraction of available space

@@ -46,6 +46,7 @@ class RequestController extends GetxController {
 
 
   final declineReasonTEController = TextEditingController();
+  final searchController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   // ─── Scroll Controller ───────────────────────────────────────────────────────

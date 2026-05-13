@@ -56,6 +56,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/date.svg
   SvgGenImage get date => const SvgGenImage('assets/icons/date.svg');
 
+  /// File path: assets/icons/delete.svg
+  SvgGenImage get delete => const SvgGenImage('assets/icons/delete.svg');
+
   /// File path: assets/icons/education.svg
   SvgGenImage get education => const SvgGenImage('assets/icons/education.svg');
 
@@ -161,6 +164,7 @@ class $AssetsIconsGen {
     clean,
     dashboard,
     date,
+    delete,
     education,
     email,
     employment,

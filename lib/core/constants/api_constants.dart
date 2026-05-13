@@ -38,6 +38,8 @@ class ApiConstants {
   static String polls(int page, int limit) => '/api/v1/poll/?page=$page&limit=$limit';
   static String pollAns(String pollId) => '/api/v1/poll/$pollId/answer';
   static String pollDetails(String pollId) => '/api/v1/poll/$pollId/answers';
+  static String pollResults(String pollId) => '/api/v1/poll/$pollId/results';
+  static String pollDelete(String pollId) => '/api/v1/poll/$pollId/delete';
   static const String pollCreate = '/api/v1/poll/create';
 
 
@@ -54,6 +56,7 @@ class ApiConstants {
   /// banner ──────────────────────────────────────────────
   static const String banner = '/api/v1/banner';
   static const String bannerCreate = '/api/v1/banner/upload';
+  static  String bannerDelete(String bannerId) => '/api/v1/banner/$bannerId/delete';
 
 
 

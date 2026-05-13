@@ -83,6 +83,19 @@ class BannerRepository {
       throw UnknownException(e.toString());
     }
   }
+
+  Future<void> deleteBanner(String bannerId) async {
+    try {
+      await _apiService.delete(
+        ApiConstants.bannerDelete(bannerId),
+      );
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheBanner);
   }

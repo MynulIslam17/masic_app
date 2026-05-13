@@ -56,7 +56,7 @@ class HomeAnnouncementCard extends StatelessWidget {
                     height: 32.h,
                     fontSize: 12.sp,
                     onPressed: (){
-                      Get.toNamed(AppRoutes.announcementsDetailsScreen,arguments: announcement);
+                      Get.toNamed(AppRoutes.announcementsDetailsScreen,arguments: announcement.sId);
                     },label: 'View details',)
                 ],
               ),

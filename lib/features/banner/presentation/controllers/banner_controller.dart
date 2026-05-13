@@ -34,8 +34,10 @@ class BannerController extends GetxController {
 
   // ─── Loading States ────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
+  final Rx<LoadingState>  _deleteLoadingState = LoadingState.initial.obs;
 
   LoadingState get loadingState => _loadingState.value;
+  LoadingState get deleteLoadingState => _deleteLoadingState.value;
 
   final RxList<BannerModel> _banners = <BannerModel>[].obs;
 
@@ -116,6 +118,23 @@ class BannerController extends GetxController {
       _selectedImage.value = null;
       _loadData();
     } on AppException catch (e) {
+      ToastMessageHelper.show(e.errorMessage);
+      if (kDebugMode) {
+        debugPrint('Create announcement error: $e');
+      }
+    }
+  }
+
+  Future<void> deleteBanner(String bannerId) async {
+    _deleteLoadingState.value = LoadingState.loading;
+    try {
+      await _service.deleteBanner(bannerId);
+
+      _loadData();
+      _deleteLoadingState.value = LoadingState.loaded;
+      Get.back(canPop: true);
+    } on AppException catch (e) {
+      _deleteLoadingState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
       if (kDebugMode) {
         debugPrint('Create announcement error: $e');

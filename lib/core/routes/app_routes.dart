@@ -46,10 +46,15 @@ abstract class AppRoutes {
   static const String adminProfileScreen = '/admin/profile';
 
   // ─── Poll ──────────────────────────────────────────────────────────────
-  static const String pollScreen = '/home/poll';
+  static const String pollDetailsScreen = '/home/poll/details';
+  static const String pollScreen = '/home/poll/all';
+  static const String createPollScreen = '/home/poll/create';
+  static const String pollResultScreen = '/home/poll/result';
+
 
   // tree ──────────────────────────────────────────────────────────────
   static const String treeDetailsScreen = '/home/tree';
+  static const String adminTreeScreen = '/home/tree/admin';
 
   // banner ──────────────────────────────────────────────────────────────
   static const String bannerScreen = '/home/banner';

@@ -48,7 +48,7 @@ class PollCardWidget extends StatelessWidget {
             height: 38.h,
             fontSize: 12.sp,
             onPressed: () {
-              Get.toNamed(AppRoutes.pollScreen, arguments: poll.sId);
+              Get.toNamed(AppRoutes.pollDetailsScreen, arguments: poll.sId);
             },
             label: 'Answer poll',
           ),

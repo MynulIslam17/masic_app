@@ -54,14 +54,14 @@ class AdminProfileScreen extends StatelessWidget {
               icon: Assets.icons.tree.path,
               title: "Tree",
               onTap: () {
-                //  Get.toNamed(AppRoutes.languageScreen);
+                 Get.toNamed(AppRoutes.adminTreeScreen);
               },
             ),
             ProfileListTile(
               icon: Assets.icons.poll.path,
               title: "Poll",
               onTap: () {
-                // Get.toNamed(AppRoutes.announcementsScreen);
+                Get.toNamed(AppRoutes.pollScreen);
               },
             ),
             ProfileListTile(
