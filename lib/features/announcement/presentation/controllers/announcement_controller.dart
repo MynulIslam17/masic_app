@@ -177,7 +177,7 @@ class AnnouncementController extends GetxController {
   Future<void> refresh() async {
     _announcements.clear();
     _currentPage = 1;
-    _hasMore.value = true;
+   // _hasMore.value = true;
     _isLoadingMore.value = false;
     await _loadData();
   }

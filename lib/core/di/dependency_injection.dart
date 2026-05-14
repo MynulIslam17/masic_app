@@ -226,8 +226,6 @@ class DependencyInjection {
       fenix: true,
     );
 
-
-
     Get.lazyPut<DashboardRepository>(
       () => DashboardRepository(
         apiService: Get.find<ApiService>(),
