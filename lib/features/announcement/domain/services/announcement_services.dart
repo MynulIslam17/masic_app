@@ -42,6 +42,11 @@ class AnnouncementServices {
     return await _repository.updateStatus(announcementId, status);
   }
 
+  Future<void> deleteAnnouncement(String announcementId) async {
+    return await _repository.deleteAnnouncement(announcementId);
+  }
+
+
 
   Future<void> createAnnouncement(File? image, CreateRequestModel model) async {
     return await _repository.createAnnouncement(image, model);

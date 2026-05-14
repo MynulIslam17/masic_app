@@ -40,10 +40,12 @@ class AnnouncementController extends GetxController {
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _updateLoadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _createLoadingState = LoadingState.initial.obs;
+  final Rx<LoadingState> _deleteLoadingState = LoadingState.initial.obs;
 
   LoadingState get loadingState => _loadingState.value;
   LoadingState get updateLoadingState => _updateLoadingState.value;
   LoadingState get createLoadingState => _createLoadingState.value;
+  LoadingState get deleteLoadingState => _deleteLoadingState.value;
 
   final titleTEController = TextEditingController();
   final decTEController = TextEditingController();
@@ -220,6 +222,20 @@ class AnnouncementController extends GetxController {
       _updateLoadingState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
       if (kDebugMode) debugPrint('Update status error: $e');
+    }
+  }
+
+  Future<void> deleteAnnouncement(String announcementId) async {
+    _deleteLoadingState.value = LoadingState.loading;
+    try {
+      await _service.deleteAnnouncement(announcementId);
+      _deleteLoadingState.value = LoadingState.loaded;
+      refresh();
+      Get.back(canPop: true);
+    } on AppException catch (e) {
+      _deleteLoadingState.value = LoadingState.error;
+      ToastMessageHelper.show(e.errorMessage);
+      if (kDebugMode) debugPrint('Delete announcement error: $e');
     }
   }
 

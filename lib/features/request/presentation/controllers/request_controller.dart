@@ -4,7 +4,11 @@ import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/toast_message_helper.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
+import 'package:flutter_task/features/profile/data/models/user_model.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:flutter_task/features/request/data/models/create_job_model.dart';
 import 'package:flutter_task/features/request/data/models/request_model.dart';
 import 'package:flutter_task/features/request/domain/services/request_services.dart';
 import 'package:get/get.dart';
@@ -18,21 +22,23 @@ class RequestController extends GetxController {
   RequestController({
     required RequestServices service,
     required ConnectivityService connectivityService,
-  })  : _service = service,
-        _connectivityService = connectivityService;
-  
+  }) : _service = service,
+       _connectivityService = connectivityService;
+
   // ─── Loading States ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _updateState = LoadingState.initial.obs;
+  final Rx<LoadingState> _createState = LoadingState.initial.obs;
 
   LoadingState get loadingState => _loadingState.value;
+
   LoadingState get updateState => _updateState.value;
 
-
+  LoadingState get createState => _createState.value;
 
   // ─── Data ────────────────────────────────────────────────────────────────────
   final RxList<RequestModel> _requests = <RequestModel>[].obs;
-  
+
   List<RequestModel> get requests => _requests;
 
   // ─── Pagination ──────────────────────────────────────────────────────────────
@@ -42,12 +48,14 @@ class RequestController extends GetxController {
   final RxBool _hasMore = true.obs;
 
   bool get isLoadingMore => _isLoadingMore.value;
+
   bool get hasMore => _hasMore.value && !_isLoadingMore.value;
 
-
   final declineReasonTEController = TextEditingController();
+  final jobSpecTEController = TextEditingController();
   final searchController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  final createFormKey = GlobalKey<FormState>();
 
   // ─── Scroll Controller ───────────────────────────────────────────────────────
   ScrollController? scrollController;
@@ -157,13 +165,17 @@ class RequestController extends GetxController {
     }());
   }
 
-  Future<void> updateStatus({required String requestId, required String status, String? declineReason}) async {
-    if(status == 'declined'){
-      if(!formKey.currentState!.validate()) return;
+  Future<void> updateStatus({
+    required String requestId,
+    required String status,
+    String? declineReason,
+  }) async {
+    if (status == 'declined') {
+      if (!formKey.currentState!.validate()) return;
     }
     _updateState.value = LoadingState.loading;
     try {
-      await _service.updateStatus(requestId, status,declineReason);
+      await _service.updateStatus(requestId, status, declineReason);
       _updateState.value = LoadingState.loaded;
       refresh();
       Get.back(canPop: true);
@@ -174,8 +186,71 @@ class RequestController extends GetxController {
     }
   }
 
+  Future<void> createRequest() async {
+    final user = ProfileController.to.userData;
+    if (user == null ||
+        user.contact == null ||
+        user.educationHistory == null ||
+        user.experience == null) {
+      ToastMessageHelper.show('Please fill all the required fields');
+      Get.toNamed(AppRoutes.profileInformationScreen);
+      return;
+    }
+    if (!createFormKey.currentState!.validate()) return;
+    try {
+      _createState.value = LoadingState.loading;
+      await _service.createRequest(
+        CreateJobModel(
+          user: user.sId,
+          type: 'job',
+          bio: user.bio,
+          jobSpec: jobSpecTEController.text.trim(),
+          contact: UserContact(
+            phone: user.contact?.phone,
+            email: user.email,
+            linkedin: user.contact?.linkedin,
+            address: user.contact?.address,
+          ),
+          education: user.educationHistory
+              ?.map(
+                (e) => EducationHistory(
+                  school: e.school,
+                  degree: e.degree,
+                  major: e.major,
+                  from: e.from,
+                  to: e.to,
+                  isCurrent: e.isCurrent,
+                ),
+              )
+              .toList(),
+          experience: user.experience
+              ?.map(
+                (e) => UserExperience(
+                  company: e.company,
+                  position: e.position,
+                  from: e.from,
+                  to: e.to,
+                  isCurrent: e.isCurrent,
+                ),
+              )
+              .toList(),
+          cvUrl: user.cvUrl,
+        ),
+      );
+      _createState.value = LoadingState.loaded;
+      Get.back(canPop: true);
+      Get.back(canPop: true);
+      ToastMessageHelper.show('Request sent, Please wait for admin approval');
+    } catch (e) {
+      _createState.value = LoadingState.error;
+      ToastMessageHelper.show(e.errorMessage);
+      if (kDebugMode) debugPrint('Create request error: $e');
+    }
+  }
+
   @override
   Future<void> refresh() async => _loadData();
+
   @override
   void dispose() {
     scrollController?.removeListener(_onScroll);

@@ -29,6 +29,7 @@ import 'package:flutter_task/features/profile/presentation/screens/user/support_
 import 'package:flutter_task/features/request/presentation/screens/comon/reason_screen.dart';
 import 'package:flutter_task/features/request/presentation/screens/comon/request_details_screen.dart';
 import 'package:flutter_task/features/request/presentation/screens/comon/request_screen.dart';
+import 'package:flutter_task/features/request/presentation/screens/user/job_spec_screen.dart';
 import 'package:flutter_task/features/translation/presentation/language_screen.dart';
 import 'package:flutter_task/features/profile/setting/change%20password/setting_change_password.dart';
 import 'package:flutter_task/features/profile/setting/privacy_policy_all_screen.dart';
@@ -125,6 +126,7 @@ abstract class AppPages {
     GetPage(name: AppRoutes.bannerScreen, page: () => BannerScreen()),
     GetPage(name: AppRoutes.pollScreen, page: () => PollScreen()),
     GetPage(name: AppRoutes.pollResultScreen, page: () => PollResultScreen()),
+    GetPage(name: AppRoutes.jobSpecScreen, page: () => JobSpecScreen()),
     GetPage(name: AppRoutes.createPollScreen, page: () => CreatePollScreen()),
     GetPage(name: AppRoutes.adminTreeScreen, page: () => AdminTreeScreen()),
     GetPage(name: AppRoutes.requestDetailsScreen, page: () => RequestDetailsScreen()),

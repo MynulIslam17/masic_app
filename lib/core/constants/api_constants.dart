@@ -30,6 +30,7 @@ class ApiConstants {
   static String announcements(int page, int limit) => '/api/v1/announcement/all?page=$page&limit=$limit';
   static String announcementCreate = '/api/v1/announcement/create';
   static String announcementStatus(String announcementId) => '/api/v1/announcement/$announcementId';
+  static String announcementDelete(String announcementId) => '/api/v1/announcement/$announcementId/delete';
 
 
 

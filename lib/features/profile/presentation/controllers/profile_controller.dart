@@ -311,7 +311,7 @@ class ProfileController extends GetxController {
       }
 
 // ── Experience list ───────────────────────────────────────────────────
-      final currentExperience = List<Experience>.from(
+      final currentExperience = List<UserExperience>.from(
         user.experience ?? [],
       );
 
@@ -320,7 +320,7 @@ class ProfileController extends GetxController {
               positionController.text.trim().isNotEmpty;
 
       if (hasExperienceData) {
-        final newExp = Experience(
+        final newExp = UserExperience(
           company: jobnameController.text.trim(),
           position: positionController.text.trim(),
           isCurrent: _isJobOngoings.value,
@@ -368,7 +368,7 @@ class ProfileController extends GetxController {
           spouseName: user.spouseName,
           linkedinLink: user.linkedinLink,
           bio: bioController.text.trim(),
-          contact: Contact(
+          contact: UserContact(
             phone: numberController.text.trim(),
             linkedin: linkedinController.text.trim(),
           ),
@@ -450,7 +450,7 @@ class ProfileController extends GetxController {
   }
 
   // ─── Job Helpers ───────────────────────────────────────────────────────────
-  void prepareJobForEdit(Experience job, int index) {
+  void prepareJobForEdit(UserExperience job, int index) {
     _editingExperienceIndex = index;
     jobnameController.text = job.company ?? '';
     positionController.text = job.position ?? '';

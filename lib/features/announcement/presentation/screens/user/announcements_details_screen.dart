@@ -126,35 +126,29 @@ class AnnouncementsDetailsScreen extends StatelessWidget {
               );
             }
 
-            if (isMe && status == 'pending') {
-              return Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(onPressed: () {}, label: 'Edit'),
-                  ),
-                  SizedBox(width: 12.w),
-                  Expanded(
-                    child: CustomButton(
-                      bordersColor: AppColors.errorColor,
-                      foregroundColor: AppColors.errorColor,
-                      backgroundColor: AppColors.bgColor,
-                      label: 'Delete',
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => CustomDialog(
-                            title: "Delete Announcements",
-                            rightButtonLabel: 'Yes, Delete',
-                            onTapLeftButton: () => Get.back(),
-                            onTapRightButton: () {},
-                            description:
-                            'Are you sure want to delete your Announcements?',
-                          ),
+            if (isMe) {
+              return CustomButton(
+                bordersColor: AppColors.errorColor,
+                foregroundColor: AppColors.errorColor,
+                backgroundColor: AppColors.bgColor,
+                label: 'Delete',
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Obx(() {
+                        return CustomDialog(
+                          title: "Delete Announcements",
+                          rightButtonLabel: 'Yes, Delete',
+                          onTapLeftButton: () => Get.back(),
+                          isLoading: controller.deleteLoadingState.isLoading,
+                          onTapRightButton: () => controller.deleteAnnouncement(announcementId),
+                          description:
+                          'Are you sure want to delete your Announcements?',
                         );
-                      },
+                      }
                     ),
-                  ),
-                ],
+                  );
+                },
               );
             }
 

@@ -121,15 +121,9 @@ class HomeContent extends StatelessWidget {
                             actions: [
                               CustomButton(
                                 label: 'Request by profile data',
-                                onPressed: () => Get.back(),
-                              ),
-                              SizedBox(height: 10.h),
-                              CustomButton(
-                                backgroundColor: Colors.transparent,
-                                bordersColor: AppColors.primaryColor,
-                                foregroundColor: AppColors.primaryColor,
-                                label: 'Request manually',
-                                onPressed: () => Get.back(),
+                                onPressed: () {
+                                  Get.toNamed(AppRoutes.jobSpecScreen);
+                                },
                               ),
                             ],
                           ),

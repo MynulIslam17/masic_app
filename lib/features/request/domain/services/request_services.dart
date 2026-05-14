@@ -2,6 +2,7 @@ import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/features/poll/data/models/poll_details_model.dart';
 import 'package:flutter_task/features/poll/data/models/poll_model.dart';
 import 'package:flutter_task/features/poll/data/repositories/poll_repository.dart';
+import 'package:flutter_task/features/request/data/models/create_job_model.dart';
 import 'package:flutter_task/features/request/data/models/request_model.dart';
 import 'package:flutter_task/features/request/data/repositories/request_repository.dart';
 
@@ -35,6 +36,11 @@ class RequestServices {
   Future<void> updateStatus(String requestId, String status,String? declineReason) async {
     return await _repository.updateStatus(requestId, status,declineReason);
   }
+
+  Future<void> createRequest(CreateJobModel createRequestModel) async {
+    return await _repository.createRequest(createRequestModel);
+  }
+
 
 
   bool hasCache() {

@@ -122,6 +122,16 @@ class AnnouncementRepository {
     }
   }
 
+  Future<void> deleteAnnouncement(String announcementId) async {
+    try {
+      await _apiService.delete(ApiConstants.announcementStatus(announcementId));
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
   bool hasCache(String type) {
     final cacheKey = _cacheKey(type);
     return _cacheService.containsKey(cacheKey);

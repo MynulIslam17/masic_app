@@ -8,6 +8,7 @@ import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/core/services/api_service.dart';
 import 'package:flutter_task/core/services/cache_service.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
+import 'package:flutter_task/features/request/data/models/create_job_model.dart';
 import 'package:flutter_task/features/request/data/models/request_model.dart';
 
 class RequestRepository {
@@ -87,6 +88,23 @@ class RequestRepository {
     }
   }
 
+
+  Future<void> createRequest(CreateJobModel createRequestModel) async {
+    try {
+      final formData = {
+        "data": jsonEncode(createRequestModel.toJson()),
+      };
+
+      await _apiService.post(
+        ApiConstants.requestCreate,
+        data: formData,
+      );
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheRequests);
   }

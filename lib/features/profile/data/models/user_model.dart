@@ -1,5 +1,5 @@
 class UserModel {
-  Contact? contact;
+  UserContact? contact;
   List<String>? certificateUrl;
   String? sId;
   String? email;
@@ -38,7 +38,7 @@ class UserModel {
   String? cvUrl;
   String? phone;
   List<EducationHistory>? educationHistory;
-  List<Experience>? experience;
+  List<UserExperience>? experience;
 
   UserModel({
     this.contact,
@@ -85,13 +85,13 @@ class UserModel {
 
   UserModel.fromJson(Map<String, dynamic> json) {
     contact = json['contact'] != null
-        ? Contact.fromJson(json['contact'])
+        ? UserContact.fromJson(json['contact'])
         : null;
 
     if (json['certificateUrl'] is List) {
       certificateUrl = List<String>.from(json['certificateUrl']);
     } else if (json['certificateUrl'] is String &&
-        json['certificateUrl'].isNotEmpty) {
+        json['certificateUrl'].toString().isNotEmpty) {
       certificateUrl = [json['certificateUrl']];
     }
 
@@ -138,142 +138,183 @@ class UserModel {
         educationHistory!.add(EducationHistory.fromJson(v));
       });
     }
+
     if (json['experience'] != null) {
-      experience = <Experience>[];
+      experience = <UserExperience>[];
       json['experience'].forEach((v) {
-        experience!.add(Experience.fromJson(v));
+        experience!.add(UserExperience.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    if (contact != null) data['contact'] = contact!.toJson();
-    if (certificateUrl != null) data['certificateUrl'] = certificateUrl;
-    data['_id'] = sId;
-    data['email'] = email;
-    data['name'] = name;
-    data['role'] = role;
-    data['country'] = country;
-    data['countryCode'] = countryCode;
-    data['motherTree'] = motherTree;
-    data['linkedMember'] = linkedMember;
-    data['treeJoinStatus'] = treeJoinStatus;
-    data['adminScope'] = adminScope;
-    data['adminGrantedBy'] = adminGrantedBy;
-    data['isActive'] = isActive;
-    data['isVerified'] = isVerified;
-    data['isDeleted'] = isDeleted;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    data['__v'] = iV;
-    data['address'] = address;
-    data['age'] = age;
-    data['city'] = city;
-    data['dateOfBirth'] = dateOfBirth;
-    data['district'] = district;
-    data['education'] = education;
-    data['educationLevel'] = educationLevel;
-    data['employmentStatus'] = employmentStatus;
-    data['fieldOfWork'] = fieldOfWork;
-    data['gender'] = gender;
-    data['linkedinLink'] = linkedinLink;
-    data['region'] = region;
-    data['spouseName'] = spouseName;
-    data['spousePhone'] = spousePhone;
-    data['universityName'] = universityName;
-    data['profileImage'] = profileImage;
-    data['bio'] = bio;
-    data['cvUrl'] = cvUrl;
-    data['phone'] = phone;
-    if (educationHistory != null) {
-      data['educationHistory'] = educationHistory!
-          .map((v) => v.toJson())
-          .toList();
+
+    void addIfNotNull(String key, dynamic value) {
+      if (value != null) {
+        if (value is String && value.trim().isEmpty) return;
+        if (value is List && value.isEmpty) return;
+        data[key] = value;
+      }
     }
-    if (experience != null) {
-      data['experience'] = experience!.map((v) => v.toJson()).toList();
+
+    addIfNotNull('contact', contact?.toJson());
+    addIfNotNull('certificateUrl', certificateUrl);
+
+    addIfNotNull('_id', sId);
+    addIfNotNull('email', email);
+    addIfNotNull('name', name);
+    addIfNotNull('role', role);
+    addIfNotNull('country', country);
+    addIfNotNull('countryCode', countryCode);
+    addIfNotNull('motherTree', motherTree);
+    addIfNotNull('linkedMember', linkedMember);
+    addIfNotNull('treeJoinStatus', treeJoinStatus);
+    addIfNotNull('adminScope', adminScope);
+    addIfNotNull('adminGrantedBy', adminGrantedBy);
+
+    addIfNotNull('isActive', isActive);
+    addIfNotNull('isVerified', isVerified);
+    addIfNotNull('isDeleted', isDeleted);
+
+    addIfNotNull('createdAt', createdAt);
+    addIfNotNull('updatedAt', updatedAt);
+    addIfNotNull('__v', iV);
+
+    addIfNotNull('address', address);
+    addIfNotNull('age', age);
+    addIfNotNull('city', city);
+    addIfNotNull('dateOfBirth', dateOfBirth);
+    addIfNotNull('district', district);
+    addIfNotNull('education', education);
+    addIfNotNull('educationLevel', educationLevel);
+    addIfNotNull('employmentStatus', employmentStatus);
+    addIfNotNull('fieldOfWork', fieldOfWork);
+    addIfNotNull('gender', gender);
+    addIfNotNull('linkedinLink', linkedinLink);
+    addIfNotNull('region', region);
+    addIfNotNull('spouseName', spouseName);
+    addIfNotNull('spousePhone', spousePhone);
+    addIfNotNull('universityName', universityName);
+    addIfNotNull('profileImage', profileImage);
+    addIfNotNull('bio', bio);
+    addIfNotNull('cvUrl', cvUrl);
+    addIfNotNull('phone', phone);
+
+    if (educationHistory != null && educationHistory!.isNotEmpty) {
+      data['educationHistory'] =
+          educationHistory!.map((v) => v.toJson()).toList();
     }
+
+    if (experience != null && experience!.isNotEmpty) {
+      data['experience'] =
+          experience!.map((v) => v.toJson()).toList();
+    }
+
     return data;
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      "name": name,
-      "phone": phone,
-      "profileImage": profileImage,
-      "cvUrl": cvUrl,
-      "certificateUrl": certificateUrl ?? [],
-      "bio": bio,
+    final Map<String, dynamic> data = {};
+
+    void addIfNotNull(String key, dynamic value) {
+      if (value != null) {
+        if (value is String && value.trim().isEmpty) return;
+        if (value is List && value.isEmpty) return;
+        data[key] = value;
+      }
+    }
+
+    addIfNotNull("name", name);
+    addIfNotNull("phone", phone);
+    addIfNotNull("profileImage", profileImage);
+    addIfNotNull("cvUrl", cvUrl);
+    addIfNotNull("certificateUrl", certificateUrl);
+    addIfNotNull("bio", bio);
+    addIfNotNull("address", address);
+    addIfNotNull("country", country);
+    addIfNotNull("countryCode", countryCode);
+    addIfNotNull("region", region);
+    addIfNotNull("city", city);
+    addIfNotNull("district", district);
+    addIfNotNull("dateOfBirth", dateOfBirth);
+    addIfNotNull("age", age);
+    addIfNotNull("gender", gender);
+    addIfNotNull("employmentStatus", employmentStatus);
+    addIfNotNull("education", education);
+    addIfNotNull("educationLevel", educationLevel);
+    addIfNotNull("universityName", universityName);
+    addIfNotNull("fieldOfWork", fieldOfWork);
+    addIfNotNull("spouseName", spouseName);
+    addIfNotNull("spousePhone", spousePhone);
+    addIfNotNull("linkedinLink", linkedinLink);
+
+    final contactMap = {
+      "phone": contact?.phone ?? phone,
+      "linkedin": contact?.linkedin ?? linkedinLink,
       "address": address,
-      "country": country,
-      "countryCode": countryCode,
-      "region": region,
-      "city": city,
-      "district": district,
-      "dateOfBirth": dateOfBirth,
-      "age": age,
-      "gender": gender,
-      "employmentStatus": employmentStatus,
-      "education": education,
-      "educationLevel": educationLevel,
-      "universityName": universityName,
-      "fieldOfWork": fieldOfWork,
-      "spouseName": spouseName,
-      "spousePhone": spousePhone,
-      "linkedinLink": linkedinLink,
-
-      // Contact
-      "contact": {
-        "phone": contact?.phone ?? phone,
-        "linkedin": contact?.linkedin ?? linkedinLink,
-        "address": address,
-      },
-
-      // Education History
-      "educationHistory": educationHistory != null
-          ? educationHistory!.map((e) => {
-        "school": e.school,
-        "degree": e.degree,
-        "major": e.major,
-        "from": e.from,
-        "to": e.to,
-        "isCurrent": e.isCurrent,
-      }).toList()
-          : [],
-
-      // Experience
-      "experience": experience != null
-          ? experience!.map((e) => {
-        "company": e.company,
-        "position": e.position,
-        "from": e.from,
-        "to": e.to,
-        "isCurrent": e.isCurrent,
-      }).toList()
-          : [],
     };
-  }}
 
-class Contact {
+    contactMap.removeWhere(
+          (key, value) =>
+      value == null ||
+          (value.trim().isEmpty),
+    );
+
+    if (contactMap.isNotEmpty) {
+      data["contact"] = contactMap;
+    }
+
+    if (educationHistory != null && educationHistory!.isNotEmpty) {
+      data["educationHistory"] = educationHistory!
+          .map((e) => e.toJson())
+          .toList();
+    }
+
+    if (experience != null && experience!.isNotEmpty) {
+      data["experience"] =
+          experience!.map((e) => e.toJson()).toList();
+    }
+
+    return data;
+  }
+}
+
+class UserContact {
   String? phone;
+  String? email;
   String? linkedin;
   String? address;
 
+  UserContact({
+    this.phone,
+    this.email,
+    this.linkedin,
+    this.address,
+  });
 
-  Contact({this.phone, this.linkedin, this.address});
-
-  Contact.fromJson(Map<String, dynamic> json) {
+  UserContact.fromJson(Map<String, dynamic> json) {
     phone = json['phone'];
+    email = json['email'];
     linkedin = json['linkedin'];
     address = json['address'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['phone'] = phone;
-    data['linkedin'] = linkedin;
-    data['address'] = address;
+
+    void addIfNotNull(String key, dynamic value) {
+      if (value != null) {
+        if (value is String && value.trim().isEmpty) return;
+        data[key] = value;
+      }
+    }
+
+    addIfNotNull('phone', phone);
+    addIfNotNull('email', email);
+    addIfNotNull('linkedin', linkedin);
+    addIfNotNull('address', address);
+
     return data;
   }
 }
@@ -309,18 +350,27 @@ class EducationHistory {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['school'] = school;
-    data['degree'] = degree;
-    data['major'] = major;
-    data['from'] = from;
-    data['to'] = to;
-    data['isCurrent'] = isCurrent;
-    data['_id'] = sId;
+
+    void addIfNotNull(String key, dynamic value) {
+      if (value != null) {
+        if (value is String && value.trim().isEmpty) return;
+        data[key] = value;
+      }
+    }
+
+    addIfNotNull('school', school);
+    addIfNotNull('degree', degree);
+    addIfNotNull('major', major);
+    addIfNotNull('from', from);
+    addIfNotNull('to', to);
+    addIfNotNull('isCurrent', isCurrent);
+    addIfNotNull('_id', sId);
+
     return data;
   }
 }
 
-class Experience {
+class UserExperience {
   String? company;
   String? position;
   String? from;
@@ -328,7 +378,7 @@ class Experience {
   bool? isCurrent;
   String? sId;
 
-  Experience({
+  UserExperience({
     this.company,
     this.position,
     this.from,
@@ -337,7 +387,7 @@ class Experience {
     this.sId,
   });
 
-  Experience.fromJson(Map<String, dynamic> json) {
+  UserExperience.fromJson(Map<String, dynamic> json) {
     company = json['company'];
     position = json['position'];
     from = json['from'];
@@ -348,12 +398,21 @@ class Experience {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
-    data['company'] = company;
-    data['position'] = position;
-    data['from'] = from;
-    data['to'] = to;
-    data['isCurrent'] = isCurrent;
-    data['_id'] = sId;
+
+    void addIfNotNull(String key, dynamic value) {
+      if (value != null) {
+        if (value is String && value.trim().isEmpty) return;
+        data[key] = value;
+      }
+    }
+
+    addIfNotNull('company', company);
+    addIfNotNull('position', position);
+    addIfNotNull('from', from);
+    addIfNotNull('to', to);
+    addIfNotNull('isCurrent', isCurrent);
+    addIfNotNull('_id', sId);
+
     return data;
   }
 }
