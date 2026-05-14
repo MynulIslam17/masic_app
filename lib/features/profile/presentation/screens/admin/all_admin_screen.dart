@@ -32,27 +32,7 @@ class _AllAdminScreenState extends State<AllAdminScreen> {
             controller.setRoleFilter('');
             Get.back(canPop: true);
           },
-          title: 'Admins',
-          actions: [
-            IconButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: CustomText(text: 'Filter'),
-                    content: Column(children: []),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Close'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              icon: Assets.icons.filter.svg(),
-            ),
-          ],
+          title: 'Admin',
         ),
         body: RefreshIndicator(
           onRefresh: () => controller.refresh(),

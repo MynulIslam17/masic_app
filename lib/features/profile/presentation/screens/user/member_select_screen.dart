@@ -5,6 +5,7 @@ import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/profile/presentation/widgets/filter_dialog.dart';
 import 'package:flutter_task/features/profile/presentation/widgets/member_card.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
@@ -23,16 +24,7 @@ class MemberSelectScreen extends StatelessWidget {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
-                  title: CustomText(text: 'Filter'),
-                  content: Column(children: []),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: Text('Close'),
-                    ),
-                  ],
-                ),
+                builder: (context) => FilterDialog(),
               );
             },
             icon: Assets.icons.filter.svg(),

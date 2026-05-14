@@ -69,7 +69,7 @@ class ProfileRepository {
     String? employmentStatus,
     String? educationLevel,
     String? searchTerm,
-    int? age,
+    String? age,
     String? role,
   }) async {
     final cacheKey = _cacheKey(role ?? '');
@@ -85,7 +85,7 @@ class ProfileRepository {
           'employmentStatus': employmentStatus,
         if (educationLevel != null && educationLevel.isNotEmpty)
           'educationLevel': educationLevel,
-        if (age != null && age != 0) 'age': age,
+        if (age != null && age.isNotEmpty) 'age': age,
         if (role != null && role.isNotEmpty) 'role': role,
       };
       final response = await _apiService.get(
@@ -127,7 +127,7 @@ class ProfileRepository {
     String? employmentStatus,
     String? educationLevel,
     String? searchTerm,
-    int? age,
+    String? age,
     String? role,
   }) async {
     final cacheKey = _cacheKey(role ?? '');

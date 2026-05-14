@@ -17,7 +17,7 @@ class ProfileService {
     String? employmentStatus,
     String? educationLevel,
     String? searchTerm,
-    int? age,
+    String? age,
     String? role,
   }) async {
     try {
@@ -26,11 +26,11 @@ class ProfileService {
         _repository.fetchUsers(
           page: page,
           limit: limit,
-          gender: gender,
-          employmentStatus: employmentStatus,
-          educationLevel: educationLevel,
+          gender: gender?.toLowerCase(),
+          employmentStatus: employmentStatus?.toLowerCase(),
+          educationLevel: educationLevel?.toLowerCase(),
           searchTerm: searchTerm,
-          age: age,
+          age: age?.toLowerCase(),
           role: role,
         ),
       ]);
@@ -50,17 +50,17 @@ class ProfileService {
     String? employmentStatus,
     String? educationLevel,
     String? searchTerm,
-    int? age,
+    String? age,
     String? role,
   }) async {
     return await _repository.fetchUsersMore(
       page: page,
       limit: limit,
-      gender: gender,
-      employmentStatus: employmentStatus,
-      educationLevel: educationLevel,
+      gender: gender?.toLowerCase(),
+      employmentStatus: employmentStatus?.toLowerCase(),
+      educationLevel: educationLevel?.toLowerCase(),
       searchTerm: searchTerm,
-      age: age,
+      age: age?.toLowerCase(),
       role: role,
     );
   }

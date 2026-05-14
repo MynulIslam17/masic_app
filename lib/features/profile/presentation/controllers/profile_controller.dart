@@ -63,7 +63,7 @@ class ProfileController extends GetxController {
   final RxString _genderFilter = ''.obs;
   final RxString _employmentFilter = ''.obs;
   final RxString _educationFilter = ''.obs;
-  final RxInt _ageFilter = 0.obs;
+  final RxString _ageFilter = ''.obs;
   final RxBool _isJobOngoings = false.obs;
   final RxBool _isEducationOngoings = false.obs;
   final RxString _roleFilter = ''.obs;
@@ -76,7 +76,7 @@ class ProfileController extends GetxController {
 
   String get educationFilter => _educationFilter.value;
 
-  int get ageFilter => _ageFilter.value;
+  String get ageFilter => _ageFilter.value;
 
   bool get isJobOngoings => _isJobOngoings.value;
 
@@ -183,6 +183,11 @@ class ProfileController extends GetxController {
     }
   }
 
+
+  void setGenderFilter(String value) => _genderFilter.value = value;
+  void setAgeFilter(String value) => _ageFilter.value = value;
+  void setEmploymentFilter(String value) => _employmentFilter.value = value;
+  void setEducationFilter(String value) => _educationFilter.value = value;
 
 
   bool isUserSelected(String userId) => _selectedUserIds.contains(userId);
@@ -451,6 +456,14 @@ class ProfileController extends GetxController {
     _userData.value = null;
     _selectedDate = null;
     await loadData();
+  }
+
+  void clearAllFilters() {
+    _genderFilter.value = '';
+    _employmentFilter.value = '';
+    _educationFilter.value = '';
+    _ageFilter.value = '';
+    retry();
   }
 
 
