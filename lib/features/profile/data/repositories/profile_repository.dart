@@ -19,6 +19,15 @@ class ProfileRepository {
   }) : _apiService = apiService,
        _cacheService = cacheService;
 
+  String _cacheKey(String role) {
+    switch (role) {
+      case 'admin':
+        return ApiConstants.cacheAdminProfile;
+      default:
+        return ApiConstants.cacheUsersProfile;
+    }
+  }
+
   // fetch user profile
   Future<UserModel> fetchUserProfile() async {
     try {
@@ -61,7 +70,10 @@ class ProfileRepository {
     String? educationLevel,
     String? searchTerm,
     int? age,
+    String? role,
   }) async {
+    final cacheKey = _cacheKey(role ?? '');
+
     try {
       final queryParameters = <String, dynamic>{
         'page': page,
@@ -74,6 +86,7 @@ class ProfileRepository {
         if (educationLevel != null && educationLevel.isNotEmpty)
           'educationLevel': educationLevel,
         if (age != null && age != 0) 'age': age,
+        if (role != null && role.isNotEmpty) 'role': role,
       };
       final response = await _apiService.get(
         ApiConstants.usersProfile,
@@ -83,13 +96,12 @@ class ProfileRepository {
       final users = (response.data['data'] as List)
           .map((e) => UserModel.fromJson(e))
           .toList();
-      await _cacheService.put(
-        ApiConstants.cacheUsersProfile,
-        users.map((e) => e.toJson()).toList(),
-      );
+
+      await _cacheService.put(cacheKey, users.map((e) => e.toJson()).toList());
+
       return users;
     } on AppException {
-      final cached = getCachedUsers();
+      final cached = getCachedUsers(cacheKey);
       if (cached.isNotEmpty) return cached;
       rethrow;
     } catch (e) {
@@ -97,21 +109,55 @@ class ProfileRepository {
     }
   }
 
-  List<UserModel> getCachedUsers() {
+  List<UserModel> getCachedUsers(String role) {
+    final cacheKey = _cacheKey(role);
     try {
       final jsonList =
-          _cacheService.get<List>(
-            ApiConstants.cacheUsersProfile,
-            defaultValue: [],
-          ) ??
-          [];
+          _cacheService.get<List>(cacheKey, defaultValue: []) ?? [];
       return jsonList.map((json) => UserModel.fromJson(json)).toList();
     } catch (e) {
       return [];
     }
   }
 
-  Future<UserModel> updateUserProfile(UserModel user, {File? image,File? cv,File? certificate}) async {
+  Future<List<UserModel>> fetchUsersMore({
+    int page = 1,
+    int limit = 10,
+    String? gender,
+    String? employmentStatus,
+    String? educationLevel,
+    String? searchTerm,
+    int? age,
+    String? role,
+  }) async {
+    final cacheKey = _cacheKey(role ?? '');
+    final response = await fetchUsers(
+      page: page,
+      limit: limit,
+      gender: gender,
+      employmentStatus: employmentStatus,
+      educationLevel: educationLevel,
+      searchTerm: searchTerm,
+      age: age,
+      role: role,
+    );
+    if (response.isNotEmpty) {
+      final currentCached = getCachedUsers(cacheKey);
+      final newList = [...currentCached, ...response];
+      await _cacheService.put(
+        _cacheKey(role ?? ''),
+        newList.map((e) => e.toJson()).toList(),
+      );
+    }
+    return response;
+  }
+
+  Future<UserModel> updateUserProfile(
+    UserModel user, {
+    File? image,
+    File? cv,
+    File? certificate,
+  }) async {
     try {
       final bodyRequest = {'data': jsonEncode(user.toMap())};
 
@@ -146,6 +192,19 @@ class ProfileRepository {
         updatedUser.toJson(),
       );
       return updatedUser;
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+  Future<void> updateRole(String userId, String role) async {
+    try {
+      await _apiService.patch(
+        ApiConstants.updateRole(userId),
+        data: {'role': role},
+      );
     } on AppException {
       rethrow;
     } catch (e) {

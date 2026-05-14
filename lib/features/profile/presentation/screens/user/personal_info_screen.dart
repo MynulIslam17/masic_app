@@ -7,18 +7,12 @@ import 'package:flutter_task/features/profile/presentation/controllers/profile_c
 import 'package:flutter_task/features/profile/presentation/widgets/Item_card.dart';
 import 'package:get/get.dart';
 
-class PersonalInfoScreen extends StatefulWidget {
+class PersonalInfoScreen extends StatelessWidget {
   const PersonalInfoScreen({super.key});
 
   @override
-  State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
-}
-
-class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
-  final controller = ProfileController.to;
-
-  @override
   Widget build(BuildContext context) {
+    final controller = ProfileController.to;
     return CustomScaffold(
       paddingSide: 24.w,
       appBar: CustomAppBar(title: 'Personal information'),

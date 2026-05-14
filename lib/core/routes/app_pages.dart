@@ -13,9 +13,12 @@ import 'package:flutter_task/features/auth/presentation/pages/sign_up/sign_up_sc
 import 'package:flutter_task/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/poll/presentation/screens/user/poll_details_screen.dart';
-import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_details_screen.dart';
-import 'package:flutter_task/features/announcement/presentation/screens/user/announcements_screen.dart';
+import 'package:flutter_task/features/announcement/presentation/screens/comon/announcements_details_screen.dart';
+import 'package:flutter_task/features/announcement/presentation/screens/comon/announcements_screen.dart';
 import 'package:flutter_task/features/announcement/presentation/screens/comon/create_announcements_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/admin/all_admin_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/admin/all_user_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/admin/profile_details_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/add_bio_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/add_contact_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/add_cv_screen.dart';
@@ -93,6 +96,10 @@ abstract class AppPages {
     ),
     GetPage(name: AppRoutes.editProfileScreen, page: () => EditProfileScreen()),
     GetPage(
+      name: AppRoutes.profileDetailsScreen,
+      page: () => ProfileDetailsScreen(),
+    ),
+    GetPage(
       name: AppRoutes.profileInformationScreen,
       page: () => ProfileInformationScreen(),
     ),
@@ -129,8 +136,13 @@ abstract class AppPages {
     GetPage(name: AppRoutes.jobSpecScreen, page: () => JobSpecScreen()),
     GetPage(name: AppRoutes.createPollScreen, page: () => CreatePollScreen()),
     GetPage(name: AppRoutes.adminTreeScreen, page: () => AdminTreeScreen()),
-    GetPage(name: AppRoutes.requestDetailsScreen, page: () => RequestDetailsScreen()),
+    GetPage(
+      name: AppRoutes.requestDetailsScreen,
+      page: () => RequestDetailsScreen(),
+    ),
     GetPage(name: AppRoutes.treeDetailsScreen, page: () => TreeDetailsScreen()),
+    GetPage(name: AppRoutes.allUserScreen, page: () => AllUserScreen()),
+    GetPage(name: AppRoutes.allAdminScreen, page: () => AllAdminScreen()),
   ];
 }
 

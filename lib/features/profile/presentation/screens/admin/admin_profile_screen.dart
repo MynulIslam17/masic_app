@@ -5,6 +5,7 @@ import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/core/widgets/profile_list_tile.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class AdminProfileScreen extends StatelessWidget {
@@ -40,14 +41,15 @@ class AdminProfileScreen extends StatelessWidget {
               icon: Assets.icons.allAdmin.path,
               title: "All admin",
               onTap: () {
-                //  Get.toNamed(AppRoutes.personalInfoScreen);
+                ProfileController.to.setRoleFilter('admin');
+                  Get.toNamed(AppRoutes.allAdminScreen);
               },
             ),
             ProfileListTile(
               icon: Assets.icons.allUser.path,
               title: "All users",
               onTap: () {
-                //  Get.toNamed(AppRoutes.personalInfoScreen);
+                 Get.toNamed(AppRoutes.allUserScreen);
               },
             ),
             ProfileListTile(

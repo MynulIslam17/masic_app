@@ -23,29 +23,40 @@ class ProfileController extends GetxController {
     required ProfileService service,
     required ConnectivityService connectivityService,
   }) : _service = service,
-        _connectivityService = connectivityService;
+       _connectivityService = connectivityService;
 
   // ─── Loading States ────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
+
+  final Rx<LoadingState> _updateRoleState = LoadingState.initial.obs;
+
+  LoadingState get updateRoleState => _updateRoleState.value;
+
+
   LoadingState get loadingState => _loadingState.value;
 
   final Rx<LoadingState> _updateLoadingState = LoadingState.initial.obs;
+
   LoadingState get updateLoadingState => _updateLoadingState.value;
+
 
   // ─── User Data ─────────────────────────────────────────────────────────────
   final _selectedImage = Rxn<File>();
   final _selectedCV = Rxn<File>();
 
   File? get selectedImage => _selectedImage.value;
+
   File? get selectedCV => _selectedCV.value;
 
   final _userData = Rxn<UserModel>();
+
   UserModel? get userData => _userData.value;
 
   DateTime? _selectedDate;
 
   // ─── Users List ────────────────────────────────────────────────────────────
   final RxList<UserModel> _usersData = <UserModel>[].obs;
+
   List<UserModel> get usersData => _usersData;
 
   // ─── Filters ───────────────────────────────────────────────────────────────
@@ -55,18 +66,31 @@ class ProfileController extends GetxController {
   final RxInt _ageFilter = 0.obs;
   final RxBool _isJobOngoings = false.obs;
   final RxBool _isEducationOngoings = false.obs;
+  final RxString _roleFilter = ''.obs;
 
   final searchController = TextEditingController();
 
   String get genderFilter => _genderFilter.value;
+
   String get employmentFilter => _employmentFilter.value;
+
   String get educationFilter => _educationFilter.value;
+
   int get ageFilter => _ageFilter.value;
+
   bool get isJobOngoings => _isJobOngoings.value;
+
+  String get roleFilter => _roleFilter.value;
+
   bool get isEducationOngoings => _isEducationOngoings.value;
+
+  void setRoleFilter(String value) => _roleFilter.value = value;
+
+
 
   // ─── Selection ─────────────────────────────────────────────────────────────
   final RxList<String> _selectedUserIds = <String>[].obs;
+
   List<String> get selectedUserIds => _selectedUserIds;
 
   // ─── Edit Tracking ─────────────────────────────────────────────────────────
@@ -77,13 +101,16 @@ class ProfileController extends GetxController {
   int _currentPage = 1;
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
+
   bool get isLoadingMore => _isLoadingMore.value;
 
   final RxBool _hasMore = true.obs;
+
   bool get hasMoreUsers => _hasMore.value && !_isLoadingMore.value;
 
   // ─── Scroll Controller ─────────────────────────────────────────────────────
   ScrollController? _scrollController;
+
   ScrollController? get scrollController => _scrollController;
 
   // ─── Text Controllers ──────────────────────────────────────────────────────
@@ -108,6 +135,7 @@ class ProfileController extends GetxController {
   final fromJobDateController = TextEditingController();
   final toJobDateController = TextEditingController();
 
+
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
   @override
   void onInit() {
@@ -116,6 +144,7 @@ class ProfileController extends GetxController {
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) loadData();
     });
+    ever(_roleFilter, (_) => refresh());
     loadData();
   }
 
@@ -154,20 +183,26 @@ class ProfileController extends GetxController {
     }
   }
 
+
+
   bool isUserSelected(String userId) => _selectedUserIds.contains(userId);
 
   // ─── Date ──────────────────────────────────────────────────────────────────
   void setSelectedDate(DateTime date) {
     _selectedDate = date;
-    dateOfBirthController.text = TimeFormatHelper.formatDateTime(date.toString());
+    dateOfBirthController.text = TimeFormatHelper.formatDateTime(
+      date.toString(),
+    );
   }
 
   void onChangedJob(value) => _isJobOngoings.value = value!;
+
   void onChangedEducation(value) => _isEducationOngoings.value = value!;
 
   // ─── Load Data ─────────────────────────────────────────────────────────────
   Future<void> loadData() async {
     try {
+      final role = _roleFilter.value;
       final hasCache = _service.hasCache();
       final isOnline = _connectivityService.isConnected.value;
 
@@ -189,6 +224,7 @@ class ProfileController extends GetxController {
           educationLevel: educationFilter,
           searchTerm: searchController.text,
           age: ageFilter,
+          role: role,
         );
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
@@ -222,6 +258,7 @@ class ProfileController extends GetxController {
         employmentStatus: employmentFilter,
         educationLevel: educationFilter,
         age: ageFilter,
+        role: roleFilter,
       );
 
       if (newUsers.isNotEmpty) {
@@ -245,7 +282,7 @@ class ProfileController extends GetxController {
   void _loadFromCache() {
     _populateControllers(_service.getCachedUserData());
     _userData.value = _service.getCachedUserData();
-    _usersData.value = _service.getCachedUsers();
+    _usersData.value = _service.getCachedUsers(roleFilter);
 
     assert(() {
       if (kDebugMode) {
@@ -278,8 +315,8 @@ class ProfileController extends GetxController {
 
       final hasEducationData =
           schoolController.text.trim().isNotEmpty ||
-              degreeController.text.trim().isNotEmpty ||
-              majorController.text.trim().isNotEmpty;
+          degreeController.text.trim().isNotEmpty ||
+          majorController.text.trim().isNotEmpty;
 
       if (hasEducationData) {
         final newEdu = EducationHistory(
@@ -287,14 +324,10 @@ class ProfileController extends GetxController {
           degree: degreeController.text.trim(),
           major: majorController.text.trim(),
           from: fromDateController.text.trim().isNotEmpty
-              ? TimeFormatHelper.parseToIso(
-            fromDateController.text.trim(),
-          )
+              ? TimeFormatHelper.parseToIso(fromDateController.text.trim())
               : null,
           to: toDateController.text.trim().isNotEmpty
-              ? TimeFormatHelper.parseToIso(
-            toDateController.text.trim(),
-          )
+              ? TimeFormatHelper.parseToIso(toDateController.text.trim())
               : null,
           isCurrent: _isEducationOngoings.value,
         );
@@ -310,14 +343,14 @@ class ProfileController extends GetxController {
         }
       }
 
-// ── Experience list ───────────────────────────────────────────────────
+      // ── Experience list ───────────────────────────────────────────────────
       final currentExperience = List<UserExperience>.from(
         user.experience ?? [],
       );
 
       final hasExperienceData =
           jobnameController.text.trim().isNotEmpty ||
-              positionController.text.trim().isNotEmpty;
+          positionController.text.trim().isNotEmpty;
 
       if (hasExperienceData) {
         final newExp = UserExperience(
@@ -325,14 +358,10 @@ class ProfileController extends GetxController {
           position: positionController.text.trim(),
           isCurrent: _isJobOngoings.value,
           from: fromJobDateController.text.trim().isNotEmpty
-              ? TimeFormatHelper.parseToIso(
-            fromJobDateController.text.trim(),
-          )
+              ? TimeFormatHelper.parseToIso(fromJobDateController.text.trim())
               : null,
           to: toJobDateController.text.trim().isNotEmpty
-              ? TimeFormatHelper.parseToIso(
-            toJobDateController.text.trim(),
-          )
+              ? TimeFormatHelper.parseToIso(toJobDateController.text.trim())
               : null,
         );
 
@@ -422,6 +451,21 @@ class ProfileController extends GetxController {
     _userData.value = null;
     _selectedDate = null;
     await loadData();
+  }
+
+
+  Future<void> updateRole(String userId,String role) async {
+    try {
+      _updateRoleState.value = LoadingState.loading;
+      await _service.updateRole(userId,role);
+      _updateRoleState.value = LoadingState.loaded;
+      await retry();
+      Get.back(canPop: true);
+    } catch (e) {
+      _updateRoleState.value = LoadingState.error;
+      debugPrint('❌ Update error: $e');
+      ToastMessageHelper.show(e.errorMessage);
+    }
   }
 
   // ─── Education Helpers ─────────────────────────────────────────────────────

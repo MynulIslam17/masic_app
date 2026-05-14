@@ -22,6 +22,7 @@ class ApiConstants {
   static const String userProfile = '/api/v1/users/me';
   static const String userProfileUpdate = '/api/v1/users/edit-profile';
   static const String usersProfile = '/api/v1/users';
+  static String updateRole(String userId) => '/api/v1/super-admin/role/update/$userId';
 
 
 
@@ -87,6 +88,7 @@ class ApiConstants {
 
   static const String cacheUserProfile = 'user/me';
   static const String cacheUsersProfile = 'users/me';
+  static const String cacheAdminProfile = 'users/admin';
   static const String cacheAnnouncements = 'announcements';
   static const String cacheMyAnnouncements = 'announcements_my';
   static const String cachePolls = 'poll';

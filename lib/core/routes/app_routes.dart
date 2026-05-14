@@ -26,6 +26,7 @@ abstract class AppRoutes {
   static const String announcementsDetailsScreen = '/announcements/details';
   static const String memberSelectScreen = '/member-select';
   static const String editProfileScreen = '/profile/edit';
+  static const String profileDetailsScreen = '/profile/details';
   static const String profileInformationScreen = '/profile/information';
   static const String personalInfoScreen = '/profile/personal-info';
   static const String addBioScreen = '/profile/add-bio';
@@ -46,6 +47,9 @@ abstract class AppRoutes {
   // ─── Admin ──────────────────────────────────────────────────────────────
   static const String adminDashboardScreen = '/admin/home';
   static const String adminProfileScreen = '/admin/profile';
+  static const String allUserScreen = '/admin/all-user';
+  static const String allAdminScreen = '/admin/all-admin';
+
 
   // ─── Poll ──────────────────────────────────────────────────────────────
   static const String pollDetailsScreen = '/home/poll/details';

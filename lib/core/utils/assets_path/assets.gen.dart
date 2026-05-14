@@ -50,6 +50,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/clean.svg
   SvgGenImage get clean => const SvgGenImage('assets/icons/clean.svg');
 
+  /// File path: assets/icons/color_email.svg
+  SvgGenImage get colorEmail =>
+      const SvgGenImage('assets/icons/color_email.svg');
+
   /// File path: assets/icons/dashboard.svg
   SvgGenImage get dashboard => const SvgGenImage('assets/icons/dashboard.svg');
 
@@ -105,6 +109,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/personal.svg
   SvgGenImage get personal => const SvgGenImage('assets/icons/personal.svg');
 
+  /// File path: assets/icons/phone.svg
+  SvgGenImage get phone => const SvgGenImage('assets/icons/phone.svg');
+
   /// File path: assets/icons/policy.svg
   SvgGenImage get policy => const SvgGenImage('assets/icons/policy.svg');
 
@@ -150,6 +157,9 @@ class $AssetsIconsGen {
   SvgGenImage get uploadImage =>
       const SvgGenImage('assets/icons/upload_image.svg');
 
+  /// File path: assets/icons/work.svg
+  SvgGenImage get work => const SvgGenImage('assets/icons/work.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
     about,
@@ -162,6 +172,7 @@ class $AssetsIconsGen {
     banner,
     call,
     clean,
+    colorEmail,
     dashboard,
     date,
     delete,
@@ -180,6 +191,7 @@ class $AssetsIconsGen {
     password,
     person,
     personal,
+    phone,
     policy,
     poll,
     profile,
@@ -194,6 +206,7 @@ class $AssetsIconsGen {
     treeHome,
     university,
     uploadImage,
+    work,
   ];
 }
 

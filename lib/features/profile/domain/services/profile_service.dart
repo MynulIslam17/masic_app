@@ -18,6 +18,7 @@ class ProfileService {
     String? educationLevel,
     String? searchTerm,
     int? age,
+    String? role,
   }) async {
     try {
       await Future.wait([
@@ -30,6 +31,7 @@ class ProfileService {
           educationLevel: educationLevel,
           searchTerm: searchTerm,
           age: age,
+          role: role,
         ),
       ]);
     } on AppException {
@@ -49,8 +51,9 @@ class ProfileService {
     String? educationLevel,
     String? searchTerm,
     int? age,
+    String? role,
   }) async {
-    return await _repository.fetchUsers(
+    return await _repository.fetchUsersMore(
       page: page,
       limit: limit,
       gender: gender,
@@ -58,11 +61,16 @@ class ProfileService {
       educationLevel: educationLevel,
       searchTerm: searchTerm,
       age: age,
+      role: role,
     );
   }
 
   Future<UserModel> updateUserProfile(UserModel user, {File? image, File? cv,File? certificate}) async {
     return await _repository.updateUserProfile(user, image: image);
+  }
+
+  Future<void> updateRole(String userId,String role) async {
+    return await _repository.updateRole(userId,role);
   }
 
   bool hasCache() {
@@ -73,7 +81,7 @@ class ProfileService {
     return _repository.getCachedUserData();
   }
 
-  List<UserModel> getCachedUsers() {
-    return _repository.getCachedUsers();
+  List<UserModel> getCachedUsers(String role) {
+    return _repository.getCachedUsers(role);
   }
 }
