@@ -11,13 +11,14 @@ class FamilyTree extends StatelessWidget {
   final List<Children> topChildren;
   final List<Children> botChildren;
   final double rootTopY;
+  final bool onToggleEdit;
 
   const FamilyTree({
     super.key,
     required this.root,
     required this.topChildren,
     required this.botChildren,
-    this.rootTopY = 380.0,
+    this.rootTopY = 380.0, this.onToggleEdit = false,
   });
 
   static double _childTopFromRoot(int index, double rootTopY) {
@@ -126,6 +127,9 @@ class FamilyTree extends StatelessWidget {
       final bool exp = TreeController.to.expandedNodes[key] ?? false;
 
       return TreeCard(
+        onToggleEdit: onToggleEdit ?  () => TreeController.to.deleteUser(
+          c.sId ?? '',
+        ) : null,
         id: key,
         label: label,
         isRoot: false,

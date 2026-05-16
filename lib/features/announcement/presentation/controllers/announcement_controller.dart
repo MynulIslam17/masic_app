@@ -109,6 +109,10 @@ class AnnouncementController extends GetxController {
 
       if (hasCache) {
         _loadFromCache();
+        if(_announcements.isEmpty){
+          _loadingState.value = LoadingState.error;
+          return;
+        }
         _loadingState.value = LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.loading;

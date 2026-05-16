@@ -159,7 +159,7 @@ class EditProfileScreen extends StatelessWidget {
                 final value = MenuShowHelper.showCustomMenu(
                   context: context,
                   details: details,
-                  options: ["Employed", "Self-employed", "Unemployed"],
+                  options: ["employed", "unemployed"],
                 );
                 value.then((value) {
                   if (value != null) {

@@ -212,6 +212,9 @@ class ProfileRepository {
     }
   }
 
+
+
+
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheUserProfile);
   }

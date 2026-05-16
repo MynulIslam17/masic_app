@@ -33,6 +33,16 @@ class TreeService {
     }
   }
 
+  Future<void> deleteUser(String userId) async {
+    try {
+      await _repository.deleteUser(userId);
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }}
+
+
   bool hasCache() {
     return _repository.hasCache();
   }

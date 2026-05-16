@@ -9,7 +9,8 @@ import 'package:flutter_task/features/tree/domain/services/tree_service.dart';
 import 'package:get/get.dart' hide Node;
 import 'package:graphview/GraphView.dart';
 
-class TreeController extends GetxController with GetSingleTickerProviderStateMixin {
+class TreeController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   final TreeService _service;
   final ConnectivityService _connectivityService;
 
@@ -22,36 +23,37 @@ class TreeController extends GetxController with GetSingleTickerProviderStateMix
        _connectivityService = connectivityService;
 
   // ─── Layout Constants ──────────────────────────────────────────────────────
-  static const double cardH   = 40.0;
+  static const double cardH = 40.0;
   static const double cardGap = 8.0;
-  static const double childW  = 155.0;
+  static const double childW = 155.0;
   static const double centerW = 138.0;
-  static const double stub    = 26.0;
-  static const double hLine   = 10.0;
+  static const double stub = 26.0;
+  static const double hLine = 10.0;
   static const double vPad = 8.0;
 
-
-  static const double spineX  = centerW + hLine;   // 166.0
-  static const double childL  = spineX  + stub;    // 192.0
-  static const double totalW  = childL  + childW;  // 347.0
+  static const double spineX = centerW + hLine; // 166.0
+  static const double childL = spineX + stub; // 192.0
+  static const double totalW = childL + childW; // 347.0
   static double get centerL => (totalW - centerW) / 5;
-
 
   // ─── Loading State ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _detailsLoadingState = LoadingState.initial.obs;
-
+  final Rx<LoadingState> _deleteState = LoadingState.initial.obs;
 
   LoadingState get loadingState => _loadingState.value;
+
   LoadingState get detailsLoadingState => _detailsLoadingState.value;
+
+  LoadingState get deleteState => _deleteState.value;
 
   // ─── Data ──────────────────────────────────────────────────────────────────
   final Rx<TreeModel?> _treeData = Rx<TreeModel?>(null);
   final _userDetails = Rxn<UserModel>();
 
   TreeModel? get treeData => _treeData.value;
-  UserModel? get userDetails => _userDetails.value;
 
+  UserModel? get userDetails => _userDetails.value;
 
   // ─── Graph ─────────────────────────────────────────────────────────────────
   final Graph graph = Graph()..isTree = true;
@@ -80,8 +82,6 @@ class TreeController extends GetxController with GetSingleTickerProviderStateMix
     animController.dispose();
     super.onClose();
   }
-
-
 
   // ─── Load Data ─────────────────────────────────────────────────────────────
   Future<void> loadData() async {
@@ -129,18 +129,30 @@ class TreeController extends GetxController with GetSingleTickerProviderStateMix
     }());
   }
 
-
   // ─── User Details ─────────────────────────────────────────────────────────────
   Future<void> fetchUserDetails(String userId) async {
     try {
-        _detailsLoadingState.value = LoadingState.loading;
-        
+      _detailsLoadingState.value = LoadingState.loading;
+
       final user = await _service.treeUserDetails(userId);
       _userDetails.value = user;
       _detailsLoadingState.value = LoadingState.loaded;
     } catch (e) {
       _detailsLoadingState.value = LoadingState.error;
       if (kDebugMode) debugPrint('fetchPollDetails error: $e');
+    }
+  }
+
+  Future<void> deleteUser(String userId) async {
+    try {
+      _deleteState.value = LoadingState.loading;
+      await _service.deleteUser(userId);
+      _deleteState.value = LoadingState.loaded;
+      await loadData();
+      Get.back(canPop: true);
+    } catch (e) {
+      _deleteState.value = LoadingState.error;
+      if (kDebugMode) debugPrint('deleteUser error: $e');
     }
   }
 }

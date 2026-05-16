@@ -1,0 +1,33 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:flutter_task/core/extensions/app_extension.dart';
+// import 'package:flutter_task/core/widgets/widgets.dart';
+// import 'package:flutter_task/features/request/data/models/request_local_model.dart';
+// import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
+// import 'package:flutter_task/features/request/presentation/widgets/request_widget.dart';
+// import 'package:get/get.dart';
+//
+// class AdminRequestScreen extends StatelessWidget {
+//   const AdminRequestScreen({super.key});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return CustomScaffold(
+//       paddingSide: 0,
+//       appBar: CustomAppBar(title: "Request"),
+//       body: Padding(
+//         padding: EdgeInsets.only(top: 24.h),
+//         child: Column(
+//           children: RequestLocalModel.requestDemoList
+//               .map(
+//                 (e) => Padding(
+//                   padding: EdgeInsets.only(bottom: 10.h),
+//                   child: RequestWidget(request: e),
+//                 ),
+//               )
+//               .toList(),
+//         ),
+//       ),
+//     );
+//   }
+// }

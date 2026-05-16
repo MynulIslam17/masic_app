@@ -104,22 +104,31 @@ class HomeController extends GetxController {
 
   void _loadFromCache() {
     final homeData = _service.getCachedHomeData();
+
     _announcements.value = homeData.announcements;
     _polls.value = homeData.polls;
-    _bannerUrl.value = homeData.banner?.first.imageUrl ?? '';
+
+    /// Safe banner handling
+    if (homeData.banner != null &&
+        homeData.banner!.isNotEmpty) {
+      _bannerUrl.value =
+          homeData.banner!.first.imageUrl ?? '';
+    } else {
+      _bannerUrl.value = '';
+    }
+
     // Debug logging
     assert(() {
       if (kDebugMode) {
         print('📦 Loaded from cache:');
         print('   Announcements home: ${_announcements.length}');
         print('   Polls home: ${_polls.length}');
-        print('   Banner home: ${homeData.banner?.first.imageUrl}');
+        print('   Banner home: $_bannerUrl');
       }
 
       return true;
     }());
   }
-
   @override
   Future<void> refresh() async {
     _announcements.clear();

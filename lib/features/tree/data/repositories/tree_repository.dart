@@ -63,6 +63,17 @@ class TreeRepository {
   }
 
 
+  Future<void> deleteUser(String userId) async {
+    try {
+      await _apiService.post(ApiConstants.deleteUser(userId));
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheTree);
   }
