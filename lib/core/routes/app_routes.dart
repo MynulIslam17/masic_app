@@ -36,10 +36,11 @@ abstract class AppRoutes {
   static const String addCvScreen = '/profile/add-cv';
 
   // ─── Request ──────────────────────────────────────────────────────────────
-  static const String requestScreen = '/home/request';
+  static const String requestedScreen = '/home/requested';
   static const String requestDetailsScreen = '/home/request/details';
   static const String reasonScreen = '/home/request/reason';
-  static const String jobSpecScreen = '/home/request/job-spec';
+  static const String requestScreen = '/home/request/request';
+
 
 
 

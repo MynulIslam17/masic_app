@@ -7,8 +7,8 @@ import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/request/data/models/request_model.dart';
 import 'package:get/get.dart';
 
-class RequestCardWidget extends StatelessWidget {
-  const RequestCardWidget({super.key, required this.request});
+class RequestedCardWidget extends StatelessWidget {
+  const RequestedCardWidget({super.key, required this.request});
 
   final RequestModel request;
 

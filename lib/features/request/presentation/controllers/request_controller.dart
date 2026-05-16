@@ -186,7 +186,7 @@ class RequestController extends GetxController {
     }
   }
 
-  Future<void> createRequest() async {
+  Future<void> createRequest({required String type}) async {
     final user = ProfileController.to.userData;
     if (user == null ||
         user.contact == null ||
@@ -196,13 +196,12 @@ class RequestController extends GetxController {
       Get.toNamed(AppRoutes.profileInformationScreen);
       return;
     }
-    if (!createFormKey.currentState!.validate()) return;
     try {
       _createState.value = LoadingState.loading;
       await _service.createRequest(
         CreateJobModel(
           user: user.sId,
-          type: 'job',
+          type: type,
           bio: user.bio,
           jobSpec: jobSpecTEController.text.trim(),
           contact: UserContact(

@@ -107,27 +107,7 @@ class HomeContent extends StatelessWidget {
                       height: 38.h,
                       fontSize: 12.sp,
                       onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            insetPadding: EdgeInsets.symmetric(horizontal: 24.w),
-                            title: CustomText(
-                              fontWeight: FontWeight.w600,
-                              text: 'Select request',
-                              fontSize: 20.sp,
-                              color: AppColors.primaryColor,
-                            ),
-                            content: CustomText(text: 'Before request you need to select your which data you are used.'),
-                            actions: [
-                              CustomButton(
-                                label: 'Request by profile data',
-                                onPressed: () {
-                                  Get.toNamed(AppRoutes.jobSpecScreen);
-                                },
-                              ),
-                            ],
-                          ),
-                        );
+                       Get.toNamed(AppRoutes.requestScreen);
                       },
                       label: 'Request',
                     ),

@@ -77,7 +77,7 @@ class AdminProfileScreen extends StatelessWidget {
               icon: Assets.icons.requested.path,
               title: "Requested",
               onTap: () {
-                Get.toNamed(AppRoutes.requestScreen);
+                Get.toNamed(AppRoutes.requestedScreen);
               },
             ),
             ProfileListTile(

@@ -6,12 +6,12 @@ import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
-import 'package:flutter_task/features/request/presentation/widgets/request_card_widget.dart';
+import 'package:flutter_task/features/request/presentation/widgets/requested_card_widget.dart';
 import 'package:flutter_task/features/request/presentation/widgets/request_simmer.dart';
 import 'package:get/get.dart';
 
-class RequestScreen extends StatelessWidget {
-  const RequestScreen({super.key});
+class RequestedScreen extends StatelessWidget {
+  const RequestedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +120,7 @@ class RequestScreen extends StatelessWidget {
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => Padding(
                         padding:  EdgeInsets.only(bottom: 10.h),
-                        child: RequestCardWidget(
+                        child: RequestedCardWidget(
                           request: controller.requests[index],
                         ),
                       ),
