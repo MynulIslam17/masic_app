@@ -34,7 +34,7 @@ class RequestedCardWidget extends StatelessWidget {
                 child: CustomText(
                   textAlign: TextAlign.start,
                   maxline: 1,
-                  text: request.jobSpec ?? 'N/A',
+                  text: request.bio ?? 'N/A',
                   fontSize: 16.sp,
                   color: AppColors.primaryColor,
                 ),
@@ -86,8 +86,6 @@ class RequestedCardWidget extends StatelessWidget {
 
   Color getColor(String status) {
     switch (status) {
-      case 'pending':
-        return Colors.amber;
       case 'approved':
         return AppColors.primaryColor;
       default:
