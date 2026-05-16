@@ -51,7 +51,7 @@ class MemberSelectScreen extends StatelessWidget {
                 CustomText(
                   textAlign: TextAlign.start,
                   fontSize: 12.sp,
-                  text: 'Total user : 02',
+                  text: 'Total user : ${controller.usersData.length}',
                 ),
               ],
             ),

@@ -4,6 +4,8 @@ import 'package:flutter_task/core/helpers/time_format.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:flutter_task/features/request/data/models/request_model.dart';
 import 'package:get/get.dart';
 
@@ -39,6 +41,15 @@ class RequestedCardWidget extends StatelessWidget {
                   color: AppColors.primaryColor,
                 ),
               ),
+              if(AuthController.to.isAdmin())
+                CustomButton(onPressed: (){
+                  Get.toNamed(AppRoutes.requestDetailsScreen,arguments: request.sId);
+                },
+                label: 'View details',
+                  fontSize: 12.sp,
+                  width: 100.w,
+                  height: 32.h,
+                )else
               CustomContainer(
                 horizontalMargin: 0,
                 bordersColor: getColor(request.status ?? 'N/A'),

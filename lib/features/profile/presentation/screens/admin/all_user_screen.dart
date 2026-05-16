@@ -44,7 +44,7 @@ class AllUserScreen extends StatelessWidget {
                 borderColor: AppColors.colorE6E6E6,
                 showShadow: false,
                 controller: controller.searchController,
-                hintText: 'Search here . . .',
+                hintText: 'Search by name or id',
               ),
               SizedBox(height: 10.h),
               Row(

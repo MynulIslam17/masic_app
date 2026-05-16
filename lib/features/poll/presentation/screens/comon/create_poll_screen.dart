@@ -52,7 +52,7 @@ class CreatePollScreen extends StatelessWidget {
                       return Padding(
                         padding: EdgeInsets.only(bottom: 10.h),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: CustomTextField(
@@ -75,24 +75,29 @@ class CreatePollScreen extends StatelessWidget {
                         ),
                       );
                     }),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: CustomContainer(
-                        width: double.infinity,
-                        onTap: () => controller.addOptionField(),
-                        color: AppColors.colorE6E6E6,
-                        paddingAll: 14.r,
-                        radiusAll: 16.r,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.add, color: AppColors.grey400, size: 20.r),
-                            SizedBox(width: 6.w),
-                            Text('Add option', style: TextStyle(color: AppColors.grey400)),
-                          ],
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: CustomTextField(
+                            borderColor: AppColors.colorE6E6E6,
+                            showShadow: false,
+                            readOnly: true,
+                            onTap: () => controller.addOptionField(),
+                            filColor: AppColors.bgColor,
+                            hintText: 'Write an answer here',
+                            controller: TextEditingController(),
+                          ),
                         ),
-                      ),
+                        SizedBox(width: 8.w),
+                        CustomContainer(
+                          onTap: () => controller.addOptionField(),
+                          color: AppColors.colorE6E6E6,
+                          paddingAll: 14.r,
+                          radiusAll: 16.r,
+                          child: Icon(Icons.add, color: AppColors.grey400, size: 20.r),
+                        ),
+                      ],
                     ),
                   ],
                 )),

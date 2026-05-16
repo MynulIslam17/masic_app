@@ -125,6 +125,9 @@ class $AssetsIconsGen {
   SvgGenImage get profileHome =>
       const SvgGenImage('assets/icons/profile_home.svg');
 
+  /// File path: assets/icons/remove.svg
+  SvgGenImage get remove => const SvgGenImage('assets/icons/remove.svg');
+
   /// File path: assets/icons/requested.svg
   SvgGenImage get requested => const SvgGenImage('assets/icons/requested.svg');
 
@@ -196,6 +199,7 @@ class $AssetsIconsGen {
     poll,
     profile,
     profileHome,
+    remove,
     requested,
     search,
     selected,

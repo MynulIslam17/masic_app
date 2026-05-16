@@ -27,24 +27,28 @@ class TabItem extends StatelessWidget {
     return Obx(() {
       final isActive = selectedTab.value == index;
       return Expanded(
-        child: GestureDetector(
-          onTap: () => onTap(index),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: EdgeInsets.symmetric(vertical: 10.h),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: isActive
-                      ? AppColors.primaryColor
-                      : AppColors.colorE6E6E6,
-                  width: isActive ? 2 : 1,
+        child: Padding(
+          padding:  EdgeInsets.symmetric(horizontal: 16.w),
+          child: GestureDetector(
+            onTap: () => onTap(index),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: EdgeInsets.symmetric(vertical: 10.h),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: isActive
+                        ? AppColors.primaryColor
+                        : AppColors.colorE6E6E6,
+                    width: isActive ? 1 : 0.5,
+                  ),
                 ),
               ),
-            ),
-            child: Center(
-              child: CustomText(
-                text: label,),
+              child: Center(
+                child: CustomText(
+                  fontSize: 12.sp,
+                  text: label,),
+              ),
             ),
           ),
         ),

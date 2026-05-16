@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/request/data/models/request_local_model.dart';
@@ -78,6 +79,8 @@ class RequestWidget extends StatelessWidget {
                             bordersColor: AppColors.primaryColor,
                             label: 'Request manually',
                             onPressed: () {
+                              Get.back();
+                              Get.toNamed(AppRoutes.personalInfoScreen,arguments: request.type);
                             },
                           ),
                         ],

@@ -50,6 +50,7 @@ class UserCard extends StatelessWidget {
                     details: details,
                     options: [
                       'View Details',
+                      'Block',
                       if (ProfileController.to.userData?.role == 'superAdmin')...[
                         if(user.role == 'admin')
                         'Decline admin access',

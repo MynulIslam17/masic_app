@@ -10,6 +10,7 @@ import 'package:flutter_task/features/announcement/presentation/controllers/anno
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_card.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_simmer.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/tap_bar.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
@@ -37,7 +38,7 @@ class AnnouncementsScreen extends StatelessWidget {
               floating: false,
               elevation: 0,
               scrolledUnderElevation: 0,
-              expandedHeight: 150.h,
+              expandedHeight: AuthController.to.isAdmin() ? 150.h : 116.h,
 
               leading: IconButton(
                 icon: isRtl
@@ -80,12 +81,12 @@ class AnnouncementsScreen extends StatelessWidget {
                 ),
               ),
 
-              bottom: PreferredSize(
+              bottom: AuthController.to.isAdmin() ? PreferredSize(
                 preferredSize: Size.fromHeight(26.h),
                 child: Row(
                   children: [
                     TabItem(
-                      label: 'All announce',
+                      label: 'Requested announce',
                       index: 0,
                       selectedTab: controller.selectedTab,
                       onTap: controller.onTabChanged,
@@ -98,7 +99,7 @@ class AnnouncementsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
+              ) : null,
             ),
             SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),

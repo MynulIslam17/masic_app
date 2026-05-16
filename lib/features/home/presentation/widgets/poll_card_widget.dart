@@ -24,13 +24,17 @@ class PollCardWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(
-            top: 10.h,
-            maxline: 1,
-            textAlign: TextAlign.start,
-            text: poll.title ?? '',
-            fontSize: 16.sp,
-            color: AppColors.primaryColor,
+          Row(
+            children: [
+              CustomText(
+                top: 10.h,
+                maxline: 1,
+                textAlign: TextAlign.start,
+                text: poll.title ?? '',
+                fontSize: 16.sp,
+                color: AppColors.primaryColor,
+              ),
+            ],
           ),
           SizedBox(height: 12.h),
           CustomText(

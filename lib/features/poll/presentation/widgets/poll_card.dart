@@ -24,11 +24,24 @@ class PollCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomText(
-            maxline: 1,
-            textAlign: TextAlign.start,
-            text: poll.title ?? 'N/A',
-            fontSize: 16.sp,
+          Row(
+            children: [
+              Expanded(
+                child: CustomText(
+                  maxline: 1,
+                  textAlign: TextAlign.start,
+                  text: poll.title ?? 'N/A',
+                  fontSize: 16.sp,
+                ),
+              ),
+              CustomButton(
+                width: 100.w,
+                height: 32.h,
+                fontSize: 12.sp,
+                onPressed: (){
+                  Get.toNamed(AppRoutes.pollResultScreen,arguments: poll.sId);
+                },label: 'View details',)
+            ],
           ),
 
           CustomText(

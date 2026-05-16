@@ -18,7 +18,7 @@ class MemberCard extends StatelessWidget {
 
       return ListTile(
         selected: isSelected,
-        selectedTileColor: AppColors.primaryColor.withValues(alpha: 0.1),
+        selectedTileColor: AppColors.primaryColor.withValues(alpha: 0.05),
         leading: CustomNetworkImage(
           height: 48.r,
           width: 48.r,
@@ -38,12 +38,13 @@ class MemberCard extends StatelessWidget {
         trailing: CustomButton(
           width: 69.w,
           height: 30.h,
+          bordersColor: AppColors.primaryColor,
           backgroundColor: isSelected
-              ? AppColors.primaryColor.withValues(alpha: 0.1)
-              : AppColors.primaryColor,
-          foregroundColor: !isSelected ? Colors.white : AppColors.primaryColor,
+              ? AppColors.primaryColor
+              : Colors.transparent,
+          foregroundColor: !isSelected ? AppColors.primaryColor : AppColors.white,
           fontSize: 10.sp,
-          label: isSelected ? 'Selected' : 'Select',
+          label: isSelected ? 'Deselect' : 'Select',
           onPressed: () =>
               ProfileController.to.toggleUserSelection(user.sId ?? ''),
         ),

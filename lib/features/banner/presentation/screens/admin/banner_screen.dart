@@ -91,14 +91,47 @@ class BannerScreen extends StatelessWidget {
                               width: double.infinity,
                               fit: BoxFit.cover,),
                             Positioned(
-                              bottom: 16.h,
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: CustomContainer(
+                                radiusAll: 33.r,
+                                height: 112.h,
+                                width: double.infinity,
+                                linearColors: [
+                                  AppColors.white.withValues(alpha: 0.0),
+                                  AppColors.white
+                                ],
+                              )
+                            ) ,
+
+
+                            Positioned(
+                              bottom: 10.h,
                               left: 16.w,
-                              child: CustomText(
-                                  textAlign: TextAlign.start,
-                                  color: AppColors.white,
-                                  fontSize: 16.sp,
-                                  fontWeight: FontWeight.w400,
-                                  text: TimeFormatHelper.formatDate(DateTime.parse(banner.createdAt ?? '')))
+                              child: Row(
+                                children: [
+                                  CustomContainer(
+                                    shape: BoxShape.circle,
+                                    paddingAll: 14.r,
+                                    color: AppColors.colorD9D9D9,
+                                    child: CustomText(
+                                      textAlign: TextAlign.start,
+                                      color: AppColors.primaryColor,
+                                      fontSize: 16.sp,
+                                      text: '${index + 1}',
+                                    ),
+                                  ),
+                                  CustomText(
+                                    left: 10.w,
+                                      textAlign: TextAlign.start,
+                                      color: AppColors.primaryColor,
+                                      fontSize: 16.sp,
+                                      fontWeight: FontWeight.w400,
+                                      text: 'Upload at ${TimeFormatHelper.formatDate(DateTime.parse(banner.createdAt ?? ''))}'
+                                  ),
+                                ],
+                              )
                             ) ,
 
 

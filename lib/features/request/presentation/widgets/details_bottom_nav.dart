@@ -3,16 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
+import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
 import 'package:get/get.dart';
 
 class DetailsBottomNav extends StatelessWidget {
-  const DetailsBottomNav({
-    super.key,
-    required this.requestId,
-  });
+  const DetailsBottomNav({super.key, required this.requestId});
 
   final String requestId;
 
@@ -24,7 +22,7 @@ class DetailsBottomNav extends StatelessWidget {
         padding: EdgeInsets.all(16.r),
         child: Obx(() {
           final request = controller.requests.firstWhereOrNull(
-                (e) => e.sId == requestId,
+            (e) => e.sId == requestId,
           );
           if (request == null) return const SizedBox.shrink();
           final status = request.status ?? '';
@@ -33,6 +31,7 @@ class DetailsBottomNav extends StatelessWidget {
             return Row(
               children: [
                 Expanded(
+                  flex: 2,
                   child: CustomButton(
                     onPressed: () {
                       showDialog(
@@ -51,7 +50,7 @@ class DetailsBottomNav extends StatelessWidget {
                               status: 'approved',
                             ),
                             description:
-                            'Are you sure want to approve your Request?',
+                                'Are you sure want to approve your Request?',
                           );
                         }),
                       );
@@ -59,19 +58,32 @@ class DetailsBottomNav extends StatelessWidget {
                     label: 'Approved',
                   ),
                 ),
-                SizedBox(width: 12.w),
+                SizedBox(width: 8.w),
                 Expanded(
+                  flex: 3,
                   child: CustomButton(
-                    bordersColor: AppColors.errorColor,
-                    foregroundColor: AppColors.errorColor,
+                    bordersColor: AppColors.primaryColor,
+                    foregroundColor: AppColors.primaryColor,
                     backgroundColor: AppColors.bgColor,
-                    label: 'Rejected',
+                    label: 'Additional info need',
                     onPressed: () {
-                      Get.toNamed(
-                        AppRoutes.reasonScreen,
-                        arguments: requestId,
-                      );
+                      Get.toNamed(AppRoutes.reasonScreen, arguments: {
+                        'requestId': requestId,
+                        'reason': 'Write additional info',
+                      });
                     },
+                  ),
+                ),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.toNamed(AppRoutes.reasonScreen, arguments: {
+                        'requestId': requestId,
+                        'reason': 'Write decline reason',
+                      });
+                    },
+                    child: Assets.icons.remove.svg(height: 50.r, width: 50.r),
                   ),
                 ),
               ],

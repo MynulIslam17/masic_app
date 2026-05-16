@@ -10,37 +10,42 @@ class ReasonScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final requestId = Get.arguments as String;
+    final Map<String, dynamic> args = Get.arguments as Map<String, dynamic>;
+    final requestId = args['requestId'] as String;
+    final reason = args['reason'] as String;
     final controller = RequestController.to;
     return CustomScaffold(
-      appBar: CustomAppBar(title: "Reason"),
-      body: Column(
-        children: [
-          Form(
-            key: controller.formKey,
-            child: CustomTextField(
-              hintText: 'Write details here . . .',
-              showShadow: false,
-              maxLines: 5,
-              minLines: 5,
-              controller: controller.declineReasonTEController,
+      appBar: CustomAppBar(title: reason),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Form(
+              key: controller.formKey,
+              child: CustomTextField(
+                hintText: 'Write details here . . .',
+                showShadow: false,
+                maxLines: 20,
+                minLines: 20,
+                controller: controller.declineReasonTEController,
+              ),
             ),
-          ),
-
-          SizedBox(height: 44.h),
-          Obx(() {
-              return CustomButton(
-                onPressed: () => controller.updateStatus(
-                  requestId: requestId,
-                  status: 'declined',
-                  declineReason: controller.declineReasonTEController.text.trim(),
-                ),
-                label: 'Submit',
-                isLoading: controller.updateState.isLoading,
-              );
-            }
-          ),
-        ],
+        
+            SizedBox(height: 100.h),
+            Obx(() {
+                return CustomButton(
+                  onPressed: () => controller.updateStatus(
+                    requestId: requestId,
+                    status: 'declined',
+                    declineReason: controller.declineReasonTEController.text.trim(),
+                  ),
+                  label: 'Submit',
+                  isLoading: controller.updateState.isLoading,
+                );
+              }
+            ),
+            SizedBox(height: 24.h),
+          ],
+        ),
       ),
     );
   }
