@@ -54,7 +54,7 @@ class AdminTreeScreen extends StatelessWidget {
 
               if (controller.nodeInfoMap.isEmpty) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  controller.initFromModel(model);
+                 // controller.initFromModel(model);
                 });
                 return Stack(
                   children: [
@@ -126,7 +126,7 @@ class AdminTreeScreen extends StatelessWidget {
                               hasChildren: hasChildren,
                               isExpanded: isExpanded,
                               onToggle: hasChildren
-                                  ? () => controller.toggleNode(id, model)
+                                  ? (){}
                                   : null,
                             );
                           },

@@ -9,8 +9,7 @@ import 'package:flutter_task/features/tree/domain/services/tree_service.dart';
 import 'package:get/get.dart' hide Node;
 import 'package:graphview/GraphView.dart';
 
-class TreeController extends GetxController
-    with GetSingleTickerProviderStateMixin {
+class TreeController extends GetxController with GetSingleTickerProviderStateMixin {
   final TreeService _service;
   final ConnectivityService _connectivityService;
 
@@ -21,6 +20,22 @@ class TreeController extends GetxController
     required ConnectivityService connectivityService,
   }) : _service = service,
        _connectivityService = connectivityService;
+
+  // ─── Layout Constants ──────────────────────────────────────────────────────
+  static const double cardH   = 40.0;
+  static const double cardGap = 8.0;
+  static const double childW  = 155.0;
+  static const double centerW = 138.0;
+  static const double stub    = 26.0;
+  static const double hLine   = 10.0;
+  static const double vPad = 8.0;
+
+
+  static const double spineX  = centerW + hLine;   // 166.0
+  static const double childL  = spineX  + stub;    // 192.0
+  static const double totalW  = childL  + childW;  // 347.0
+  static double get centerL => (totalW - centerW) / 5;
+
 
   // ─── Loading State ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
@@ -53,17 +68,6 @@ class TreeController extends GetxController
   void onInit() {
     super.onInit();
 
-    animController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-
-    builder = BuchheimWalkerConfiguration()
-      ..siblingSeparation = 40
-      ..levelSeparation = 80
-      ..subtreeSeparation = 20
-      ..orientation = BuchheimWalkerConfiguration.ORIENTATION_LEFT_RIGHT;
-
     ever(_connectivityService.isConnected, (bool isConnected) {
       if (isConnected) loadData();
     });
@@ -77,58 +81,7 @@ class TreeController extends GetxController
     super.onClose();
   }
 
-  // ─── Graph Init ────────────────────────────────────────────────────────────
-  void initFromModel(TreeModel model) {
-    expandedNodes.clear();
-    nodeInfoMap.clear();
 
-    final root = model.root;
-    if (root == null) return;
-
-    void traverse(NodeInfo info) {
-      expandedNodes[info.id] ??= false;
-      nodeInfoMap[info.id] = info;
-      for (final child in info.children) {
-        traverse(child);
-      }
-    }
-
-    traverse(NodeInfo.fromRoot(root));
-    _buildGraph(model);
-    graphVersion.value++;
-  }
-
-  void _buildGraph(TreeModel model) {
-    graph.nodes.clear();
-    graph.edges.clear();
-
-    final root = model.root;
-    if (root == null) return;
-
-    void addNode(NodeInfo info, Node? parentNode) {
-      final currentNode = Node.Id(info.id);
-      if (parentNode != null) {
-        graph.addEdge(parentNode, currentNode);
-      } else {
-        graph.addNode(currentNode);
-      }
-      if (expandedNodes[info.id] == true) {
-        for (final child in info.children) {
-          addNode(child, currentNode);
-        }
-      }
-    }
-
-    addNode(NodeInfo.fromRoot(root), null);
-  }
-
-  void toggleNode(String nodeId, TreeModel model) {
-    expandedNodes[nodeId] = !(expandedNodes[nodeId] ?? false);
-    animController.reset();
-    _buildGraph(model);
-    graphVersion.value++;
-    animController.forward();
-  }
 
   // ─── Load Data ─────────────────────────────────────────────────────────────
   Future<void> loadData() async {
