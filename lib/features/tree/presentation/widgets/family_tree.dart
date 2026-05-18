@@ -46,21 +46,19 @@ class FamilyTree extends StatelessWidget {
 
     final double botEnd = botChildren.isNotEmpty
         ? _childBotFromRoot(botChildren.length - 1, rootTopY) +
-        TreeController.cardH
+              TreeController.cardH
         : rootTopY + TreeController.cardH;
 
     final double offsetY = topStart < 0 ? -topStart : 0;
     final double totalH = botEnd + offsetY;
     final double adjustedRootTopY = rootTopY + offsetY;
 
-    // hideRoot হলে spineX card এর right edge থেকে শুরু হবে
-    // মানে 0 থেকে — কারণ Row এ card এর পরেই এই widget বসে
     final double spineX = hideRoot ? 0 : TreeController.spineX;
     final double childL = spineX + TreeController.stub;
     final double nestedW = childL + TreeController.childW;
 
     final double rootLeft =
-        (TreeController.totalW - TreeController.centerW) / 2;
+        (TreeController.totalW - TreeController.centerW) / 1.5;
 
     final String label = root.label?.isNotEmpty == true
         ? root.label!
@@ -78,7 +76,8 @@ class FamilyTree extends StatelessWidget {
                 topCount: topChildren.length,
                 botCount: botChildren.length,
                 centerMidY: adjustedRootTopY + TreeController.cardH / 2,
-                botTopY: adjustedRootTopY +
+                botTopY:
+                    adjustedRootTopY +
                     TreeController.cardH +
                     TreeController.vPad,
                 color: AppColors.primaryColor.withOpacity(0.38),
@@ -87,7 +86,6 @@ class FamilyTree extends StatelessWidget {
             ),
           ),
 
-          // ── Top children ──
           for (int i = 0; i < topChildren.length; i++)
             Positioned(
               left: childL,
@@ -97,8 +95,6 @@ class FamilyTree extends StatelessWidget {
               ),
               child: Obx(() => _childContent(topChildren[i])),
             ),
-
-          // ── Root card (hideRoot false হলেই দেখাবে) ──
           if (!hideRoot)
             Positioned(
               left: rootLeft,
@@ -114,7 +110,6 @@ class FamilyTree extends StatelessWidget {
               ),
             ),
 
-          // ── Bot children ──
           for (int i = 0; i < botChildren.length; i++)
             Positioned(
               left: childL,
@@ -127,8 +122,9 @@ class FamilyTree extends StatelessWidget {
   }
 
   Widget _childContent(Children c) {
-    final String label =
-    c.label?.isNotEmpty == true ? c.label! : (c.linkedUser?.name ?? '');
+    final String label = c.label?.isNotEmpty == true
+        ? c.label!
+        : (c.linkedUser?.name ?? '');
     final bool hasKids = c.children?.isNotEmpty == true;
     final String key = c.sId ?? '';
     final bool exp = TreeController.to.expandedNodes[key] ?? false;
@@ -146,22 +142,16 @@ class FamilyTree extends StatelessWidget {
         relationType: c.relationType,
       );
 
-      // ✅ FIX: parent card এর midY == nested tree এর rootTopY এর midY
-      // parent card height = cardH = 40
-      // nested tree এ top children আছে "half" টা
-      // last top child এর top = rootTopY - vPad - cardH
-      // সেটা parent card এর top (0) এর সাথে align করতে:
       final double nestedRootTopY =
           (half) * (TreeController.cardH + TreeController.cardGap) -
-              TreeController.cardGap +
-              TreeController.vPad;
+          TreeController.cardGap +
+          TreeController.vPad;
 
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: TreeController.childW,
             height: TreeController.cardH,
             child: TreeCard(
               onToggleEdit: onToggleEdit
@@ -188,7 +178,6 @@ class FamilyTree extends StatelessWidget {
     }
 
     return SizedBox(
-      width: TreeController.childW,
       height: TreeController.cardH,
       child: TreeCard(
         onToggleEdit: onToggleEdit
@@ -204,4 +193,5 @@ class FamilyTree extends StatelessWidget {
             : null,
       ),
     );
-  }}
+  }
+}

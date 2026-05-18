@@ -22,7 +22,7 @@ class TreeController extends GetxController {
   // ─── Layout Constants ──────────────────────────────────────────────────────
   static const double cardH = 40.0;
   static const double cardGap = 8.0;
-  static const double childW = 155.0;
+  static const double childW = 120.0;
   static const double centerW = 138.0;
   static const double stub = 26.0;
   static const double hLine = 10.0;
@@ -31,7 +31,7 @@ class TreeController extends GetxController {
   static const double spineX = centerW + hLine; // 166.0
   static const double childL = spineX + stub; // 192.0
   static const double totalW = childL + childW; // 347.0
-  static double get centerL => (totalW - centerW) / 5;
+  static double get centerL => (totalW - centerW) / 2;
 
   // ─── Loading State ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
@@ -56,7 +56,6 @@ class TreeController extends GetxController {
 
   final RxMap<String, bool> expandedNodes = <String, bool>{}.obs;
 
-  // expandedNodes এর পরে এই method যোগ করো
   bool isExpanded(String key) => expandedNodes[key] ?? false;
 
   void toggleNode(String key) {

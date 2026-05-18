@@ -24,7 +24,9 @@ class TreeCard extends StatelessWidget {
     required this.isRoot,
     required this.hasChildren,
     required this.isExpanded,
-    this.onToggle, required this.id, this.onToggleEdit,
+    this.onToggle,
+    required this.id,
+    this.onToggleEdit,
   });
 
   @override
@@ -39,7 +41,9 @@ class TreeCard extends StatelessWidget {
           child: CustomContainer(
             color: !isRoot ? Colors.transparent : Colors.white,
             radiusAll: 8.r,
-            bordersColor: !isRoot ? Colors.transparent : AppColors.primaryColor.withValues(alpha: 0.4),
+            bordersColor: !isRoot
+                ? Colors.transparent
+                : AppColors.primaryColor.withValues(alpha: 0.4),
             paddingAll: !isRoot ? 0.r : 4.r,
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
@@ -55,6 +59,8 @@ class TreeCard extends StatelessWidget {
               child: Row(
                 children: [
                   CustomText(
+                    maxline: 1,
+                    textOverflow: TextOverflow.ellipsis,
                     text: label,
                     fontSize: 13.sp,
                     fontWeight: isRoot ? FontWeight.w600 : FontWeight.w400,
@@ -63,7 +69,7 @@ class TreeCard extends StatelessWidget {
                   if (onToggleEdit != null) ...[
                     SizedBox(width: 8.w),
                     GestureDetector(
-                      onTap: (){
+                      onTap: () {
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -78,7 +84,7 @@ class TreeCard extends StatelessWidget {
                               children: [
                                 CustomText(
                                   text:
-                                  'Please select the perfect option which you want to do ?',
+                                      'Please select the perfect option which you want to do ?',
                                   fontSize: 12.sp,
                                   color: AppColors.appGreyColor,
                                 ),
@@ -95,17 +101,17 @@ class TreeCard extends StatelessWidget {
 
                                 SizedBox(height: 16.h),
 
-                                 Obx(() {
-                                     return CustomButton(
-                                          backgroundColor: Colors.transparent,
-                                          foregroundColor: AppColors.primaryColor,
-                                          bordersColor: AppColors.primaryColor,
-                                          onPressed: onToggleEdit,
-                                          isLoading: TreeController.to.deleteState.isLoading,
-                                          label: 'Remove this user',
-                                        );
-                                   }
-                                 ),
+                                Obx(() {
+                                  return CustomButton(
+                                    backgroundColor: Colors.transparent,
+                                    foregroundColor: AppColors.primaryColor,
+                                    bordersColor: AppColors.primaryColor,
+                                    onPressed: onToggleEdit,
+                                    isLoading:
+                                        TreeController.to.deleteState.isLoading,
+                                    label: 'Remove this user',
+                                  );
+                                }),
                               ],
                             ),
 
@@ -118,8 +124,7 @@ class TreeCard extends StatelessWidget {
                                       backgroundColor: Colors.transparent,
                                       foregroundColor: AppColors.primaryColor,
                                       bordersColor: AppColors.primaryColor,
-                                      onPressed: () {
-                                      },
+                                      onPressed: () {},
                                       label: 'Continue',
                                     ),
                                   ),
@@ -142,7 +147,8 @@ class TreeCard extends StatelessWidget {
                               ),
                             ],
                           ),
-                        );                      },
+                        );
+                      },
                       child: Container(
                         width: 26.r,
                         height: 26.r,
@@ -150,14 +156,14 @@ class TreeCard extends StatelessWidget {
                           color: AppColors.primaryColor.withOpacity(0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.edit_outlined,
+                        child: Icon(
+                          Icons.edit_outlined,
                           size: 16.sp,
                           color: AppColors.primaryColor.withOpacity(0.5),
                         ),
                       ),
                     ),
                   ],
-
                 ],
               ),
             ),
