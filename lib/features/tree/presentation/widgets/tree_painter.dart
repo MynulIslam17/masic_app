@@ -7,7 +7,7 @@ class TreePainter extends CustomPainter {
   final double centerMidY;
   final double botTopY;
   final Color color;
-  final double? startX; // ← নতুন: nested tree এর জন্য
+  final double? startX;
 
   const TreePainter({
     required this.topCount,
@@ -37,24 +37,34 @@ class TreePainter extends CustomPainter {
       ..strokeWidth = 1.2
       ..strokeCap = StrokeCap.round;
 
-    // startX দেওয়া থাকলে সেটা use করো, না হলে default spineX
     final double spineX = startX ?? TreeController.spineX;
     final double childL = spineX + TreeController.stub;
 
-    final double spineTop = topCount > 0 ? _topMidY(0) : centerMidY;
-    final double spineBot = botCount > 0 ? _botMidY(botCount - 1) : centerMidY;
+    final bool hasTop = topCount > 0;
+    final bool hasBot = botCount > 0;
 
-    canvas.drawLine(Offset(spineX, spineTop), Offset(spineX, spineBot), p);
+    if (hasTop && hasBot) {
+      final double spineTop = _topMidY(0);
+      final double spineBot = _botMidY(botCount - 1);
+      canvas.drawLine(Offset(spineX, spineTop), Offset(spineX, spineBot), p);
+    } else if (hasTop && topCount == 1) {
+    } else if (hasBot && botCount == 1 && !hasTop) {
+    } else if (hasTop || hasBot) {
+      final double spineTop = hasTop ? _topMidY(0) : centerMidY;
+      final double spineBot = hasBot ? _botMidY(botCount - 1) : centerMidY;
+      canvas.drawLine(Offset(spineX, spineTop), Offset(spineX, spineBot), p);
+    }
 
-    // hideRoot true হলে center line আঁকব না
-    if (startX == null) {
+    if (startX == null && (hasTop || hasBot)) {
+      final double centerCardLeftEdge =
+          (TreeController.totalW - TreeController.centerW) / 5;
+
       canvas.drawLine(
+        Offset(centerCardLeftEdge, centerMidY),
         Offset(spineX, centerMidY),
-        Offset(TreeController.centerL, centerMidY),
         p,
       );
     }
-
     for (int i = 0; i < topCount; i++) {
       final double y = _topMidY(i);
       canvas.drawLine(Offset(spineX, y), Offset(childL, y), p);
@@ -65,7 +75,6 @@ class TreePainter extends CustomPainter {
       canvas.drawLine(Offset(spineX, y), Offset(childL, y), p);
     }
   }
-
   @override
   bool shouldRepaint(TreePainter old) =>
       old.topCount != topCount ||

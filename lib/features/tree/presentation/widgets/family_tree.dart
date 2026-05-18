@@ -135,7 +135,7 @@ class FamilyTree extends StatelessWidget {
 
     if (exp && hasKids) {
       final kids = c.children!;
-      final half = (kids.length / 2).ceil();
+      final int half = (kids.length / 2).ceil();
 
       final fakeRoot = Root(
         sId: c.sId,
@@ -146,9 +146,15 @@ class FamilyTree extends StatelessWidget {
         relationType: c.relationType,
       );
 
-      final nestedRootTopY = half > 0
-          ? half * (TreeController.cardH + TreeController.cardGap)
-          : TreeController.cardH / 2;
+      // ✅ FIX: parent card এর midY == nested tree এর rootTopY এর midY
+      // parent card height = cardH = 40
+      // nested tree এ top children আছে "half" টা
+      // last top child এর top = rootTopY - vPad - cardH
+      // সেটা parent card এর top (0) এর সাথে align করতে:
+      final double nestedRootTopY =
+          (half) * (TreeController.cardH + TreeController.cardGap) -
+              TreeController.cardGap +
+              TreeController.vPad;
 
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,5 +204,4 @@ class FamilyTree extends StatelessWidget {
             : null,
       ),
     );
-  }
-}
+  }}
