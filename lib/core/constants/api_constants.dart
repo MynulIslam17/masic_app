@@ -67,6 +67,7 @@ class ApiConstants {
   static const String tree = '/api/v1/tree/full';
   static  String treeUserDetails(String userID) => '/api/v1/tree/$userID';
   static String deleteUser(String userId) => '/api/v1/member/remove-child/$userId';
+  static  String motherTreeSelect(String userId) => '/api/v1/member/choose-mother/$userId';
 
 
 

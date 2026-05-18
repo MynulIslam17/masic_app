@@ -73,6 +73,12 @@ class ProfileService {
     return await _repository.updateRole(userId,role);
   }
 
+
+  Future<void> motherTreeSelect(String userId) async {
+    return await _repository.motherTreeSelect(userId);
+  }
+
+
   bool hasCache() {
     return _repository.hasCache();
   }

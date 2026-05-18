@@ -77,6 +77,10 @@ class AuthController extends GetxController {
       _loginState = LoadingState.loaded;
       update();
       if(userModel.isVerified == true){
+        if(userModel.treeJoinStatus == 'unlinked'){
+          Get.offAllNamed(AppRoutes.motherSelectScreen);
+          return;
+        }
         if(userModel.role == 'superAdmin'){
           Get.offAllNamed(AppRoutes.adminDashboardScreen);
         }else{

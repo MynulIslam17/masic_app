@@ -33,11 +33,13 @@ class SignUpScreen extends StatelessWidget {
               ),
               SizedBox(height: 16.h),
               CustomTextField(
+                showShadow: false,
                 prefixIcon: Assets.icons.person.svg(),
                 labelText: 'First Name',
                 controller: to.fastNameController,
                 hintText: "Enter your first name",
               ), CustomTextField(
+                showShadow: false,
                 prefixIcon: Assets.icons.person.svg(),
                 labelText: 'Last Name',
                 controller: to.lastNameController,
@@ -45,6 +47,7 @@ class SignUpScreen extends StatelessWidget {
               ),
 
               CustomTextField(
+                showShadow: false,
                 prefixIcon: Assets.icons.email.svg(),
                 labelText: 'Email',
                 controller: to.emailController,
@@ -54,6 +57,7 @@ class SignUpScreen extends StatelessWidget {
               ),
 
               CustomTextField(
+                showShadow: false,
                 prefixIcon: Assets.icons.number.svg(),
                 labelText: 'Phone Number',
                 controller: to.phoneController,
@@ -61,6 +65,7 @@ class SignUpScreen extends StatelessWidget {
                 keyboardType: TextInputType.number,
               ),
               CustomTextField(
+                showShadow: false,
                 prefixIcon: Assets.icons.password.svg(),
                 labelText: 'Password',
                 controller: to.passwordController,
@@ -68,6 +73,7 @@ class SignUpScreen extends StatelessWidget {
                 isPassword: true,
               ),
               CustomTextField(
+                showShadow: false,
                 prefixIcon: Assets.icons.password.svg(),
                 labelText: 'Confirm Password',
                 controller: to.confirmPasswordController,

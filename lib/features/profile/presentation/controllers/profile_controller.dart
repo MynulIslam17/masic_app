@@ -7,6 +7,7 @@ import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/time_format.dart';
 import 'package:flutter_task/core/helpers/toast_message_helper.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
@@ -29,6 +30,10 @@ class ProfileController extends GetxController {
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
 
   final Rx<LoadingState> _updateRoleState = LoadingState.initial.obs;
+
+  final Rx<LoadingState> _motherTreeState = LoadingState.initial.obs;
+
+  LoadingState get motherTreeState => _motherTreeState.value;
 
   LoadingState get updateRoleState => _updateRoleState.value;
 
@@ -92,6 +97,14 @@ class ProfileController extends GetxController {
   final RxList<String> _selectedUserIds = <String>[].obs;
 
   List<String> get selectedUserIds => _selectedUserIds;
+
+  final RxString _selectedUserId = ''.obs;
+
+  String get selectedUserId => _selectedUserId.value;
+
+  void selectSingleUser(String id) {
+    _selectedUserId.value = id;
+  }
 
   // ─── Edit Tracking ─────────────────────────────────────────────────────────
   int? _editingEducationIndex;
@@ -480,6 +493,22 @@ class ProfileController extends GetxController {
       ToastMessageHelper.show(e.errorMessage);
     }
   }
+
+
+  Future<void> motherTreeSelect() async {
+    try {
+      _motherTreeState.value = LoadingState.loading;
+      await _service.motherTreeSelect(_selectedUserId.value);
+      _motherTreeState.value = LoadingState.loaded;
+      Get.offAllNamed(AppRoutes.bottomNavUserBar);
+    } catch (e) {
+      _motherTreeState.value = LoadingState.error;
+      debugPrint('❌ Update error: $e');
+      ToastMessageHelper.show(e.errorMessage);
+    }
+  }
+
+
 
   // ─── Education Helpers ─────────────────────────────────────────────────────
   void prepareEducationForEdit(EducationHistory education, int index) {

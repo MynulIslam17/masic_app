@@ -7,15 +7,22 @@ import 'package:flutter_task/features/profile/presentation/controllers/profile_c
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 class MemberCard extends StatelessWidget {
-  const MemberCard({super.key, required this.user});
+  const MemberCard({
+    super.key,
+    required this.user,
+    this.isMotherTree = false,
+  });
 
   final UserModel user;
+  final bool isMotherTree;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isSelected = ProfileController.to.isUserSelected(user.sId ?? '');
-
+      final controller = ProfileController.to;
+      final isSelected = isMotherTree
+          ? controller.selectedUserId == (user.linkedMember ?? '')
+          : controller.isUserSelected(user.sId ?? '');
       return ListTile(
         selected: isSelected,
         selectedTileColor: AppColors.primaryColor.withValues(alpha: 0.05),
@@ -45,10 +52,21 @@ class MemberCard extends StatelessWidget {
           foregroundColor: !isSelected ? AppColors.primaryColor : AppColors.white,
           fontSize: 10.sp,
           label: isSelected ? 'Deselect' : 'Select',
-          onPressed: () =>
-              ProfileController.to.toggleUserSelection(user.sId ?? ''),
+          onPressed: () {
+            if (isMotherTree) {
+              controller.selectSingleUser(user.linkedMember ?? '');
+            } else {
+              controller.toggleUserSelection(user.sId ?? '');
+            }
+          },
         ),
-        onTap: () => ProfileController.to.toggleUserSelection(user.sId ?? ''),
+        onTap: () {
+          if (isMotherTree) {
+            controller.selectSingleUser(user.linkedMember ?? '');
+          } else {
+            controller.toggleUserSelection(user.sId ?? '');
+          }
+        },
         shape: RoundedRectangleBorder(
           side: BorderSide(color: AppColors.colorE6E6E6),
           borderRadius: BorderRadius.circular(100.r),

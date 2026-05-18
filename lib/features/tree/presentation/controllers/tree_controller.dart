@@ -1,4 +1,3 @@
-import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/exceptions/app_exceptions.dart';
@@ -6,11 +5,9 @@ import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/tree/data/models/tree_model.dart';
 import 'package:flutter_task/features/tree/domain/services/tree_service.dart';
-import 'package:get/get.dart' hide Node;
-import 'package:graphview/GraphView.dart';
+import 'package:get/get.dart';
 
-class TreeController extends GetxController
-    with GetSingleTickerProviderStateMixin {
+class TreeController extends GetxController {
   final TreeService _service;
   final ConnectivityService _connectivityService;
 
@@ -53,17 +50,19 @@ class TreeController extends GetxController
 
   TreeModel? get treeData => _treeData.value;
 
+
+
   UserModel? get userDetails => _userDetails.value;
 
-  // ─── Graph ─────────────────────────────────────────────────────────────────
-  final Graph graph = Graph()..isTree = true;
-  late final BuchheimWalkerConfiguration builder;
-
   final RxMap<String, bool> expandedNodes = <String, bool>{}.obs;
-  final RxMap<String, NodeInfo> nodeInfoMap = <String, NodeInfo>{}.obs;
-  final RxInt graphVersion = 0.obs;
 
-  late AnimationController animController;
+  // expandedNodes এর পরে এই method যোগ করো
+  bool isExpanded(String key) => expandedNodes[key] ?? false;
+
+  void toggleNode(String key) {
+    expandedNodes[key] = !(expandedNodes[key] ?? false);
+    expandedNodes.refresh();
+  }
 
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
   @override
@@ -75,12 +74,6 @@ class TreeController extends GetxController
     });
 
     loadData();
-  }
-
-  @override
-  void onClose() {
-    animController.dispose();
-    super.onClose();
   }
 
   // ─── Load Data ─────────────────────────────────────────────────────────────

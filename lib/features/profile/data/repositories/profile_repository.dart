@@ -211,6 +211,17 @@ class ProfileRepository {
   }
 
 
+  Future<void> motherTreeSelect (String userId) async {
+    try {
+      await _apiService.post(ApiConstants.motherTreeSelect(userId));
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+
 
 
   bool hasCache() {
