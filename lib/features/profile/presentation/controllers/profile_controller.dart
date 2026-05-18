@@ -409,8 +409,8 @@ class ProfileController extends GetxController {
           educationHistory: currentEducation,
           experience: currentExperience,
         ),
-        image: selectedImage,
-        cv: selectedCV,
+        image: _selectedImage.value,
+        cv: _selectedCV.value,
       );
       _userData.value = updatedUser;
 

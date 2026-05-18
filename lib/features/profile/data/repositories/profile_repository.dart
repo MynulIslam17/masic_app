@@ -153,36 +153,34 @@ class ProfileRepository {
   }
 
   Future<UserModel> updateUserProfile(
-    UserModel user, {
-    File? image,
-    File? cv,
-    File? certificate,
-  }) async {
+      UserModel user, {
+        File? image,
+        File? cv,
+        File? certificate,
+      }) async {
     try {
-      final bodyRequest = {'data': jsonEncode(user.toMap())};
-
-      final files = <MultipartFile>[
+      final formData = FormData.fromMap({
+        'data': jsonEncode(user.toMap()),
         if (image != null)
-          MultipartFile.fromFileSync(
+          'image': await MultipartFile.fromFile(
             image.path,
             filename: image.path.split('/').last,
           ),
         if (cv != null)
-          MultipartFile.fromFileSync(
+          'cv': await MultipartFile.fromFile(
             cv.path,
             filename: cv.path.split('/').last,
           ),
         if (certificate != null)
-          MultipartFile.fromFileSync(
+          'certificates': await MultipartFile.fromFile(
             certificate.path,
             filename: certificate.path.split('/').last,
           ),
-      ];
+      });
 
-      final response = await _apiService.uploadMultipleFilesPatch(
+      final response = await _apiService.dio.patch(
         ApiConstants.userProfileUpdate,
-        data: bodyRequest,
-        files: files,
+        data: formData,
       );
 
       final data = response.data['data'];

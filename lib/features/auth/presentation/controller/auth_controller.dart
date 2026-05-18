@@ -100,7 +100,7 @@ class AuthController extends GetxController {
     update();
     try {
       await _authService.register(
-        name: fastNameController.text.trim() + lastNameController.text.trim(),
+        name: '${fastNameController.text.trim()} ${lastNameController.text.trim()}',
         email: emailController.text.trim(),
         phone: phoneController.text.trim(),
         confirmPassword: confirmPasswordController.text,

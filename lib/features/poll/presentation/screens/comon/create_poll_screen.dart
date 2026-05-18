@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/helpers/photo_picker_helper.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:flutter_task/features/poll/presentation/controllers/poll_controller.dart';
 import 'package:get/get.dart';
 
@@ -80,6 +78,7 @@ class CreatePollScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: CustomTextField(
+                            validator: (_) => null,
                             borderColor: AppColors.colorE6E6E6,
                             showShadow: false,
                             readOnly: true,

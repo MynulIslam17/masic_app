@@ -58,7 +58,7 @@ class OtpScreen extends StatelessWidget {
     if(role == 'forgot'){
       Get.toNamed(AppRoutes.resetPasswordScreen);
     }else{
-      Get.toNamed(AppRoutes.bottomNavUserBar);
+      Get.offAllNamed(AppRoutes.bottomNavUserBar);
     }
   }
 }

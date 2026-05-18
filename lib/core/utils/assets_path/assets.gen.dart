@@ -24,6 +24,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/admin.svg
   SvgGenImage get admin => const SvgGenImage('assets/icons/admin.svg');
 
+  /// File path: assets/icons/ai.svg
+  SvgGenImage get ai => const SvgGenImage('assets/icons/ai.svg');
+
+  /// File path: assets/icons/ai_empty.svg
+  SvgGenImage get aiEmpty => const SvgGenImage('assets/icons/ai_empty.svg');
+
   /// File path: assets/icons/all_admin.svg
   SvgGenImage get allAdmin => const SvgGenImage('assets/icons/all_admin.svg');
 
@@ -167,6 +173,8 @@ class $AssetsIconsGen {
   List<SvgGenImage> get values => [
     about,
     admin,
+    ai,
+    aiEmpty,
     allAdmin,
     allUser,
     announcement,
