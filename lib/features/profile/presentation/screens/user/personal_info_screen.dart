@@ -148,9 +148,35 @@ class PersonalInfoScreen extends StatelessWidget {
                   child: CustomButton(
                     isLoading: controller.createState.isLoading,
                     label: 'Submit',
-                    onPressed: () {
+                    onPressed: () async{
                       //Get.toNamed(AppRoutes.personalInfoScreen);
-                      controller.createRequest(type: requestType);
+                     final bool success = await controller.createRequest(type: requestType);
+
+                     if(success){
+                       showDialog(
+                         context: context,
+                         builder: (context) => AlertDialog(
+                           title: CustomText(
+                             text: 'Success',
+                             fontSize: 20.sp,
+                             color: AppColors.primaryColor,
+                             fontWeight: FontWeight.w600,
+                           ),
+                           content: CustomText(
+                             text: 'Your request has been submitted successfully.',
+                           ),
+                           actions: [
+                             CustomButton(
+                               onPressed: () {
+                                 Get.back();
+                                 Get.back();
+                               },
+                               label: 'OK',
+                             ),
+                           ],
+                         ),
+                       );
+                     }
                     },
                   ),
                 ),

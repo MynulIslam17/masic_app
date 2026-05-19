@@ -190,19 +190,18 @@ class RequestController extends GetxController {
     }
   }
 
-  Future<void> createRequest({required String type}) async {
+  Future<bool> createRequest({required String type}) async {
     final user = ProfileController.to.userData;
 
     if (user == null) {
       ToastMessageHelper.show('User data not found');
-      return;
+      return false;
     }
 
-    // Validate all required fields
     final validationError = _validateUserData(user);
     if (validationError != null) {
       ToastMessageHelper.show(validationError);
-      return;
+      return false;
     }
 
     try {
@@ -248,15 +247,15 @@ class RequestController extends GetxController {
       _createState.value = LoadingState.loaded;
       Get.back(canPop: true);
       Get.back(canPop: true);
-      ToastMessageHelper.show('Request sent, Please wait for admin approval');
       jobSpecTEController.clear();
+      return true;
     } catch (e) {
       _createState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
       if (kDebugMode) debugPrint('Create request error: $e');
+      return false;
     }
   }
-
   String? _validateUserData(UserModel user) {
     // Contact validation
 

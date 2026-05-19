@@ -59,15 +59,15 @@ class SettingScreen extends StatelessWidget {
           ),
 
           // About Us
-          ProfileListTile(
-            icon: Assets.icons.about.path,
-            title: "About Us",
-            onTap: () {
-              Get.toNamed(AppRoutes.privacyPolicyAllScreen,
-                arguments: {'title': 'About Us', 'key': 'about'},
-              );
-            },
-          ),
+          // ProfileListTile(
+          //   icon: Assets.icons.about.path,
+          //   title: "About Us",
+          //   onTap: () {
+          //     Get.toNamed(AppRoutes.privacyPolicyAllScreen,
+          //       arguments: {'title': 'About Us', 'key': 'about'},
+          //     );
+          //   },
+          // ),
 
           Spacer(),
           CustomButton(
