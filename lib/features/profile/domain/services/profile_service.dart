@@ -78,6 +78,16 @@ class ProfileService {
     return await _repository.motherTreeSelect(userId);
   }
 
+  Future<void> addMember(String userId,String motherId) async {
+    return await _repository.addMember(userId,motherId);
+  }
+
+
+  Future<void> blockUser(String userId,{required String  type}) async {
+    return await _repository.blockUser(userId,type: type);
+  }
+
+
 
   bool hasCache() {
     return _repository.hasCache();

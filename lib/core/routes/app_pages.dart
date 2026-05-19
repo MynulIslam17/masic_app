@@ -1,6 +1,7 @@
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
 import 'package:flutter_task/features/banner/presentation/screens/admin/banner_screen.dart';
+import 'package:flutter_task/features/home/presentation/home_screen.dart';
 import 'package:flutter_task/features/poll/presentation/screens/admin/poll_result_screen.dart';
 import 'package:flutter_task/features/poll/presentation/screens/comon/create_poll_screen.dart';
 import 'package:flutter_task/features/poll/presentation/screens/comon/poll_screen.dart';
@@ -120,6 +121,7 @@ abstract class AppPages {
 
     GetPage(name: AppRoutes.requestedScreen, page: () => RequestedScreen()),
     GetPage(name: AppRoutes.motherSelectScreen, page: () => MotherSelectScreen()),
+    GetPage(name: AppRoutes.homeScreen, page: () => HomeScreen()),
 
     GetPage(
       name: AppRoutes.adminDashboardScreen,

@@ -100,6 +100,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/mail.svg
   SvgGenImage get mail => const SvgGenImage('assets/icons/mail.svg');
 
+  /// File path: assets/icons/menu.svg
+  SvgGenImage get menu => const SvgGenImage('assets/icons/menu.svg');
+
   /// File path: assets/icons/noti.svg
   SvgGenImage get noti => const SvgGenImage('assets/icons/noti.svg');
 
@@ -197,6 +200,7 @@ class $AssetsIconsGen {
     logo,
     logout,
     mail,
+    menu,
     noti,
     number,
     password,

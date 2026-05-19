@@ -1,27 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get.dart';
 
 class MemberCard extends StatelessWidget {
   const MemberCard({
     super.key,
     required this.user,
     this.isMotherTree = false,
+    this.isTree = false,
   });
 
   final UserModel user;
   final bool isMotherTree;
+  final bool isTree;
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final isBlock = user.isDeleted ?? false;
       final controller = ProfileController.to;
       final isSelected = isMotherTree
           ? controller.selectedUserId == (user.linkedMember ?? '')
+          : isTree
+          ? controller.selectedUserId == (user.sId ?? '')
           : controller.isUserSelected(user.sId ?? '');
       return ListTile(
         selected: isSelected,
@@ -42,27 +48,79 @@ class MemberCard extends StatelessWidget {
           text: 'Mother tree: ${user.motherTree ?? ''}',
           fontSize: 10.sp,
         ),
-        trailing: CustomButton(
-          width: 69.w,
-          height: 30.h,
-          bordersColor: AppColors.primaryColor,
-          backgroundColor: isSelected
-              ? AppColors.primaryColor
-              : Colors.transparent,
-          foregroundColor: !isSelected ? AppColors.primaryColor : AppColors.white,
-          fontSize: 10.sp,
-          label: isSelected ? 'Deselect' : 'Select',
+        trailing: user.treeJoinStatus == 'placed'
+            ? CustomButton(
+                width: 69.w,
+                height: 30.h,
+                backgroundColor: AppColors.colorE8E8E8,
+                foregroundColor: AppColors.appGreyColor,
+                fontSize: 10.sp,
+                label: 'Disable',
+                onPressed: () {},
+              )
+            : isBlock
+            ? CustomButton(
+                width: 69.w,
+                height: 30.h,
+                bordersColor: AppColors.primaryColor,
+                backgroundColor: AppColors.primaryColor,
+                foregroundColor: AppColors.white,
+                fontSize: 10.sp,
+                label: 'Unblock',
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Obx(
+                      () => CustomDialog(
+                        title: 'Unblock user?',
+                        leftButtonLabel: 'Cancel',
+                        rightButtonLabel: 'Unblock',
+                        isLoading: controller.blockUserState.isLoading,
+                        onTapLeftButton: () => Get.back(),
+                        onTapRightButton: () =>
+                            controller.blockUser(user.sId!, type: 'unblock'),
+                        description:
+                            'Are you sure you want to unblock this user?',
+                      ),
+                    ),
+                  );
+                },
+              )
+            : CustomButton(
+                width: 69.w,
+                height: 30.h,
+                bordersColor: AppColors.primaryColor,
+                backgroundColor: isSelected
+                    ? AppColors.primaryColor
+                    : Colors.transparent,
+                foregroundColor: !isSelected
+                    ? AppColors.primaryColor
+                    : AppColors.white,
+                fontSize: 10.sp,
+                label: isSelected ? 'Deselect' : 'Select',
           onPressed: () {
-            if (isMotherTree) {
-              controller.selectSingleUser(user.linkedMember ?? '');
-            } else {
-              controller.toggleUserSelection(user.sId ?? '');
+            if (isMotherTree || isTree) {
+              final id = isTree ? user.sId ?? '' : user.linkedMember ?? '';
+              debugPrint('Current selected: ${controller.selectedUserId}');
+              debugPrint('This user id: $id');
+              debugPrint('isSelected: $isSelected');
+              if (isSelected) {
+                controller.selectSingleUser('');
+              } else {
+                controller.selectSingleUser(id);
+              }
             }
           },
-        ),
+              ),
         onTap: () {
-          if (isMotherTree) {
-            controller.selectSingleUser(user.linkedMember ?? '');
+          if (isBlock || user.treeJoinStatus == 'placed') return;
+          if (isMotherTree || isTree) {
+            final id = isTree ? user.sId ?? '' : user.linkedMember ?? '';
+            if (isSelected) {
+              controller.selectSingleUser('');
+            } else {
+              controller.selectSingleUser(id);
+            }
           } else {
             controller.toggleUserSelection(user.sId ?? '');
           }

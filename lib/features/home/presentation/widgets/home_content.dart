@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
 import 'package:flutter_task/features/home/presentation/widgets/home_announcement_card.dart';
 import 'package:flutter_task/features/home/presentation/widgets/poll_card_widget.dart';
@@ -65,56 +66,61 @@ class HomeContent extends StatelessWidget {
             ],
 
             // Request section
-            SliverToBoxAdapter(
-              child: CustomText(
-                top: 8.h,
-                left: 20.w,
-                right: 20.w,
-                bottom: 10.h,
-                textAlign: TextAlign.start,
-                color: AppColors.primaryColor,
-                text: 'Request',
-                fontSize: 16.sp,
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: CustomContainer(
-                horizontalMargin: 16.w,
-                bordersColor: AppColors.color8A8A8A,
-                radiusAll: 20.r,
-                height: 158.h,
-                width: double.infinity,
-                paddingHorizontal: 44.r,
-                paddingVertical: 20.r,
-                child: Column(
-                  children: [
-                    CustomText(
-                      maxline: 1,
-                      text: 'Request for opportunities',
-                      fontSize: 16.sp,
-                      color: AppColors.primaryColor,
-                    ),
-                    SizedBox(height: 12.h),
-                    CustomText(
-                      maxline: 2,
-                      text:
-                          'Submit requests for jobs, volunteering opportunities, workshops',
-                      fontSize: 10.sp,
-                    ),
-                    SizedBox(height: 14.h),
 
-                    CustomButton(
-                      height: 38.h,
-                      fontSize: 12.sp,
-                      onPressed: () {
-                       Get.toNamed(AppRoutes.requestScreen);
-                      },
-                      label: 'Request',
-                    ),
-                  ],
+
+            if(!AuthController.to.isAdmin())...[
+              SliverToBoxAdapter(
+                child: CustomText(
+                  top: 8.h,
+                  left: 20.w,
+                  right: 20.w,
+                  bottom: 10.h,
+                  textAlign: TextAlign.start,
+                  color: AppColors.primaryColor,
+                  text: 'Request',
+                  fontSize: 16.sp,
                 ),
               ),
-            ),
+              SliverToBoxAdapter(
+                child: CustomContainer(
+                  horizontalMargin: 16.w,
+                  bordersColor: AppColors.color8A8A8A,
+                  radiusAll: 20.r,
+                  height: 158.h,
+                  width: double.infinity,
+                  paddingHorizontal: 44.r,
+                  paddingVertical: 20.r,
+                  child: Column(
+                    children: [
+                      CustomText(
+                        maxline: 1,
+                        text: 'Request for opportunities',
+                        fontSize: 16.sp,
+                        color: AppColors.primaryColor,
+                      ),
+                      SizedBox(height: 12.h),
+                      CustomText(
+                        maxline: 2,
+                        text:
+                        'Submit requests for jobs, volunteering opportunities, workshops',
+                        fontSize: 10.sp,
+                      ),
+                      SizedBox(height: 14.h),
+
+                      CustomButton(
+                        height: 38.h,
+                        fontSize: 12.sp,
+                        onPressed: () {
+                          Get.toNamed(AppRoutes.requestScreen);
+                        },
+                        label: 'Request',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            ],
 
             if (controller.polls.isNotEmpty) ...[
               SliverToBoxAdapter(

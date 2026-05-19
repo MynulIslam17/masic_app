@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/custom_container.dart';
 import 'package:flutter_task/core/widgets/custom_loader.dart';
-import 'package:flutter_task/core/widgets/custom_text.dart';
 import 'package:flutter_task/core/widgets/empty_data_widget.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
 import 'package:flutter_task/features/tree/presentation/widgets/family_tree.dart';
 import 'package:get/get.dart';
@@ -19,46 +21,77 @@ class AdminTreeScreen extends StatelessWidget {
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
-        body: SingleChildScrollView(
-          clipBehavior: Clip.none,
-          scrollDirection: Axis.horizontal,
-          child: Stack(
-            children: [
-
-              Assets.icons.treeHome.svg(fit: BoxFit.cover),
-
-              SafeArea(
-                child: Obx(() {
-                  switch (ctrl.loadingState) {
-                    case LoadingState.initial:
-                    case LoadingState.loading:
-                      return const Center(child: CustomLoader());
-                    case LoadingState.offline:
-                    case LoadingState.error:
-                      return EmptyDataWidget(
-                        message: 'Failed to load data. Please try again.',
-                        onRefresh: () async => await ctrl.loadData(),
-                      );
-                    case LoadingState.loaded:
-                      final treeData = ctrl.treeData;
-
-                      if (treeData == null || treeData.root == null) {
-                        return Center(child: CustomText(text: 'No data available'));
-                      }
-                      final root = ctrl.treeData!.root!;
-                      final all = root.children ?? [];
-                      final half = all.length ~/ 2;
-                      return FamilyTree(
-                        root: root,
-                        topChildren: all.sublist(0, half),
-                        botChildren: all.sublist(half),
-                        onToggleEdit:  true
-                      );
+        body: Stack(
+          children: [
+            Obx(() {
+              switch (ctrl.loadingState) {
+                case LoadingState.initial:
+                case LoadingState.loading:
+                  return Stack(
+                    children: [
+                      Assets.icons.treeHome.svg(fit: BoxFit.cover),
+                      const Center(child: CustomLoader()),
+                    ],
+                  );
+                case LoadingState.offline:
+                case LoadingState.error:
+                  return EmptyDataWidget(
+                    message: 'Failed to load data. Please try again.',
+                    onRefresh: () async => await ctrl.loadData(),
+                  );
+                case LoadingState.loaded:
+                  final treeData = ctrl.treeData;
+                  if (treeData == null || treeData.root == null) {
+                    return Stack(
+                      children: [
+                        Assets.icons.treeHome.svg(fit: BoxFit.cover),
+                        const Center(child: CustomLoader()),
+                      ],
+                    );
                   }
-                }),
+                  final root = treeData.root!;
+                  final all = root.children ?? [];
+                  final half = (all.length / 2).ceil();
+
+                  return InteractiveViewer(
+                    constrained: false,
+                    boundaryMargin:  EdgeInsets.only(right: 200.w),
+                    minScale: 0.3,
+                    maxScale: 2.5,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Assets.icons.treeHome.svg(fit: BoxFit.cover),
+                        FamilyTree(
+                          onToggleEdit: true,
+                          root: root,
+                          topChildren: all.sublist(0, half),
+                          botChildren: all.sublist(half),
+                        ),
+                      ],
+                    ),
+                  );
+              }
+            }),
+
+            if(AuthController.to.isAdmin())
+            Positioned(
+              top: 10.h,
+              left: 16.w,
+              child: SafeArea(
+                child: GestureDetector(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: CustomContainer(
+                    paddingAll: 10.r,
+                      shape: BoxShape.circle,
+                      color: AppColors.white,
+                      child: Assets.icons.backButton.svg())
+                  ),
               ),
-            ],
-          ),
+            )
+          ],
         ),
       ),
     );

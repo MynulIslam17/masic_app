@@ -50,12 +50,11 @@ class UserCard extends StatelessWidget {
                     details: details,
                     options: [
                       'View Details',
-                      'Block',
-                      if (ProfileController.to.userData?.role == 'superAdmin')...[
-                        if(user.role == 'admin')
-                        'Decline admin access',
-                        if(user.role == 'user')
-                        'Give admin access',
+                      if (user.isDeleted == true) 'Unblock' else 'Block',
+                      if (ProfileController.to.userData?.role ==
+                          'superAdmin') ...[
+                        if (user.role == 'admin') 'Decline admin access',
+                        if (user.role == 'user') 'Give admin access',
                       ],
                     ],
                   );
@@ -98,6 +97,27 @@ class UserCard extends StatelessWidget {
                               controller.updateRole(user.sId!, 'admin'),
                           description:
                               'Are you sure you want to give this admin access request?',
+                        ),
+                      ),
+                    );
+                  } else if (selectedMenu == 'Block' ||
+                      selectedMenu == 'Unblock') {
+                    showDialog(
+                      context: context,
+                      builder: (context) => Obx(
+                        () => CustomDialog(
+                          title: selectedMenu == 'Unblock' ? 'Unblock user?' : 'Block user?',
+                          leftButtonLabel: 'Cancel',
+                          rightButtonLabel: 'Block',
+                          isLoading: controller.blockUserState.isLoading,
+                          onTapLeftButton: () => Get.back(),
+                          onTapRightButton: () => controller.blockUser(
+                            user.sId!,
+                            type: selectedMenu == 'Unblock'
+                                ? 'unblock'
+                                : 'block',
+                          ),
+                          description: 'Are you sure you want to ${selectedMenu.toLowerCase()} this user?'
                         ),
                       ),
                     );

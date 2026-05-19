@@ -32,8 +32,11 @@ class ProfileController extends GetxController {
   final Rx<LoadingState> _updateRoleState = LoadingState.initial.obs;
 
   final Rx<LoadingState> _motherTreeState = LoadingState.initial.obs;
+  final Rx<LoadingState> _blockUserState = LoadingState.initial.obs;
 
   LoadingState get motherTreeState => _motherTreeState.value;
+  LoadingState get blockUserState => _blockUserState.value;
+
 
   LoadingState get updateRoleState => _updateRoleState.value;
 
@@ -98,12 +101,13 @@ class ProfileController extends GetxController {
 
   List<String> get selectedUserIds => _selectedUserIds;
 
-  final RxString _selectedUserId = ''.obs;
+  final RxString _selectedUserId = 'gdh'.obs;
 
   String get selectedUserId => _selectedUserId.value;
 
   void selectSingleUser(String id) {
     _selectedUserId.value = id;
+    debugPrint('Selected user ID: $id');
   }
 
   // ─── Edit Tracking ─────────────────────────────────────────────────────────
@@ -503,6 +507,36 @@ class ProfileController extends GetxController {
       Get.offAllNamed(AppRoutes.bottomNavUserBar);
     } catch (e) {
       _motherTreeState.value = LoadingState.error;
+      debugPrint('❌ Update error: $e');
+      ToastMessageHelper.show(e.errorMessage);
+    }
+  }
+
+  Future<void> addMember(String motherId) async {
+    try {
+      _motherTreeState.value = LoadingState.loading;
+      await _service.addMember(_selectedUserId.value,motherId);
+      _motherTreeState.value = LoadingState.loaded;
+      await retry();
+      Get.back(canPop: true);
+      Get.back(canPop: true);
+    } catch (e) {
+      _motherTreeState.value = LoadingState.error;
+      debugPrint('❌ Update error: $e');
+      ToastMessageHelper.show(e.errorMessage);
+    }
+  }
+
+
+  Future<void> blockUser(String userId,{required String  type}) async {
+    try {
+      _blockUserState.value = LoadingState.loading;
+      await _service.blockUser(userId,type: type);
+      _blockUserState.value = LoadingState.loaded;
+      await retry();
+      Get.back(canPop: true);
+    } catch (e) {
+      _blockUserState.value = LoadingState.error;
       debugPrint('❌ Update error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }

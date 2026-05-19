@@ -44,7 +44,8 @@ class ProfileScreen extends StatelessWidget {
             onTap: () {
               Get.toNamed(AppRoutes.profileInformationScreen);
             },
-          ),ProfileListTile(
+          ),
+          ProfileListTile(
             icon: Assets.icons.requested.path,
             title: "Requested",
             onTap: () {

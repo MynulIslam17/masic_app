@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/profile/presentation/widgets/filter_dialog.dart';
 import 'package:flutter_task/features/profile/presentation/widgets/member_card.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
@@ -16,6 +16,7 @@ class MotherSelectScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String? motherId = Get.arguments as String?;
     final controller = ProfileController.to;
     return CustomScaffold(
       appBar: CustomAppBar(
@@ -76,7 +77,9 @@ class MotherSelectScreen extends StatelessWidget {
                     itemCount: controller.usersData.length,
                     itemBuilder: (context, index) {
                       final user = controller.usersData[index];
-                      return MemberCard(user: user,isMotherTree: true);
+                      return MemberCard(
+                        isTree: motherId != null,
+                          user: user,isMotherTree: motherId == null);
                     },
                     separatorBuilder: (context, index) =>
                         SizedBox(height: 10.h),
@@ -101,7 +104,11 @@ class MotherSelectScreen extends StatelessWidget {
               return CustomButton(
                 isLoading: controller.motherTreeState.isLoading,
                 onPressed: () {
-                  controller.motherTreeSelect();
+                  if(AuthController.to.isAdmin()) {
+                    controller.addMember(motherId ?? '');
+                  }else {
+                    controller.motherTreeSelect();
+                  }
                 },
                 label: 'Submit',
               );

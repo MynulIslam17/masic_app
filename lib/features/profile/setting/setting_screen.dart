@@ -5,6 +5,7 @@ import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/core/widgets/profile_list_tile.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:get/get.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -13,21 +14,27 @@ class SettingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      appBar: const CustomAppBar(
-        title: 'Settings',
-      ),
+      appBar: const CustomAppBar(title: 'Settings'),
       body: Column(
         children: [
           SizedBox(height: 20.h),
 
-          // Change Password
-          ProfileListTile(
-            icon: Assets.icons.password.path,
-            title: "Change Password",
-            onTap: () {
-              Get.toNamed(AppRoutes.settingChangePassword);
-            },
-          ),
+          if (AuthController.to.isAdmin())
+            ProfileListTile(
+              icon: Assets.icons.profile.path,
+              title: "Profile Information",
+              onTap: () {
+                Get.toNamed(AppRoutes.profileInformationScreen);
+              },
+            )
+          else
+            ProfileListTile(
+              icon: Assets.icons.password.path,
+              title: "Change Password",
+              onTap: () {
+                Get.toNamed(AppRoutes.settingChangePassword);
+              },
+            ),
 
           // Terms & Condition
           ProfileListTile(
@@ -38,7 +45,7 @@ class SettingScreen extends StatelessWidget {
               //   "title" : "Terms & Condition",
               // });
 
-             // Get.toNamed(AppRoutes.termsScreen);
+              // Get.toNamed(AppRoutes.termsScreen);
             },
           ),
 
@@ -50,7 +57,7 @@ class SettingScreen extends StatelessWidget {
               // Get.toNamed(AppRoutes.privacyPolicyAllScreen, arguments: {
               //   "title" : "Privacy Policy",
               // });
-             // Get.toNamed(AppRoutes.policyScreen);
+              // Get.toNamed(AppRoutes.policyScreen);
             },
           ),
 
@@ -74,22 +81,24 @@ class SettingScreen extends StatelessWidget {
             backgroundColor: Colors.transparent,
             foregroundColor: AppColors.errorColor,
             label: 'Delete Account',
-              onPressed: (){
-            showDialog(
-              context: context,
-              builder: (context) => CustomDialog(
-                title: "Delete Account",
-                rightButtonLabel: 'Yes, Delete',
-                onTapLeftButton: () {
-                  Get.back();
-                },
-                onTapRightButton: () {
-                  // Handle delete logic here
-                  // Get.offAllNamed(AppRoutes.signUpScreen);
-                }, description: 'Are you sure want to delete your Account?',
-              ),
-            );
-          }),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => CustomDialog(
+                  title: "Delete Account",
+                  rightButtonLabel: 'Yes, Delete',
+                  onTapLeftButton: () {
+                    Get.back();
+                  },
+                  onTapRightButton: () {
+                    // Handle delete logic here
+                    // Get.offAllNamed(AppRoutes.signUpScreen);
+                  },
+                  description: 'Are you sure want to delete your Account?',
+                ),
+              );
+            },
+          ),
 
           SizedBox(height: 20.h),
         ],

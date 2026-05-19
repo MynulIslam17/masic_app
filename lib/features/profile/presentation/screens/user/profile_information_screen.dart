@@ -76,22 +76,22 @@ class ProfileInformationScreen extends StatelessWidget {
                       label: 'University name',
                       value: user?.universityName ?? 'N/A',
                     ),
-                    InfoRow(
-                      label: 'Field of work',
-                      value: user?.fieldOfWork ?? 'N/A',
-                    ),
-                    InfoRow(
-                      label: 'Spouse name',
-                      value: user?.spouseName ?? 'N/A',
-                    ),
-                    InfoRow(
-                      label: 'Spouse number',
-                      value: user?.spousePhone ?? 'N/A',
-                    ),
-                    InfoRow(
-                      label: 'Linkedin link',
-                      value: user?.linkedinLink ?? 'N/A',
-                    ),
+                    // InfoRow(
+                    //   label: 'Field of work',
+                    //   value: user?.fieldOfWork ?? 'N/A',
+                    // ),
+                    // InfoRow(
+                    //   label: 'Spouse name',
+                    //   value: user?.spouseName ?? 'N/A',
+                    // ),
+                    // InfoRow(
+                    //   label: 'Spouse number',
+                    //   value: user?.spousePhone ?? 'N/A',
+                    // ),
+                    // InfoRow(
+                    //   label: 'Linkedin link',
+                    //   value: user?.linkedinLink ?? 'N/A',
+                    // ),
                   ],
                 ),
               ),

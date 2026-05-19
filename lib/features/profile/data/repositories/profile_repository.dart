@@ -221,6 +221,31 @@ class ProfileRepository {
     }
   }
 
+  Future<void> addMember (String userId,String motherId) async {
+    try {
+      await _apiService.post(ApiConstants.addMember(userId,motherId));
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+
+  Future<void> blockUser (String userId,{required String  type}) async {
+    try {
+      await _apiService.patch(ApiConstants.blockUser(userId),
+        data: {
+          'type': type,
+        }
+      );
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
 
 
 

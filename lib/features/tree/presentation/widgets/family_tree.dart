@@ -46,7 +46,7 @@ class FamilyTree extends StatelessWidget {
 
     final double botEnd = botChildren.isNotEmpty
         ? _childBotFromRoot(botChildren.length - 1, rootTopY) +
-              TreeController.cardH
+        TreeController.cardH
         : rootTopY + TreeController.cardH;
 
     final double offsetY = topStart < 0 ? -topStart : 0;
@@ -56,7 +56,6 @@ class FamilyTree extends StatelessWidget {
     final double spineX = hideRoot ? 0 : TreeController.spineX;
     final double childL = spineX + TreeController.stub;
     final double nestedW = childL + TreeController.childW;
-
     final double rootLeft =
         (TreeController.totalW - TreeController.centerW) / 1.5;
 
@@ -76,8 +75,7 @@ class FamilyTree extends StatelessWidget {
                 topCount: topChildren.length,
                 botCount: botChildren.length,
                 centerMidY: adjustedRootTopY + TreeController.cardH / 2,
-                botTopY:
-                    adjustedRootTopY +
+                botTopY: adjustedRootTopY +
                     TreeController.cardH +
                     TreeController.vPad,
                 color: AppColors.primaryColor.withOpacity(0.38),
@@ -89,12 +87,11 @@ class FamilyTree extends StatelessWidget {
           for (int i = 0; i < topChildren.length; i++)
             Positioned(
               left: childL,
-              top: _childTopFromRoot(
-                topChildren.length - 1 - i,
-                adjustedRootTopY,
-              ),
-              child: Obx(() => _childContent(topChildren[i])),
+              top: _childTopFromRoot(topChildren.length - 1 - i, adjustedRootTopY),
+              // ✅ FIX: method এর বদলে আলাদা widget
+              child: _ChildNode(child: topChildren[i], onToggleEdit: onToggleEdit),
             ),
+
           if (!hideRoot)
             Positioned(
               left: rootLeft,
@@ -102,7 +99,8 @@ class FamilyTree extends StatelessWidget {
               width: TreeController.centerW,
               height: TreeController.cardH,
               child: TreeCard(
-                id: root.sId ?? '',
+                memberId: root.sId ?? '',
+                id: root.sId ?? root.linkedUser?.sId ?? '',
                 label: label,
                 isRoot: true,
                 hasChildren: false,
@@ -114,84 +112,104 @@ class FamilyTree extends StatelessWidget {
             Positioned(
               left: childL,
               top: _childBotFromRoot(i, adjustedRootTopY),
-              child: Obx(() => _childContent(botChildren[i])),
+              // ✅ FIX: method এর বদলে আলাদা widget
+              child: _ChildNode(child: botChildren[i], onToggleEdit: onToggleEdit),
             ),
         ],
       ),
     );
   }
+}
 
-  Widget _childContent(Children c) {
-    final String label = c.label?.isNotEmpty == true
-        ? c.label!
-        : (c.linkedUser?.name ?? '');
-    final bool hasKids = c.children?.isNotEmpty == true;
-    final String key = c.sId ?? '';
-    final bool exp = TreeController.to.expandedNodes[key] ?? false;
+// ✅ আলাদা widget — সব level এ Obx কাজ করবে
+class _ChildNode extends StatelessWidget {
+  final Children child;
+  final bool onToggleEdit;
 
-    if (exp && hasKids) {
-      final kids = c.children!;
-      final int half = (kids.length / 2).ceil();
+  const _ChildNode({required this.child, required this.onToggleEdit});
 
-      final fakeRoot = Root(
-        sId: c.sId,
-        linkedUser: c.linkedUser,
-        label: c.label,
-        level: c.level,
-        children: kids,
-        relationType: c.relationType,
-      );
+  @override
+  Widget build(BuildContext context) {
+    final String key = child.sId?.isNotEmpty == true
+        ? child.sId!
+        : (child.linkedUser?.sId ?? '');
 
-      final double nestedRootTopY =
-          (half) * (TreeController.cardH + TreeController.cardGap) -
-          TreeController.cardGap +
-          TreeController.vPad;
+    final String label = child.label?.isNotEmpty == true
+        ? child.label!
+        : (child.linkedUser?.name ?? '');
 
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: TreeController.cardH,
-            child: TreeCard(
-              onToggleEdit: onToggleEdit
-                  ? () => TreeController.to.deleteUser(c.sId ?? '')
-                  : null,
-              id: key,
-              label: label,
-              isRoot: false,
-              hasChildren: hasKids,
-              isExpanded: exp,
-              onToggle: () => TreeController.to.expandedNodes[key] = !exp,
+    final bool hasKids = child.children?.isNotEmpty == true;
+
+    return Obx(() {
+      final bool exp = TreeController.to.expandedNodes[key] ?? false;
+
+      if (exp && hasKids) {
+        final kids = child.children!;
+        final int half = (kids.length / 2).ceil();
+
+        final fakeRoot = Root(
+          sId: child.sId,
+          linkedUser: child.linkedUser,
+          label: child.label,
+          level: child.level,
+          children: kids,
+          relationType: child.relationType,
+        );
+
+        final double nestedRootTopY =
+            half * (TreeController.cardH + TreeController.cardGap) -
+                TreeController.cardGap +
+                TreeController.vPad;
+
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: TreeController.cardH,
+              child: TreeCard(
+                memberId: child.sId ?? '',
+                id: key,
+                label: label,
+                isRoot: false,
+                hasChildren: hasKids,
+                isExpanded: exp,
+                onToggle: () => TreeController.to.expandedNodes[key] = !exp,
+                onToggleEdit: onToggleEdit
+                    ? () => TreeController.to.deleteUser(key)
+                    : null,
+              ),
             ),
-          ),
-          FamilyTree(
-            root: fakeRoot,
-            topChildren: kids.sublist(0, half),
-            botChildren: kids.sublist(half),
-            rootTopY: nestedRootTopY,
-            onToggleEdit: onToggleEdit,
-            hideRoot: true,
-          ),
-        ],
-      );
-    }
+            FamilyTree(
+              root: fakeRoot,
+              topChildren: kids.sublist(0, half),
+              botChildren: kids.sublist(half),
+              rootTopY: nestedRootTopY,
+              onToggleEdit: onToggleEdit,
+              hideRoot: true,
+            ),
+          ],
+        );
+      }
 
-    return SizedBox(
-      height: TreeController.cardH,
-      child: TreeCard(
-        onToggleEdit: onToggleEdit
-            ? () => TreeController.to.deleteUser(c.sId ?? '')
-            : null,
-        id: key,
-        label: label,
-        isRoot: false,
-        hasChildren: hasKids,
-        isExpanded: exp,
-        onToggle: hasKids
-            ? () => TreeController.to.expandedNodes[key] = !exp
-            : null,
-      ),
-    );
+      return SizedBox(
+        height: TreeController.cardH,
+        child: TreeCard(
+          memberId: child.sId ?? '',
+          id: key,
+          label: label,
+          isRoot: false,
+          hasChildren: hasKids,
+          isExpanded: exp,
+          onToggle: hasKids
+              ? () => TreeController.to.expandedNodes[key] = !exp
+              : null,
+          onToggleEdit: onToggleEdit
+              ? () => TreeController.to.deleteUser(key)
+              : null,
+
+        ),
+      );
+    });
   }
 }

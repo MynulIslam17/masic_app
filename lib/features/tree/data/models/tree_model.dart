@@ -208,30 +208,3 @@ class Children {
 }
 
 
-class NodeInfo {
-  final String id;
-  final String label;
-  final List<NodeInfo> children;
-
-  const NodeInfo({
-    required this.id,
-    required this.label,
-    required this.children,
-  });
-
-  factory NodeInfo.fromRoot(Root root) {
-    return NodeInfo(
-      id: root.sId ?? '',
-      label: root.label ?? root.linkedUser?.name ?? '',
-      children: (root.children ?? []).map(NodeInfo.fromChildren).toList(),
-    );
-  }
-
-  static NodeInfo fromChildren(Children child) {
-    return NodeInfo(
-      id: child.sId ?? '',
-      label: child.label ?? child.linkedUser?.name ?? '',
-      children: (child.children ?? []).map(fromChildren).toList(),
-    );
-  }
-}

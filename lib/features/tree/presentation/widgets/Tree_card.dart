@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 class TreeCard extends StatelessWidget {
   final String label;
   final String id;
+  final String memberId;
   final bool isRoot;
   final bool hasChildren;
   final bool isExpanded;
@@ -26,7 +27,7 @@ class TreeCard extends StatelessWidget {
     required this.isExpanded,
     this.onToggle,
     required this.id,
-    this.onToggleEdit,
+    this.onToggleEdit, required this.memberId,
   });
 
   @override
@@ -95,7 +96,10 @@ class TreeCard extends StatelessWidget {
                                   backgroundColor: Colors.transparent,
                                   foregroundColor: AppColors.primaryColor,
                                   bordersColor: AppColors.primaryColor,
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Get.toNamed(AppRoutes.motherSelectScreen, arguments: memberId);
+                                    debugPrint('memberId: $memberId');
+                                  },
                                   label: 'Add new user',
                                 ),
 
@@ -114,38 +118,6 @@ class TreeCard extends StatelessWidget {
                                 }),
                               ],
                             ),
-
-                            actions: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: CustomButton(
-                                      height: 45.h,
-                                      backgroundColor: Colors.transparent,
-                                      foregroundColor: AppColors.primaryColor,
-                                      bordersColor: AppColors.primaryColor,
-                                      onPressed: () {},
-                                      label: 'Continue',
-                                    ),
-                                  ),
-
-                                  SizedBox(width: 12.w),
-
-                                  Expanded(
-                                    child: CustomButton(
-                                      height: 45.h,
-                                      backgroundColor: Colors.transparent,
-                                      foregroundColor: AppColors.errorColor,
-                                      bordersColor: AppColors.errorColor,
-                                      onPressed: () {
-                                        Get.back(canPop: true);
-                                      },
-                                      label: 'Cancel',
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
                           ),
                         );
                       },

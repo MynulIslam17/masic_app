@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
+import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/admin_app_bar.dart';
 import 'package:flutter_task/core/widgets/custom_scaffold.dart';
 import 'package:flutter_task/core/widgets/empty_data_widget.dart';
@@ -26,12 +25,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return CustomScaffold(
       paddingSide: 0,
       appBar: AdminAppBar(
+        showLeading: false,
         actions: [
           IconButton(
             onPressed: () {
-              Get.toNamed(AppRoutes.adminProfileScreen);
+              Get.back();
             },
-            icon: Icon(Icons.menu, color: AppColors.color8A8A8A),
+            icon: Assets.icons.clean.svg(height: 24.r, width: 24.r),
           ),
         ],
       ),

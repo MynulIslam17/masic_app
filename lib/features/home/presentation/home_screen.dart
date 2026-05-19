@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
 import 'package:flutter_task/features/home/presentation/widgets/home_content.dart';
@@ -18,6 +20,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = HomeController.to;
+    final isAdmin  = AuthController.to.isAdmin();
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: NestedScrollView(
@@ -25,7 +28,12 @@ class HomeScreen extends StatelessWidget {
           return [
             SliverAppBar(
               actions: [
-                IconButton(onPressed: () {}, icon: Assets.icons.noti.svg()),
+                GestureDetector(
+                    onTap: () {}, child: Assets.icons.noti.svg()),
+                if(isAdmin)
+                IconButton(onPressed: () {
+                  Get.toNamed(AppRoutes.adminProfileScreen);
+                }, icon: Assets.icons.menu.svg()),
               ],
               expandedHeight: 110.h,
               floating: false,
@@ -43,7 +51,9 @@ class HomeScreen extends StatelessWidget {
                     final userData = ProfileController.to.userData;
                     return GestureDetector(
                       onTap: () {
-                        BottomNavBarController.to.onChange(2);
+                        if(!isAdmin) {
+                          BottomNavBarController.to.onChange(2);
+                        }
                       },
                       child: Row(
                         children: [

@@ -34,7 +34,7 @@ class AdminProfileScreen extends StatelessWidget {
               icon: Assets.icons.dashboard.path,
               title: "Dashboard",
               onTap: () {
-                Get.back();
+                Get.toNamed(AppRoutes.adminDashboardScreen);
               },
             ),
             ProfileListTile(

@@ -22,7 +22,9 @@ class ApiConstants {
   static const String userProfile = '/api/v1/users/me';
   static const String userProfileUpdate = '/api/v1/users/edit-profile';
   static const String usersProfile = '/api/v1/users';
+  static String addMember(String userId,String motherId) => '/api/v1/member/add-child/$userId/$motherId';
   static String updateRole(String userId) => '/api/v1/super-admin/role/update/$userId';
+  static String blockUser(String userId) => '/api/v1/super-admin/block-unblock/$userId';
 
 
 
