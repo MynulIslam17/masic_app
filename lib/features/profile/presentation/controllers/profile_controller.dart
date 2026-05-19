@@ -11,6 +11,7 @@ import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
+import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -403,7 +404,7 @@ class ProfileController extends GetxController {
         UserModel(
           name: nameController.text.trim(),
           email: emailController.text.trim(),
-          spousePhone: phoneController.text.trim(),
+          phone: phoneController.text.trim(),
           dateOfBirth: dateOfBirth,
           gender: genderController.text.trim(),
           employmentStatus: employmentController.text.trim(),
@@ -429,6 +430,8 @@ class ProfileController extends GetxController {
         image: _selectedImage.value,
         cv: _selectedCV.value,
       );
+      Get.back(canPop: true);
+
       _userData.value = updatedUser;
 
       _selectedDate = null;
@@ -517,7 +520,7 @@ class ProfileController extends GetxController {
       _motherTreeState.value = LoadingState.loading;
       await _service.addMember(_selectedUserId.value,motherId);
       _motherTreeState.value = LoadingState.loaded;
-      await retry();
+      await TreeController.to.loadData();
       Get.back(canPop: true);
       Get.back(canPop: true);
     } catch (e) {

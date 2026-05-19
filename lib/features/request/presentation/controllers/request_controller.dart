@@ -25,6 +25,10 @@ class RequestController extends GetxController {
   }) : _service = service,
        _connectivityService = connectivityService;
 
+
+
+
+
   // ─── Loading States ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _updateState = LoadingState.initial.obs;
@@ -188,14 +192,19 @@ class RequestController extends GetxController {
 
   Future<void> createRequest({required String type}) async {
     final user = ProfileController.to.userData;
-    if (user == null ||
-        user.contact == null ||
-        user.educationHistory == null ||
-        user.experience == null) {
-      ToastMessageHelper.show('Please fill all the required fields');
-      Get.toNamed(AppRoutes.profileInformationScreen);
+
+    if (user == null) {
+      ToastMessageHelper.show('User data not found');
       return;
     }
+
+    // Validate all required fields
+    final validationError = _validateUserData(user);
+    if (validationError != null) {
+      ToastMessageHelper.show(validationError);
+      return;
+    }
+
     try {
       _createState.value = LoadingState.loading;
       await _service.createRequest(
@@ -213,25 +222,25 @@ class RequestController extends GetxController {
           education: user.educationHistory
               ?.map(
                 (e) => EducationHistory(
-                  school: e.school,
-                  degree: e.degree,
-                  major: e.major,
-                  from: e.from,
-                  to: e.to,
-                  isCurrent: e.isCurrent,
-                ),
-              )
+              school: e.school,
+              degree: e.degree,
+              major: e.major,
+              from: e.from,
+              to: e.to,
+              isCurrent: e.isCurrent,
+            ),
+          )
               .toList(),
           experience: user.experience
               ?.map(
                 (e) => UserExperience(
-                  company: e.company,
-                  position: e.position,
-                  from: e.from,
-                  to: e.to,
-                  isCurrent: e.isCurrent,
-                ),
-              )
+              company: e.company,
+              position: e.position,
+              from: e.from,
+              to: e.to,
+              isCurrent: e.isCurrent,
+            ),
+          )
               .toList(),
           cvUrl: user.cvUrl,
         ),
@@ -240,6 +249,7 @@ class RequestController extends GetxController {
       Get.back(canPop: true);
       Get.back(canPop: true);
       ToastMessageHelper.show('Request sent, Please wait for admin approval');
+      jobSpecTEController.clear();
     } catch (e) {
       _createState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
@@ -247,6 +257,34 @@ class RequestController extends GetxController {
     }
   }
 
+  String? _validateUserData(UserModel user) {
+    // Contact validation
+
+    // Bio validation
+    if (user.bio == null || user.bio!.isEmpty) {
+      return 'Please add your bio';
+    }
+
+    if (user.contact == null) return 'Please add your contact information';
+
+
+    // Education validation
+    if (user.educationHistory == null || user.educationHistory!.isEmpty) {
+      return 'Please add at least one education history';
+    }
+
+    // Experience validation
+    if (user.experience == null || user.experience!.isEmpty) {
+      return 'Please add at least one work experience';
+    }
+
+    // CV validation
+    if (user.cvUrl == null || user.cvUrl!.isEmpty) {
+      return 'Please upload your CV';
+    }
+
+    return null; // All valid
+  }
   @override
   Future<void> refresh() async => _loadData();
 

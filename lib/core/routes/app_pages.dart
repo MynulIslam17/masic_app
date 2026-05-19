@@ -26,6 +26,7 @@ import 'package:flutter_task/features/profile/presentation/screens/user/add_cv_s
 import 'package:flutter_task/features/profile/presentation/screens/user/add_education_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/add_job_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/edit_profile_screen.dart';
+import 'package:flutter_task/features/profile/presentation/screens/user/job_specification_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/member_select_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/mother_select_screen.dart';
 import 'package:flutter_task/features/profile/presentation/screens/user/personal_info_screen.dart';
@@ -120,8 +121,15 @@ abstract class AppPages {
     GetPage(name: AppRoutes.addCvScreen, page: () => AddCvScreen()),
 
     GetPage(name: AppRoutes.requestedScreen, page: () => RequestedScreen()),
-    GetPage(name: AppRoutes.motherSelectScreen, page: () => MotherSelectScreen()),
+    GetPage(
+      name: AppRoutes.motherSelectScreen,
+      page: () => MotherSelectScreen(),
+    ),
     GetPage(name: AppRoutes.homeScreen, page: () => HomeScreen()),
+    GetPage(
+      name: AppRoutes.jobSpecificationScreen,
+      page: () => JobSpecificationScreen(),
+    ),
 
     GetPage(
       name: AppRoutes.adminDashboardScreen,

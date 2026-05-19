@@ -38,6 +38,21 @@ class PersonalInfoScreen extends StatelessWidget {
                   onPressed: () => Get.toNamed(AppRoutes.addBioScreen),
                 ),
 
+              if(requestType != null)...[
+                CustomText(text: 'Job specification', bottom: 10.h, top: 10.h),
+                if (RequestController.to.jobSpecTEController.text.isNotEmpty)
+                  ItemCard(
+                    subtitle: RequestController.to.jobSpecTEController.text,
+                    onUpdate: () => Get.toNamed(AppRoutes.jobSpecificationScreen),
+                  )
+                else
+                  _addOutlineButton(
+                    label: 'Job specification',
+                    onPressed: () => Get.toNamed(AppRoutes.jobSpecificationScreen),
+                  ),
+              ],
+
+
               // ── Contact Information ────────────────────────────────────────
               CustomText(text: 'Contact information', bottom: 10.h, top: 10.h),
               if (user?.contact != null)
@@ -134,6 +149,7 @@ class PersonalInfoScreen extends StatelessWidget {
                     isLoading: controller.createState.isLoading,
                     label: 'Submit',
                     onPressed: () {
+                      //Get.toNamed(AppRoutes.personalInfoScreen);
                       controller.createRequest(type: requestType);
                     },
                   ),

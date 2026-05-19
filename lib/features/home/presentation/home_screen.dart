@@ -28,8 +28,11 @@ class HomeScreen extends StatelessWidget {
           return [
             SliverAppBar(
               actions: [
-                GestureDetector(
-                    onTap: () {}, child: Assets.icons.noti.svg()),
+                Padding(
+                  padding:  EdgeInsets.only(right: isAdmin ? 0 : 16.w),
+                  child: GestureDetector(
+                      onTap: () {}, child: Assets.icons.noti.svg()),
+                ),
                 if(isAdmin)
                 IconButton(onPressed: () {
                   Get.toNamed(AppRoutes.adminProfileScreen);

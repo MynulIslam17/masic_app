@@ -68,7 +68,8 @@ class RequestWidget extends StatelessWidget {
                           CustomButton(
                             label: 'Request by profile data',
                             onPressed: () {
-                              controller.createRequest(type: request.type);
+                              Get.back();
+                              Get.toNamed(AppRoutes.jobSpecificationScreen,arguments: request.type);
                             },
                           ),
                           SizedBox(height: 10.h),
@@ -80,7 +81,7 @@ class RequestWidget extends StatelessWidget {
                             label: 'Request manually',
                             onPressed: () {
                               Get.back();
-                              Get.toNamed(AppRoutes.personalInfoScreen,arguments: request.type);
+                              Get.toNamed(AppRoutes.jobSpecificationScreen);
                             },
                           ),
                         ],
