@@ -28,15 +28,17 @@ class RequestedCardWidget extends StatelessWidget {
       paddingHorizontal: 16.r,
       paddingVertical: 16.r,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: CustomText(
+                  textOverflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.start,
                   maxline: 1,
-                  text: request.bio ?? 'N/A',
+                  text: request.jobSpec ?? 'N/A',
                   fontSize: 16.sp,
                   color: AppColors.primaryColor,
                 ),

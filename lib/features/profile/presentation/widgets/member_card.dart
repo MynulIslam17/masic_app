@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
@@ -48,7 +49,7 @@ class MemberCard extends StatelessWidget {
           text: 'Mother tree: ${user.motherTree ?? ''}',
           fontSize: 10.sp,
         ),
-        trailing: user.treeJoinStatus == 'placed'
+        trailing: (user.treeJoinStatus == 'placed' && isTree)
             ? CustomButton(
                 width: 69.w,
                 height: 30.h,
@@ -58,7 +59,7 @@ class MemberCard extends StatelessWidget {
                 label: 'Disable',
                 onPressed: () {},
               )
-            : isBlock
+            : (isBlock && AuthController.to.isAdmin())
             ? CustomButton(
                 width: 69.w,
                 height: 30.h,

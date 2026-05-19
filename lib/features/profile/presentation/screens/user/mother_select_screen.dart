@@ -33,68 +33,81 @@ class MotherSelectScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        controller: controller.scrollController,
-        physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-        child: Column(
-          children: [
-            CustomTextField(
-              validator: (_) => null,
-              prefixIcon: Assets.icons.search.svg(),
-              borderRadio: 100.r,
-              borderColor: AppColors.colorE6E6E6,
-              showShadow: false,
-              controller: controller.searchController,
-              hintText: 'Search here . . .',
-            ),
-            SizedBox(height: 10.h),
-            Row(
-              children: [
-                CustomText(
-                  textAlign: TextAlign.start,
-                  fontSize: 12.sp,
-                  text: 'Total user : ${controller.usersData.length}',
-                ),
-              ],
-            ),
+      body: RefreshIndicator(
+        onRefresh: () => controller.refresh(),
+        child: SingleChildScrollView(
+          controller: controller.scrollController,
+          physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          child: Column(
+            children: [
+              CustomTextField(
+                validator: (_) => null,
+                prefixIcon: Assets.icons.search.svg(),
+                borderRadio: 100.r,
+                borderColor: AppColors.colorE6E6E6,
+                showShadow: false,
+                controller: controller.searchController,
+                hintText: 'Search here . . .',
+              ),
+              SizedBox(height: 10.h),
+              Row(
+                children: [
+                  CustomText(
+                    textAlign: TextAlign.start,
+                    fontSize: 12.sp,
+                    text: 'Total user : ${controller.usersData.length}',
+                  ),
+                ],
+              ),
 
-            /// ============ > Events List < ============
-            SizedBox(height: 24.h),
-            Obx(() {
-              switch (controller.loadingState) {
-                case LoadingState.initial:
-                case LoadingState.loading:
-                  return Center(child: CustomLoader());
+              /// ============ > Events List < ============
+              SizedBox(height: 24.h),
+              Obx(() {
+                switch (controller.loadingState) {
+                  case LoadingState.initial:
+                  case LoadingState.loading:
+                    return Center(child: CustomLoader());
 
-                case LoadingState.offline:
-                case LoadingState.error:
-                  return CustomText(text: '');
+                  case LoadingState.offline:
+                  case LoadingState.error:
+                    return CustomText(text: '');
 
-                case LoadingState.loaded:
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: controller.usersData.length,
-                    itemBuilder: (context, index) {
-                      final user = controller.usersData[index];
-                      return MemberCard(
-                        isTree: motherId != null,
-                          user: user,isMotherTree: motherId == null);
-                    },
-                    separatorBuilder: (context, index) =>
-                        SizedBox(height: 10.h),
-                  );
-              }
-            }),
-            Obx(
-              () => controller.isLoadingMore
-                  ? Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.h),
-                      child: Center(child: CustomLoader()),
-                    )
-                  : SizedBox.shrink(),
-            ),
-          ],
+                  case LoadingState.loaded:
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final users = motherId == null
+                            ? controller.usersData
+                            .where((u) => u.role == 'user' && u.isDeleted != true && u.sId != ProfileController.to.userData?.sId)
+                            .toList()
+                            : controller.usersData;
+
+                        final user = users[index];
+                        return MemberCard(
+                          isTree: motherId != null,
+                          user: user,
+                          isMotherTree: motherId == null,
+                        );
+                      },
+                      itemCount: motherId == null
+                          ? controller.usersData
+                          .where((u) => u.role == 'user' && u.isDeleted != true && u.sId != ProfileController.to.userData?.sId)
+                          .length
+                          : controller.usersData.length,
+                      separatorBuilder: (context, index) => SizedBox(height: 10.h),
+                    );              }
+              }),
+              Obx(
+                () => controller.isLoadingMore
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
+                        child: Center(child: CustomLoader()),
+                      )
+                    : SizedBox.shrink(),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(

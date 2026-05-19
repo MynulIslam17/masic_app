@@ -117,7 +117,7 @@ class PollResultScreen extends StatelessWidget {
         }
       }),
 
-      bottomNavigationBar: SafeArea(child: Padding(
+      bottomNavigationBar:  SafeArea(child: Padding(
             padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 10.h),
             child: CustomButton(
               bordersColor: AppColors.errorColor,
