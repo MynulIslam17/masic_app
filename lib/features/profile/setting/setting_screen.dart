@@ -41,11 +41,9 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.terms.path,
             title: "Terms & Condition",
             onTap: () {
-              // Get.toNamed(AppRoutes.privacyPolicyAllScreen, arguments: {
-              //   "title" : "Terms & Condition",
-              // });
-
-              // Get.toNamed(AppRoutes.termsScreen);
+              Get.toNamed(AppRoutes.privacyPolicyAllScreen,
+                arguments: {'title': 'Terms & Condition', 'key': 'terms'},
+              );
             },
           ),
 
@@ -54,10 +52,9 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.policy.path,
             title: "Privacy Policy",
             onTap: () {
-              // Get.toNamed(AppRoutes.privacyPolicyAllScreen, arguments: {
-              //   "title" : "Privacy Policy",
-              // });
-              // Get.toNamed(AppRoutes.policyScreen);
+              Get.toNamed(AppRoutes.privacyPolicyAllScreen,
+                arguments: {'title': 'Privacy Policy', 'key': 'privacy'},
+              );
             },
           ),
 
@@ -66,9 +63,9 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.about.path,
             title: "About Us",
             onTap: () {
-              // Get.toNamed(AppRoutes.privacyPolicyAllScreen, arguments: {
-              //   "title" : "About Us",
-              // });
+              Get.toNamed(AppRoutes.privacyPolicyAllScreen,
+                arguments: {'title': 'About Us', 'key': 'about'},
+              );
             },
           ),
 

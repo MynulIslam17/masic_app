@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:get/get.dart';
 
 
 class SettingChangePassword extends StatefulWidget {
@@ -12,14 +15,9 @@ class SettingChangePassword extends StatefulWidget {
 
 class _SettingChangePasswordState extends State<SettingChangePassword> {
 
-
-  final TextEditingController _oldPassTEController = TextEditingController();
-  final TextEditingController _passTEController = TextEditingController();
-  final TextEditingController _rePassTEController = TextEditingController();
-  final GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
+    final controller = AuthController.to;
     return CustomScaffold(
       paddingSide: 24.w,
       appBar: CustomAppBar(
@@ -27,7 +25,7 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
       ),
       body: SingleChildScrollView(
         child: Form(
-          key: _globalKey,
+          key: controller.formKey,
           child: Column(
             //spacing: 10.h,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -36,29 +34,43 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
                 height: 24.h,
               ),
               CustomTextField(
+                showShadow: false,
                 labelText: 'Old Password',
-                controller: _oldPassTEController,
+                controller: controller.currentController,
                 hintText: "Old Password",
                 isPassword: true,
               ),
               CustomTextField(
+                showShadow: false,
                 labelText: 'New Password',
-                controller: _passTEController,
+                controller: controller.passwordController,
                 hintText: "New Password",
                 isPassword: true,
               ),
               CustomTextField(
+                showShadow: false,
                 labelText: 'Confirm Password',
-                controller: _rePassTEController,
+                controller: controller.confirmPasswordController,
                 hintText: "Confirm Password",
                 isPassword: true,
+                validator: (value) {
+                  if (value != controller.passwordController.text) {
+                    return 'Passwords do not match';
+                  }
+                  return null;
+                }
               ),
 
         SizedBox(height: 60.h,),
-              CustomButton(
-                  label: "Update",
-                  onPressed: _onChangePassword,
-                  ),
+              GetBuilder<AuthController>(
+                builder: (controller) {
+                  return CustomButton(
+                      label: "Update",
+                      isLoading: controller.changeState.isLoading,
+                      onPressed: controller.changePassword,
+                      );
+                }
+              ),
               SizedBox(
                 height:32.h,
               ),
@@ -70,17 +82,4 @@ class _SettingChangePasswordState extends State<SettingChangePassword> {
   }
 
 
-  void _onChangePassword(){
-    if(!_globalKey.currentState!.validate()) return;
-   // Get.offAllNamed(AppRoutes.resetPasswordSuccess);
-  }
-
-
-  @override
-  void dispose() {
-    _oldPassTEController.dispose();
-    _passTEController.dispose();
-    _rePassTEController.dispose();
-    super.dispose();
-  }
 }

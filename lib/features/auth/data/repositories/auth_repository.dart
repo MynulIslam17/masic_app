@@ -21,6 +21,11 @@ abstract class AuthRepository {
     required String newPassword,
   });
 
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  });
+
   /// ─── CACHE GETTERS ───────────────────────────────
   bool isLoggedIn();
 

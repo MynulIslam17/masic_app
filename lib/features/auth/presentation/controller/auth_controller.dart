@@ -22,6 +22,8 @@ class AuthController extends GetxController {
   LoadingState _otpState = LoadingState.initial;
   LoadingState _forgotState = LoadingState.initial;
   LoadingState _resetState = LoadingState.initial;
+  LoadingState _changeState = LoadingState.initial;
+
 
   LoadingState get loginState => _loginState;
 
@@ -32,6 +34,7 @@ class AuthController extends GetxController {
   LoadingState get forgotState => _forgotState;
 
   LoadingState get resetState => _resetState;
+  LoadingState get changeState => _changeState;
 
   bool checked = false;
 
@@ -45,10 +48,12 @@ class AuthController extends GetxController {
   final  fastNameController = TextEditingController();
   final  lastNameController = TextEditingController();
   final emailController = TextEditingController(text: kDebugMode ? 'mohammad@gmail.com' : '');
+  final currentController = TextEditingController();
   final passwordController = TextEditingController(text: kDebugMode ? '123456' : '');
   final confirmPasswordController = TextEditingController();
   final otpController = TextEditingController();
   final  phoneController = TextEditingController();
+
 
 
   ///
@@ -61,6 +66,7 @@ class AuthController extends GetxController {
   final otpFormKey = GlobalKey<FormState>();
   final forgotFormKey = GlobalKey<FormState>();
   final resetFormKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
 
   /// ─── LOGIN ─────────────────────────────
   Future<void> login() async {
@@ -82,7 +88,7 @@ class AuthController extends GetxController {
         //   return;
         // }
         if(userModel.role == 'superAdmin'){
-          Get.offAllNamed(AppRoutes.adminDashboardScreen);
+          Get.offAllNamed(AppRoutes.homeScreen);
         }else{
         Get.offAllNamed(AppRoutes.bottomNavUserBar);}
       }else{
@@ -183,6 +189,27 @@ class AuthController extends GetxController {
     }
   }
 
+  Future<void> changePassword() async {
+    if (!formKey.currentState!.validate()) return;
+    _changeState = LoadingState.loading;
+    update();
+    try {
+      await _authService.changePassword(
+        oldPassword: currentController.text,
+        newPassword: confirmPasswordController.text,
+      );
+      _changeState = LoadingState.loaded;
+      update();
+      Get.back(canPop: true);
+      clearControllers();
+
+    } catch (e) {
+      _changeState = LoadingState.error;
+      update();
+      ToastMessageHelper.show(e.errorMessage);
+    }
+  }
+
   /// ─── LOGOUT ────────────────────────────
   Future<void> logout() async {
     await _authService.logout();
@@ -207,6 +234,7 @@ class AuthController extends GetxController {
   void clearControllers() {
     confirmPasswordController.clear();
     otpController.clear();
+    currentController.clear();
     //emailController.clear();
     passwordController.clear();
     phoneController.clear();
@@ -224,6 +252,7 @@ class AuthController extends GetxController {
     phoneController.dispose();
     fastNameController.dispose();
     lastNameController.dispose();
+    currentController.dispose();
     super.onClose();
   }
 }

@@ -39,7 +39,7 @@ import 'package:flutter_task/features/request/presentation/screens/comon/request
 import 'package:flutter_task/features/request/presentation/screens/user/request_screen.dart';
 import 'package:flutter_task/features/translation/presentation/language_screen.dart';
 import 'package:flutter_task/features/profile/setting/change%20password/setting_change_password.dart';
-import 'package:flutter_task/features/profile/setting/privacy_policy_all_screen.dart';
+import 'package:flutter_task/features/privacy/presentation/screens/privacy_policy_all_screen.dart';
 import 'package:flutter_task/features/profile/setting/setting_screen.dart';
 import 'package:flutter_task/features/splash/splash_screen.dart';
 import 'package:flutter_task/features/tree/presentation/screens/admin_tree_screen.dart';

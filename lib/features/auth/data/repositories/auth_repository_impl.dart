@@ -163,6 +163,36 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await _apiService.post(
+        ApiConstants.changePassword,
+        data: {
+          "currentPassword": oldPassword,
+          "newPassword": newPassword,
+        },
+      );
+
+      final accessToken = response.data?['data']?['accessToken'];
+
+      if (accessToken != null) {
+        await _cacheService.put(
+          AppConstants.accessToken,
+          accessToken.toString(),
+        );
+      }
+
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
+
+  @override
   bool isLoggedIn() {
     return _cacheService.containsKey(AppConstants.accessToken);
   }

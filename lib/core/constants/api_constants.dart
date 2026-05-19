@@ -14,6 +14,7 @@ class ApiConstants {
   static const String forgot = '/api/v1/auth/forget-password';
   static const String otpVerify = '/api/v1/auth/verify-otp';
   static const String resetPassword = '/api/v1/auth/reset-password';
+  static const String changePassword = '/api/v1/auth/change-password';
 
 
 
@@ -101,4 +102,7 @@ class ApiConstants {
   static const String cacheBanner = 'banner';
   static const String cacheTree = 'tree';
   static const String cacheDashboard = 'dashboard';
+  static const String privacyPolicy = '/api/v1/privacy';
+  static const String aboutUs = '/api/v1/about';
+  static const String termsAndCondition = '/api/v1/terms';
 }

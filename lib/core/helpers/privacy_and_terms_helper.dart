@@ -8,7 +8,7 @@ import '../theme/app_colors.dart';
 class PrivacyAndTermsHelper extends StatelessWidget {
   PrivacyAndTermsHelper({super.key});
 
-  final PrivacyController _controller = Get.find<PrivacyController>();
+  final PrivacyPController _controller = Get.find<PrivacyPController>();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class PrivacyAndTermsHelper extends StatelessWidget {
   }
 }
 
-class PrivacyController extends GetxController {
+class PrivacyPController extends GetxController {
   var isChecked = false.obs;
 
   void toggleCheckbox(bool? value) {

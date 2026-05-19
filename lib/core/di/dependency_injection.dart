@@ -21,6 +21,9 @@ import 'package:flutter_task/features/home/presentation/controllers/home_control
 import 'package:flutter_task/features/poll/data/repositories/poll_repository.dart';
 import 'package:flutter_task/features/poll/domain/services/poll_services.dart';
 import 'package:flutter_task/features/poll/presentation/controllers/poll_controller.dart';
+import 'package:flutter_task/features/privacy/data/repositories/privacy_repository.dart';
+import 'package:flutter_task/features/privacy/domain/services/privacy_services.dart';
+import 'package:flutter_task/features/privacy/presentation/controllers/privacy_controller.dart';
 import 'package:flutter_task/features/profile/data/repositories/profile_repository.dart';
 import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
@@ -242,6 +245,25 @@ class DependencyInjection {
     Get.lazyPut<DashboardController>(
       () => DashboardController(
         service: Get.find<DashboardService>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<PrivacyRepository>(
+      () => PrivacyRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+    Get.lazyPut<PrivacyServices>(
+      () => PrivacyServices(repository: Get.find<PrivacyRepository>()),
+      fenix: true,
+    );
+    Get.lazyPut<PrivacyController>(
+      () => PrivacyController(
+        service: Get.find<PrivacyServices>(),
         connectivityService: Get.find<ConnectivityService>(),
       ),
       fenix: true,

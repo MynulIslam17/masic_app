@@ -50,6 +50,16 @@ class AuthService {
     );
   }
 
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    return await _repository.changePassword(
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    );
+  }
+
   /// ─── SESSION ───────────────────────────
   bool isLoggedIn() => _repository.isLoggedIn();
 
