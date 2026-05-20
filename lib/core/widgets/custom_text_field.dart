@@ -190,6 +190,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           : widget.hintText;
 
       return Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment:
         isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [

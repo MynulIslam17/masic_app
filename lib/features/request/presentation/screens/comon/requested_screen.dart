@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/custom_search_field.dart';
 import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
 import 'package:flutter_task/features/request/presentation/widgets/requested_card_widget.dart';
 import 'package:flutter_task/features/request/presentation/widgets/request_simmer.dart';
+import 'package:flutter_task/features/search/search_screen.dart';
 import 'package:get/get.dart';
 
 class RequestedScreen extends StatelessWidget {
@@ -34,7 +37,7 @@ class RequestedScreen extends StatelessWidget {
               floating: false,
               elevation: 0,
               scrolledUnderElevation: 0,
-              expandedHeight: 116.h,
+              expandedHeight: 104.h,
               leading: IconButton(
                 icon: isRtl
                     ? Assets.icons.backButton
@@ -62,13 +65,17 @@ class RequestedScreen extends StatelessWidget {
                     ),
                     child: Align(
                       alignment: Alignment.topCenter,
-                      child: CustomTextField(
-                        validator: (_) => null,
-                        prefixIcon: Assets.icons.search.svg(),
-                        borderRadio: 100.r,
-                        borderColor: AppColors.colorE6E6E6,
-                        showShadow: false,
-                        controller: controller.searchController,
+                      child: CustomSearchField(
+                        readOnly: true,
+                        onTap: () {
+                          showSearch(context: context, delegate: SearchScreen(
+                              onSearch: (String query) {
+                                return Future.delayed(const Duration(seconds: 1), () {
+                                  return [];
+                                });
+                          }));
+                        },
+                        searchController: controller.searchController,
                         hintText: 'Search here . . .',
                       ),
                     ),

@@ -57,7 +57,7 @@ class RequestController extends GetxController {
 
   final declineReasonTEController = TextEditingController();
   final jobSpecTEController = TextEditingController();
-  final searchController = TextEditingController();
+  final searchController = SearchController();
   final formKey = GlobalKey<FormState>();
   final createFormKey = GlobalKey<FormState>();
 
