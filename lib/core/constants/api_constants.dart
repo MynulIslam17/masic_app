@@ -92,6 +92,7 @@ class ApiConstants {
 
   /// chach inpoint ──────────────────────────────────────────────
 
+  static const String searchHistoryKey = 'search_history';
   static const String cacheUserProfile = 'user/me';
   static const String cacheUsersProfile = 'users/me';
   static const String cacheAdminProfile = 'users/admin';

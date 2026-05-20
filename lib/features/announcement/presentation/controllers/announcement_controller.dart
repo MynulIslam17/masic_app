@@ -6,6 +6,7 @@ import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/toast_message_helper.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
+import 'package:flutter_task/core/services/search_service.dart';
 import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
 import 'package:flutter_task/features/announcement/data/models/create_request_model.dart';
 import 'package:flutter_task/features/announcement/domain/services/announcement_services.dart';
@@ -26,6 +27,9 @@ class AnnouncementController extends GetxController {
         _connectivityService = connectivityService;
 
   final searchController = TextEditingController();
+
+  late final SearchService<AnnouncementModel> search;
+
 
   final _selectedImage = Rxn<File>();
 
@@ -69,6 +73,7 @@ class AnnouncementController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    search = SearchService(fetcher: _fetchSearch);
     _initScrollController();
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) _loadData();
@@ -125,7 +130,7 @@ class AnnouncementController extends GetxController {
           1,
           _limit,
           search: searchController.text,
-          type: type, // ✅ type pass
+          type: type,
         );
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
@@ -175,6 +180,23 @@ class AnnouncementController extends GetxController {
 
   void _loadFromCache() {
     _announcements.value = _service.getCachedAnnouncements(_currentType);
+  }
+
+
+  Future<List<AnnouncementModel>> _fetchSearch(String query) async {
+    final fromCache = _service
+        .getCachedAnnouncements(_currentType)
+        .where((a) => a.title?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
+    if (fromCache.isNotEmpty) return fromCache;
+
+    if (!_connectivityService.isConnected.value) return [];
+
+    await _service.fetchAnnouncements(1, 20, search: query, type: _currentType);
+    return _service
+        .getCachedAnnouncements(_currentType)
+        .where((a) => a.title?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
   }
 
   @override
@@ -242,6 +264,8 @@ class AnnouncementController extends GetxController {
       if (kDebugMode) debugPrint('Delete announcement error: $e');
     }
   }
+
+
 
   @override
   void onClose() {

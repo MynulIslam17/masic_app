@@ -14,15 +14,15 @@ class SearchItem extends StatelessWidget {
 
   final List<SearchModel> results;
   final double? borderRadius;
-  final void Function(String selectedItem)? onTap;
+  final void Function(SearchModel selectedItem)? onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+      padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 24.w),
       itemCount: results.length,
       separatorBuilder: (_, __) => Divider(
-        height: 1,
+        height: 24.h,
         color: Colors.grey.shade200,
         indent: 16.w,
         endIndent: 16.w,
@@ -31,8 +31,8 @@ class SearchItem extends StatelessWidget {
         final data = results[index];
         return GestureDetector(
           onTap: () {
-            if (onTap != null && data.title != null) {
-              onTap!(data.title!);
+            if (onTap != null) {
+              onTap!(data);
             }
           },
           child: CustomContainer(
@@ -60,6 +60,9 @@ class SearchItem extends StatelessWidget {
                           data.subtitle!.isNotEmpty) ...[
                         SizedBox(height: 4.h),
                         CustomText(
+                          textAlign: TextAlign.start,
+                          textOverflow: TextOverflow.ellipsis,
+                          maxline: 1,
                           text: data.subtitle!,
                           fontSize: 12.sp,
                           color: Colors.grey.shade400,

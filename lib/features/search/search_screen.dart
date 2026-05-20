@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/features/search/controller/search_controller.dart';
+import 'package:flutter_task/features/search/model/search_model.dart';
 import 'package:flutter_task/features/search/widgets/custom_search_theme.dart';
+import 'package:flutter_task/features/search/widgets/search_item_empty.dart';
 import 'package:flutter_task/features/search/widgets/search_list_item.dart';
 
 class SearchScreen extends SearchDelegate {
-
   SearchScreen({
     this.hintText = 'Search here . . .',
     this.onResultTap,
@@ -13,36 +15,45 @@ class SearchScreen extends SearchDelegate {
   });
 
   final String hintText;
-  final void Function(String selectedItem)? onResultTap;
-  final Future<List<String>> Function(String query) onSearch;
+  final void Function(SearchModel selectedItem)? onResultTap;
+  final Future<List<SearchModel>> Function(String query) onSearch;
+
+  SearchHistoryController get _ctrl => SearchHistoryController.to;
 
   @override
   String get searchFieldLabel => hintText;
 
   @override
-  ThemeData appBarTheme(BuildContext context) {
-    return CustomSearchTheme.instance.appBarTheme;
-  }
+  ThemeData appBarTheme(BuildContext context) =>
+      CustomSearchTheme.instance.appBarTheme;
 
   @override
   List<Widget> buildActions(BuildContext context) {
+    if (query.isEmpty) return [];
     return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+          showSuggestions(context);
+        },
+      ),
     ];
   }
 
   @override
   Widget buildLeading(BuildContext context) {
-    final bool isRtl = Directionality.of(context) == TextDirection.rtl;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final icon = Assets.icons.backButton.svg(height: 24.h, width: 24.w);
     return IconButton(
-      icon: isRtl
-          ? Assets.icons.backButton.svg(height: 24.h, width: 24.w).flipped
-          : Assets.icons.backButton.svg(height: 24.h, width: 24.w),
+      icon: isRtl ? icon.flipped : icon,
       onPressed: () => close(context, null),
     );
   }
 
   @override
   Widget buildResults(BuildContext context) {
+    _ctrl.addQuery(query);
     return SearchListItem(
       query: query,
       onSearch: onSearch,
@@ -52,16 +63,25 @@ class SearchScreen extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    if (query.trim().isEmpty) {
+      return SearchItemEmpty(
+        onItemTap: (q) {
+          query = q;
+          showResults(context);
+        },
+      );
+    }
     return SearchListItem(
       query: query,
       onSearch: onSearch,
-      onResultTap: onResultTap,
+      onResultTap: (item) {
+        _ctrl.addQuery(query);
+        onResultTap?.call(item);
+      },
     );
   }
 }
 
 extension on Widget {
-  Widget get flipped {
-    return Transform.flip(flipX: true, child: this);
-  }
+  Widget get flipped => Transform.flip(flipX: true, child: this);
 }

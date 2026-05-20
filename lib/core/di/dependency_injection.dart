@@ -30,6 +30,7 @@ import 'package:flutter_task/features/profile/presentation/controllers/profile_c
 import 'package:flutter_task/features/request/data/repositories/request_repository.dart';
 import 'package:flutter_task/features/request/domain/services/request_services.dart';
 import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
+import 'package:flutter_task/features/search/controller/search_controller.dart';
 import 'package:flutter_task/features/translation/presentation/controller/translation_controller.dart';
 import 'package:flutter_task/features/tree/data/repositories/tree_repository.dart';
 import 'package:flutter_task/features/tree/domain/services/tree_service.dart';
@@ -67,6 +68,14 @@ class DependencyInjection {
     await translationService.init();
     Get.put<TranslationService>(translationService, permanent: true);
     Get.put<TranslationController>(TranslationController(), permanent: true);
+
+    Get.lazyPut<SearchHistoryController>(
+          () => SearchHistoryController(
+            cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
 
     /// Auth
     Get.put<AuthRepository>(

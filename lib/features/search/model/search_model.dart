@@ -1,5 +1,6 @@
 class SearchModel {
-  final String? id, title, subtitle, image;
+  final String?  title, subtitle, image;
+  final dynamic model;
 
-  SearchModel({this.id, this.title, this.subtitle, this.image});
+  SearchModel({this.model, this.title, this.subtitle, this.image});
 }

@@ -13,8 +13,8 @@ class SearchListItem extends StatelessWidget {
   });
 
   final String query;
-  final Future<List<String>> Function(String query) onSearch;
-  final void Function(String selectedItem)? onResultTap;
+  final Future<List<SearchModel>> Function(String query) onSearch;
+  final void Function(SearchModel selectedItem)? onResultTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,7 @@ class SearchListItem extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return FutureBuilder<List<String>>(
+    return FutureBuilder<List<SearchModel>>(
       future: onSearch(query),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -42,11 +42,9 @@ class SearchListItem extends StatelessWidget {
                 Icon(Icons.wifi_off_rounded,
                     size: 56.r, color: Colors.grey.shade300),
                 SizedBox(height: 12.h),
-                Text(
+                CustomText(text:
                   snapshot.error.toString(),
-                  style: TextStyle(
                       fontSize: 14.sp, color: Colors.grey.shade400),
-                ),
               ],
             ),
           );
@@ -54,12 +52,8 @@ class SearchListItem extends StatelessWidget {
 
         final results = snapshot.data ?? [];
         if (results.isEmpty) return _buildNoResult();
-        final models = results
-            .map((title) => SearchModel(title: title))
-            .toList();
-
         return SearchItem(
-          results: models,
+          results: results,
           onTap: onResultTap,
         );
       },
@@ -73,10 +67,9 @@ class SearchListItem extends StatelessWidget {
         children: [
           Icon(Icons.search_off, size: 56.r, color: Colors.grey.shade300),
           SizedBox(height: 12.h),
-          Text(
+          CustomText(text:
             'No result for "$query"',
-            style: TextStyle(
-                fontSize: 14.sp, color: Colors.grey.shade400),
+                fontSize: 14.sp, color: Colors.grey.shade400,
           ),
         ],
       ),

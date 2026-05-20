@@ -4,14 +4,18 @@ import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/custom_search_field.dart';
 import 'package:flutter_task/core/widgets/empty_data_widget.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
 import 'package:flutter_task/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_card.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/announcement_simmer.dart';
 import 'package:flutter_task/features/announcement/presentation/widgets/tap_bar.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:flutter_task/features/search/model/search_model.dart';
+import 'package:flutter_task/features/search/search_screen.dart';
 import 'package:get/get.dart';
 
 class AnnouncementsScreen extends StatelessWidget {
@@ -67,13 +71,36 @@ class AnnouncementsScreen extends StatelessWidget {
                     ),
                     child: Align(
                       alignment: Alignment.topCenter,
-                      child: CustomTextField(
-                        validator: (_) => null,
-                        prefixIcon: Assets.icons.search.svg(),
-                        borderRadio: 100.r,
-                        borderColor: AppColors.colorE6E6E6,
-                        showShadow: false,
-                        controller: controller.searchController,
+                      child: CustomSearchField(
+                        readOnly: true,
+                        onTap: () {
+                          showSearch(
+                            context: context,
+                            delegate: SearchScreen(
+                              onSearch: (String query) async {
+                                await controller.search.search(query);
+                                return controller.search.results
+                                    .map(
+                                      (a) => SearchModel(
+                                        model: a,
+                                        title: a.title,
+                                        subtitle: a.description,
+                                        image: a.bannerUrl,
+                                      ),
+                                    )
+                                    .toList();
+                              },
+                              onResultTap: (result) {
+                                controller.search.clear();
+                                Get.toNamed(
+                                  AppRoutes.announcementsDetailsScreen,
+                                  arguments: result.model.sId as String,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        searchController: controller.searchController,
                         hintText: 'Search here . . .',
                       ),
                     ),
@@ -81,25 +108,27 @@ class AnnouncementsScreen extends StatelessWidget {
                 ),
               ),
 
-              bottom: AuthController.to.isAdmin() ? PreferredSize(
-                preferredSize: Size.fromHeight(26.h),
-                child: Row(
-                  children: [
-                    TabItem(
-                      label: 'Requested announce',
-                      index: 0,
-                      selectedTab: controller.selectedTab,
-                      onTap: controller.onTabChanged,
-                    ),
-                    TabItem(
-                      label: 'My announce',
-                      index: 1,
-                      selectedTab: controller.selectedTab,
-                      onTap: controller.onTabChanged,
-                    ),
-                  ],
-                ),
-              ) : null,
+              bottom: AuthController.to.isAdmin()
+                  ? PreferredSize(
+                      preferredSize: Size.fromHeight(26.h),
+                      child: Row(
+                        children: [
+                          TabItem(
+                            label: 'Requested announce',
+                            index: 0,
+                            selectedTab: controller.selectedTab,
+                            onTap: controller.onTabChanged,
+                          ),
+                          TabItem(
+                            label: 'My announce',
+                            index: 1,
+                            selectedTab: controller.selectedTab,
+                            onTap: controller.onTabChanged,
+                          ),
+                        ],
+                      ),
+                    )
+                  : null,
             ),
             SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -186,7 +215,7 @@ class AnnouncementsScreen extends StatelessWidget {
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => Padding(
-                        padding:  EdgeInsets.symmetric(horizontal: 16.w),
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
                         child: AnnouncementCard(
                           announcement: controller.announcements[index],
                         ),
