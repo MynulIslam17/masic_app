@@ -43,11 +43,7 @@ class SupportScreen extends StatelessWidget {
                   bottom: 6.h,
                 ),
                 CustomText(
-                  text:
-                      "If you have any questions, need assistance,"
-                      " or want to discuss your progress, feel free to "
-                      "reach out to your coach. We're here to help you "
-                      "achieve your fitness goals!",
+                  text: "Having trouble with the app? Our support team is available to help with technical issues, account concerns, or general questions.",
                   fontSize: 12.sp,
                   color: AppColors.primaryColor,
                 ),
@@ -72,33 +68,33 @@ class SupportScreen extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed: () async {
-                    final Uri url = Uri.parse('tel:(609)327-7992');
+                    final Uri url = Uri.parse('tel:+966 55 797 2888');
                     if (await launchUrl(url)) {
                       await launchUrl(url);
                     } else {
                       debugPrint('Could not launch phone dialer');
                     }
                   },
-                  label: CustomText(text: '(609)327-7992',color: Colors.white,fontWeight: FontWeight.w600),
+                  label: CustomText(text: '+966 55 797 2888',color: Colors.white,fontWeight: FontWeight.w600),
                   icon: Assets.icons.call.svg(),
                 ),
-                TextButton.icon(
-                  onPressed: () async {
-                    final Uri emailUrl = Uri(
-                      scheme: 'mailto',
-                      path: 'bta2bigma@gmail.com',
-                      query:
-                          'subject=Support Inquiry&body=Hello, I need assistance with...',
-                    );
-                    if (await launchUrl(emailUrl)) {
-                      await launchUrl(emailUrl);
-                    } else {
-                      debugPrint('Could not launch email client');
-                    }
-                  },
-                  label: CustomText(text: 'bta2bigma@gmail.com',color: Colors.white,fontWeight: FontWeight.w600,),
-                  icon: Assets.icons.mail.svg(),
-                ),
+                // TextButton.icon(
+                //   onPressed: () async {
+                //     final Uri emailUrl = Uri(
+                //       scheme: 'mailto',
+                //       path: 'bta2bigma@gmail.com',
+                //       query:
+                //           'subject=Support Inquiry&body=Hello, I need assistance with...',
+                //     );
+                //     if (await launchUrl(emailUrl)) {
+                //       await launchUrl(emailUrl);
+                //     } else {
+                //       debugPrint('Could not launch email client');
+                //     }
+                //   },
+                //   label: CustomText(text: 'bta2bigma@gmail.com',color: Colors.white,fontWeight: FontWeight.w600,),
+                //   icon: Assets.icons.mail.svg(),
+                // ),
               ],
             ),
           ),
