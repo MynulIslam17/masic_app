@@ -12,9 +12,9 @@ class RequestServices {
   RequestServices({required RequestRepository repository})
     : _repository = repository;
 
-  Future<void> fetchRequests() async {
+  Future<void> fetchRequests({String? search}) async {
     try {
-      await Future.wait([_repository.fetchRequests(page: 1, limit: 10)]);
+      await Future.wait([_repository.fetchRequests(page: 1, limit: 10, search: search)]);
     } on AppException {
       if (!_repository.hasCache()) {
         rethrow;

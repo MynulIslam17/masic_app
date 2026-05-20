@@ -6,6 +6,7 @@ import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/toast_message_helper.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
+import 'package:flutter_task/core/services/search_service.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:flutter_task/features/request/data/models/create_job_model.dart';
@@ -26,6 +27,8 @@ class RequestController extends GetxController {
        _connectivityService = connectivityService;
 
 
+
+  late final SearchService<RequestModel> search;
 
 
 
@@ -68,6 +71,7 @@ class RequestController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    search = SearchService(fetcher: _fetchSearch);
     _initScrollController();
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) _loadData();
@@ -167,6 +171,22 @@ class RequestController extends GetxController {
       }
       return true;
     }());
+  }
+
+  Future<List<RequestModel>> _fetchSearch(String query) async {
+    final fromCache = _service
+        .getCachedRequests()
+        .where((a) => a.jobSpec?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
+    if (fromCache.isNotEmpty) return fromCache;
+
+    if (!_connectivityService.isConnected.value) return [];
+
+    await _service.fetchRequests(search: query);
+    return _service
+        .getCachedRequests()
+        .where((a) => a.jobSpec?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
   }
 
   Future<void> updateStatus({

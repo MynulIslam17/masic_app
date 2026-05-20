@@ -5,6 +5,7 @@ import 'package:flutter_task/core/exceptions/app_exceptions.dart';
 import 'package:flutter_task/core/extensions/app_extension.dart';
 import 'package:flutter_task/core/helpers/toast_message_helper.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
+import 'package:flutter_task/core/services/search_service.dart';
 import 'package:flutter_task/features/poll/data/models/create_poll_model.dart';
 import 'package:flutter_task/features/poll/data/models/poll_details_model.dart';
 import 'package:flutter_task/features/poll/data/models/poll_model.dart';
@@ -119,10 +120,13 @@ class PollController extends GetxController {
 
   ScrollController? get scrollController => _scrollController;
 
+  late final  SearchService<PollModel> search;
+
   // ─── Lifecycle ────────────────────────────────────────────────────────────
   @override
   void onInit() {
     super.onInit();
+    search = SearchService(fetcher: _fetchSearch);
     _initScrollController();
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) _loadData();
@@ -208,6 +212,20 @@ class PollController extends GetxController {
 
   void _loadFromCache() {
     _polls.value = _service.getCachedPolls();
+  }
+
+  Future<List<PollModel>> _fetchSearch(String query) async {
+    final fromCache = _service
+        .getCachedPolls()
+        .where((a) => a.title?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
+    if (fromCache.isNotEmpty) return fromCache;
+    if (!_connectivityService.isConnected.value) return [];
+    await _service.fetchPolls(1, 20, search: query);
+    return _service
+        .getCachedPolls()
+        .where((a) => a.title?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
   }
 
   // ─── Refresh  ──────────────────────────────────────────────────────

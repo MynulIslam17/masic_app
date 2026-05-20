@@ -24,11 +24,12 @@ class RequestRepository {
   Future<List<RequestModel>> fetchRequests({
     int page = 1,
     int limit = 10,
+    String? search,
   }) async {
     try {
       final response = await _apiService.get(
         ApiConstants.requests,
-        queryParameters: {'page': page, 'limit': limit},
+        queryParameters: {'page': page, 'limit': limit, 'searchTerm': search},
       );
 
       final users = (response.data['data'] as List)

@@ -10,6 +10,7 @@ import 'package:flutter_task/core/widgets/widgets.dart';
 import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
 import 'package:flutter_task/features/request/presentation/widgets/requested_card_widget.dart';
 import 'package:flutter_task/features/request/presentation/widgets/request_simmer.dart';
+import 'package:flutter_task/features/search/model/search_model.dart';
 import 'package:flutter_task/features/search/search_screen.dart';
 import 'package:get/get.dart';
 
@@ -67,14 +68,34 @@ class RequestedScreen extends StatelessWidget {
                       alignment: Alignment.topCenter,
                       child: CustomSearchField(
                         readOnly: true,
+
                         onTap: () {
-                          showSearch(context: context, delegate: SearchScreen(
-                              onSearch: (String query) {
-                                return Future.delayed(const Duration(seconds: 1), () {
-                                  return [];
-                                });
-                          }));
+                          showSearch(
+                            context: context,
+                            delegate: SearchScreen(
+                              onSearch: (String query) async {
+                                await controller.search.search(query);
+                                return controller.search.results
+                                    .map(
+                                      (a) => SearchModel(
+                                        model: a,
+                                        title: a.jobSpec,
+                                        subtitle: a.bio,
+                                      ),
+                                    )
+                                    .toList();
+                              },
+                              onResultTap: (result) {
+                                controller.search.clear();
+                                Get.toNamed(
+                                  AppRoutes.requestDetailsScreen,
+                                  arguments: result.model.sId as String,
+                                );
+                              },
+                            ),
+                          );
                         },
+
                         searchController: controller.searchController,
                         hintText: 'Search here . . .',
                       ),
@@ -126,7 +147,7 @@ class RequestedScreen extends StatelessWidget {
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => Padding(
-                        padding:  EdgeInsets.only(bottom: 10.h),
+                        padding: EdgeInsets.only(bottom: 10.h),
                         child: RequestedCardWidget(
                           request: controller.requests[index],
                         ),
