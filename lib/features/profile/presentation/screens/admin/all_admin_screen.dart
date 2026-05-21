@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
+import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:flutter_task/core/widgets/custom_search_field.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:flutter_task/features/profile/presentation/widgets/user_card.dart';
+import 'package:flutter_task/features/search/model/search_model.dart';
+import 'package:flutter_task/features/search/search_screen.dart';
 import 'package:get/get.dart';
 
 class AllAdminScreen extends StatefulWidget {
@@ -41,15 +46,41 @@ class _AllAdminScreenState extends State<AllAdminScreen> {
             physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             child: Column(
               children: [
-                CustomTextField(
-                  validator: (_) => null,
-                  prefixIcon: Assets.icons.search.svg(),
-                  borderRadio: 100.r,
-                  borderColor: AppColors.colorE6E6E6,
-                  showShadow: false,
-                  controller: controller.searchController,
+                CustomSearchField(
+                  readOnly: true,
+
+                  onTap: () {
+                    showSearch(
+                      context: context,
+                      delegate: SearchScreen(
+                        onSearch: (String query) async {
+                          await controller.search.search(query);
+                          return controller.search.results
+                              .map(
+                                (a) => SearchModel(
+                              model: a,
+                              title: a.name,
+                              subtitle: a.email,
+                                  image: a.profileImage,
+                            ),
+                          )
+                              .toList();
+                        },
+                        onResultTap: (result) {
+                          controller.search.clear();
+                          Get.toNamed(
+                            AppRoutes.profileDetailsScreen,
+                            arguments: result.model as UserModel,
+                          );
+                        },
+                      ),
+                    );
+                  },
+
+                  searchController: controller.searchController,
                   hintText: 'Search here . . .',
                 ),
+
                 SizedBox(height: 10.h),
                 Row(
                   children: [

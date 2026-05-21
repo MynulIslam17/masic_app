@@ -71,6 +71,7 @@ class ProfileRepository {
     String? searchTerm,
     String? age,
     String? role,
+    String? search,
   }) async {
     final cacheKey = _cacheKey(role ?? '');
 
@@ -78,6 +79,7 @@ class ProfileRepository {
       final queryParameters = <String, dynamic>{
         'page': page,
         'limit': limit,
+        'searchTerm': search,
         if (gender != null && gender.isNotEmpty) 'gender': gender,
         if (searchTerm != null && searchTerm.isNotEmpty)
           'searchTerm': searchTerm,

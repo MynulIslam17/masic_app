@@ -9,6 +9,7 @@ import 'package:flutter_task/core/helpers/time_format.dart';
 import 'package:flutter_task/core/helpers/toast_message_helper.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/services/connectivity_service.dart';
+import 'package:flutter_task/core/services/search_service.dart';
 import 'package:flutter_task/features/profile/data/models/user_model.dart';
 import 'package:flutter_task/features/profile/domain/services/profile_service.dart';
 import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
@@ -21,11 +22,17 @@ class ProfileController extends GetxController {
 
   static ProfileController get to => Get.find();
 
+
+
+
   ProfileController({
     required ProfileService service,
     required ConnectivityService connectivityService,
   }) : _service = service,
        _connectivityService = connectivityService;
+
+
+  late final SearchService<UserModel> search;
 
   // ─── Loading States ────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
@@ -158,6 +165,7 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    search = SearchService(fetcher: _fetchSearch);
     _initScrollController();
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) loadData();
@@ -314,6 +322,28 @@ class ProfileController extends GetxController {
       }
       return true;
     }());
+  }
+
+  Future<List<UserModel>> _fetchSearch(String query) async {
+    final fromCache = _service
+        .getCachedUsers(roleFilter)
+        .where((a) => a.name?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
+    if (fromCache.isNotEmpty) return fromCache;
+
+    if (!_connectivityService.isConnected.value) return [];
+
+    await _service.fetchUserProfile(search: query,
+      gender: genderFilter,
+      employmentStatus: employmentFilter,
+      educationLevel: educationFilter,
+      age: ageFilter,
+      role: roleFilter,
+    );
+    return _service
+        .getCachedUsers(roleFilter)
+        .where((a) => a.name?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .toList();
   }
 
   // ─── Update Profile ────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@ class ProfileService {
     String? searchTerm,
     String? age,
     String? role,
+    String? search,
   }) async {
     try {
       await Future.wait([
@@ -26,6 +27,7 @@ class ProfileService {
         _repository.fetchUsers(
           page: page,
           limit: limit,
+          search: search,
           gender: gender?.toLowerCase(),
           employmentStatus: employmentStatus?.toLowerCase(),
           educationLevel: educationLevel?.toLowerCase(),

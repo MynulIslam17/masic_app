@@ -38,7 +38,7 @@ class SearchItem extends StatelessWidget {
           child: CustomContainer(
             child: Row(
               children: [
-                if (data.image != null && data.image!.isNotEmpty) ...[
+                if (data.image != null) ...[
                   CustomNetworkImage(
                     borderRadius: borderRadius ?? 12.r,
                     width: 40.w,
