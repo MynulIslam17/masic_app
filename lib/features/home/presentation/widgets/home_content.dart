@@ -5,6 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/routes/app_routes.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:flutter_task/features/admin/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:flutter_task/features/admin/dashboard/presentation/widgets/custom_bar_chart.dart';
+import 'package:flutter_task/features/admin/dashboard/presentation/widgets/custom_pie_chart.dart';
 import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
 import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
 import 'package:flutter_task/features/home/presentation/widgets/home_announcement_card.dart';
@@ -17,6 +20,8 @@ class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = HomeController.to;
+    final controllerD = DashboardController.to;
+
     return Obx(
       () => RefreshIndicator(
         onRefresh: () async {
@@ -184,6 +189,63 @@ class HomeContent extends StatelessWidget {
                 ),
               ),
             ],
+            if(AuthController.to.isAdmin())
+              SliverToBoxAdapter(
+                child: Obx(() {
+                  final dashboard = controllerD.dashboard;
+                 return Padding(
+                   padding:  EdgeInsets.symmetric(horizontal: 16.w),
+                   child: Column(
+                     mainAxisSize: MainAxisSize.min,
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       SizedBox(height: 16.h),
+                       // ── Age Range Bar Chart ──────────────────────────
+                       CustomBarChart(
+                         label: 'Age Range',
+                         chartData: dashboard?.ageRangeChartData ?? [],
+                       ),
+
+                       // ── Male & Female Pie Chart ──────────────────────
+                       CustomPieChart(
+                         pieChartData: dashboard?.genderChartData ?? [],
+                         label: 'Male and Female user',
+                       ),
+
+                       // ── Common name Bar Chart ──────────────────────────
+                       CustomBarChart(
+                         label: 'Common name',
+                         chartData: dashboard?.commonNamesChartData ?? [],
+                       ),
+
+                       // ── Employment status Pie Chart ──────────────────────
+                       CustomPieChart(
+                         pieChartData: dashboard?.employmentStatusChartData ?? [],
+                         label: 'Employment status',
+                       ),
+
+                       // ── Field of work Bar Chart ──────────────────────────
+                       CustomBarChart(
+                         label: 'Field of work',
+                         chartData: dashboard?.fieldOfWorkChartData ?? [],
+                       ),
+
+                       // ── School or University student Pie Chart ──────────────────────
+                       CustomPieChart(
+                         pieChartData: dashboard?.educationLevelChartData ?? [],
+                         label: 'School or University student',
+                       ),
+
+                       // ── Location Bar Chart ──────────────────────────
+                       CustomBarChart(
+                         label: 'Location',
+                         chartData: dashboard?.locationChartData ?? [],
+                       ),
+                     ],
+                   ),
+                 );
+                }),
+              ),
             SliverToBoxAdapter(child: SizedBox(height: 10.h)),
           ],
         ),
