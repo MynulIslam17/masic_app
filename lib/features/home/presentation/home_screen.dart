@@ -169,7 +169,6 @@ class HomeScreen extends StatelessWidget {
             case LoadingState.initial:
             case LoadingState.loading:
               return HomeShimmer();
-
             case LoadingState.offline:
             case LoadingState.error:
               return EmptyDataWidget(
