@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
@@ -17,80 +18,63 @@ class AdminTreeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ctrl = TreeController.to;
+
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: AppColors.bgColor,
         body: Stack(
           children: [
-            Obx(() {
-              switch (ctrl.loadingState) {
-                case LoadingState.initial:
-                case LoadingState.loading:
-                  return Stack(
-                    children: [
+            Positioned.fill(
+              child: Obx(() {
+                switch (ctrl.loadingState) {
+                  case LoadingState.initial:
+                  case LoadingState.loading:
+                    return Stack(children: [
                       Assets.icons.treeHome.svg(fit: BoxFit.cover),
                       const Center(child: CustomLoader()),
-                    ],
-                  );
-                case LoadingState.offline:
-                case LoadingState.error:
-                  return EmptyDataWidget(
-                    message: 'Failed to load data. Please try again.',
-                    onRefresh: () async => await ctrl.loadData(),
-                  );
-                case LoadingState.loaded:
-                  final treeData = ctrl.treeData;
-                  if (treeData == null || treeData.root == null) {
-                    return Stack(
-                      children: [
-                        Assets.icons.treeHome.svg(fit: BoxFit.cover),
-                        const Center(child: CustomLoader()),
-                      ],
+                    ]);
+
+                  case LoadingState.offline:
+                  case LoadingState.error:
+                    return EmptyDataWidget(
+                      message: 'Failed to load data. Please try again.',
+                      onRefresh: () async => ctrl.loadData(),
                     );
-                  }
-                  final root = treeData.root!;
-                  final all = root.children ?? [];
-                  final half = (all.length / 2).ceil();
 
-                  return InteractiveViewer(
-                    constrained: false,
-                    boundaryMargin:  EdgeInsets.only(right: 200.w),
-                    minScale: 0.3,
-                    maxScale: 2.5,
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Assets.icons.treeHome.svg(fit: BoxFit.cover),
-                        FamilyTree(
-                          onToggleEdit: true,
-                          root: root,
-                          topChildren: all.sublist(0, half),
-                          botChildren: all.sublist(half),
-                        ),
-                      ],
-                    ),
-                  );
-              }
-            }),
-
-            if(AuthController.to.isAdmin())
-            Positioned(
-              top: 10.h,
-              left: 16.w,
-              child: SafeArea(
-                child: GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: CustomContainer(
-                    paddingAll: 10.r,
+                  case LoadingState.loaded:
+                    final treeData = ctrl.treeData;
+                    if (treeData == null || treeData.root == null) {
+                      return Stack(
+                        children: [
+                          Assets.icons.treeHome.svg(fit: BoxFit.cover),
+                          const Center(child: CustomLoader()),
+                        ],
+                      );
+                    }
+                    return FamilyTreeGraph(
+                      root: treeData.root!,
+                      onToggleEdit: true,
+                    );
+                }
+              }),
+            ),
+            if (AuthController.to.isAdmin())
+              Positioned(
+                top: 10.h,
+                left: 16.w,
+                child: SafeArea(
+                  child: GestureDetector(
+                    onTap: Get.back,
+                    child: CustomContainer(
+                      paddingAll: 10.r,
                       shape: BoxShape.circle,
                       color: AppColors.white,
-                      child: Assets.icons.backButton.svg())
+                      child: Assets.icons.backButton.svg(),
+                    ),
                   ),
+                ),
               ),
-            )
           ],
         ),
       ),

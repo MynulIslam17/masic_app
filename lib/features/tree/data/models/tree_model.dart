@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 class TreeModel {
   TreeInfo? treeInfo;
   Root? root;
@@ -207,4 +209,20 @@ class Children {
   }
 }
 
+class Meta {
+  final String id;
+  final String memberId;
+  final String label;
+  final bool isRoot;
+  final bool hasChildren;
+  final VoidCallback? onDelete;
 
+  const Meta({
+    required this.id,
+    required this.memberId,
+    required this.label,
+    this.isRoot = false,
+    this.hasChildren = false,
+    this.onDelete,
+  });
+}

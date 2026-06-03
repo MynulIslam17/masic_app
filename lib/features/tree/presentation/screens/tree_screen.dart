@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_task/core/enums/loading_state.dart';
 import 'package:flutter_task/core/theme/app_colors.dart';
 import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
@@ -45,26 +44,8 @@ class TreeScreen extends StatelessWidget {
                   ],
                 );
               }
-              final root = treeData.root!;
-              final all = root.children ?? [];
-              final half = (all.length / 2).ceil();
-
-              return InteractiveViewer(
-                constrained: false,
-                boundaryMargin:  EdgeInsets.only(right: 200.w),
-                minScale: 0.3,
-                maxScale: 2.5,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Assets.icons.treeHome.svg(fit: BoxFit.cover),
-                    FamilyTree(
-                      root: root,
-                      topChildren: all.sublist(0, half),
-                      botChildren: all.sublist(half),
-                    ),
-                  ],
-                ),
+              return FamilyTreeGraph(
+                root: treeData.root!,
               );
           }
         }),
