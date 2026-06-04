@@ -102,10 +102,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
               left: graphLeftOffset,
               top: graphTopOffset,
               child: Obx(() {
-                // ✅ Obx দিয়ে wrap — collapsed state বদলালে শুধু graph rebuild হবে
                 final collapsedNodes = TreeController.to.collapsedNodes;
-
-                // collapsed nodes বাদ দিয়ে visible graph তৈরি করুন
                 final visibleGraph = _buildVisibleGraph(collapsedNodes);
 
                 return Container(
@@ -126,7 +123,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
                         meta: meta,
                         isExpanded: !collapsedNodes.contains(id),
                         onToggle: meta.hasChildren
-                            ? () => TreeController.to.toggleNode(id) // ✅ Controller দিয়ে toggle
+                            ? () => TreeController.to.toggleNode(id)
                             : null,
                       );
                     },
@@ -140,14 +137,12 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
     );
   }
 
-  // ✅ Collapsed nodes বাদ দিয়ে নতুন graph তৈরি করে দেয়
   Graph _buildVisibleGraph(Set<String> collapsedNodes) {
     final visibleGraph = Graph()..isTree = true;
 
     void addVisible(Node parent, List<Children> children) {
       final parentId = parent.key!.value as String;
 
-      // parent collapsed থাকলে children add করব না
       if (collapsedNodes.contains(parentId)) return;
 
       for (final c in children) {
@@ -164,7 +159,6 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
       }
     }
 
-    // root node সবসময় visible
     final rootId = widget.root.sId ?? widget.root.linkedUser?.sId ?? 'root';
     final rootNode = _nodeMap[rootId];
     if (rootNode != null) {
@@ -175,9 +169,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
     return visibleGraph;
   }
 
-  // ── Graph construction ─────────────────────────────────────────────────────
   void _buildGraph() {
-    final hasKids = widget.root.children?.isNotEmpty == true;
     final rootId = widget.root.sId ?? widget.root.linkedUser?.sId ?? 'root';
 
     final rootNode = _makeNode(
@@ -206,8 +198,6 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
             ? () => TreeController.to.deleteUser(id)
             : null,
       );
-      // ✅ _graph এ সব node রাখি (reference এর জন্য)
-      // visible graph আলাদা build হবে
       _graph.addEdge(parent, child);
       if (hasKids) _walkChildren(child, c.children!);
     }
