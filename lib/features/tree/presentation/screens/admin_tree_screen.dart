@@ -53,6 +53,7 @@ class AdminTreeScreen extends StatelessWidget {
                       );
                     }
                     return FamilyTreeGraph(
+                      key: ValueKey(treeData.hashCode),
                       root: treeData.root!,
                       onToggleEdit: true,
                     );

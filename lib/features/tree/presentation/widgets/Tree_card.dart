@@ -142,10 +142,13 @@ class NodeCard extends StatelessWidget {
               backgroundColor: Colors.transparent,
               foregroundColor: AppColors.primaryColor,
               bordersColor: AppColors.primaryColor,
-              onPressed: () => Get.toNamed(
-                AppRoutes.motherSelectScreen,
-                arguments: meta.memberId,
-              ),
+              onPressed: () {
+                Get.back();
+                Get.toNamed(
+                  AppRoutes.motherSelectScreen,
+                  arguments: meta.memberId,
+                );
+              } ,
               label: 'Add new user',
             ),
             SizedBox(height: 16.h),

@@ -551,7 +551,7 @@ class ProfileController extends GetxController {
       await _service.addMember(_selectedUserId.value,motherId);
       _motherTreeState.value = LoadingState.loaded;
       await TreeController.to.loadData();
-      Get.back(canPop: true);
+      await retry();
       Get.back(canPop: true);
     } catch (e) {
       _motherTreeState.value = LoadingState.error;
