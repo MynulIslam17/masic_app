@@ -19,20 +19,22 @@ class TreeController extends GetxController {
   }) : _service = service,
        _connectivityService = connectivityService;
 
-  // ─── Layout Constants ──────────────────────────────────────────────────────
-  static const double cardH = 40.0;
-  static const double cardGap = 8.0;
-  static const double childW = 120.0;
-  static const double centerW = 138.0;
-  static const double stub = 26.0;
-  static const double hLine = 10.0;
-  static const double vPad = 8.0;
 
-  static const double spineX = centerW + hLine; // 166.0
-  static const double childL = spineX + stub; // 192.0
-  static const double totalW = childL + childW; // 347.0
-  static double get centerL => (totalW - centerW) / 2;
 
+  // ─── Collapsed Nodes ───────────────────────────────────────────────────────
+  final RxSet<String> _collapsedNodes = <String>{}.obs;
+
+  Set<String> get collapsedNodes => _collapsedNodes; // ✅ Obx এর জন্য
+
+  bool isNodeCollapsed(String id) => _collapsedNodes.contains(id);
+
+  void toggleNode(String id) {
+    if (_collapsedNodes.contains(id)) {
+      _collapsedNodes.remove(id);
+    } else {
+      _collapsedNodes.add(id);
+    }
+  }
   // ─── Loading State ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
   final Rx<LoadingState> _detailsLoadingState = LoadingState.initial.obs;
@@ -44,26 +46,13 @@ class TreeController extends GetxController {
 
   LoadingState get deleteState => _deleteState.value;
 
-  // ─── Data ──────────────────────────────────────────────────────────────────
   final Rx<TreeModel?> _treeData = Rx<TreeModel?>(null);
   final _userDetails = Rxn<UserModel>();
 
   TreeModel? get treeData => _treeData.value;
 
-
-
   UserModel? get userDetails => _userDetails.value;
 
-  final RxMap<String, bool> expandedNodes = <String, bool>{}.obs;
-
-  bool isExpanded(String key) => expandedNodes[key] ?? false;
-
-  void toggleNode(String key) {
-    expandedNodes[key] = !(expandedNodes[key] ?? false);
-    expandedNodes.refresh();
-  }
-
-  // ─── Lifecycle ─────────────────────────────────────────────────────────────
   @override
   void onInit() {
     super.onInit();

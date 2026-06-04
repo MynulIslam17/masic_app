@@ -8,18 +8,18 @@ class TreeModel {
 
   TreeModel.fromJson(Map<String, dynamic> json) {
     treeInfo = json['treeInfo'] != null
-        ? new TreeInfo.fromJson(json['treeInfo'])
+        ? TreeInfo.fromJson(json['treeInfo'])
         : null;
-    root = json['root'] != null ? new Root.fromJson(json['root']) : null;
+    root = json['root'] != null ? Root.fromJson(json['root']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.treeInfo != null) {
-      data['treeInfo'] = this.treeInfo!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (treeInfo != null) {
+      data['treeInfo'] = treeInfo!.toJson();
     }
-    if (this.root != null) {
-      data['root'] = this.root!.toJson();
+    if (root != null) {
+      data['root'] = root!.toJson();
     }
     return data;
   }
@@ -49,12 +49,12 @@ class TreeInfo {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['name'] = this.name;
-    data['totalMembers'] = this.totalMembers;
-    data['isDefault'] = this.isDefault;
-    data['createdBy'] = this.createdBy;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['name'] = name;
+    data['totalMembers'] = totalMembers;
+    data['isDefault'] = isDefault;
+    data['createdBy'] = createdBy;
     return data;
   }
 }
@@ -86,7 +86,7 @@ class Root {
     sId = json['_id'];
     parent = json['parent'];
     linkedUser = json['linkedUser'] != null
-        ? new LinkedUser.fromJson(json['linkedUser'])
+        ? LinkedUser.fromJson(json['linkedUser'])
         : null;
     label = json['label'];
     level = json['level'];
@@ -95,27 +95,27 @@ class Root {
     if (json['children'] != null) {
       children = <Children>[];
       json['children'].forEach((v) {
-        children!.add(new Children.fromJson(v));
+        children!.add(Children.fromJson(v));
       });
     }
     spouse = json['spouse'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['parent'] = this.parent;
-    if (this.linkedUser != null) {
-      data['linkedUser'] = this.linkedUser!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['parent'] = parent;
+    if (linkedUser != null) {
+      data['linkedUser'] = linkedUser!.toJson();
     }
-    data['label'] = this.label;
-    data['level'] = this.level;
-    data['spouseOf'] = this.spouseOf;
-    data['relationType'] = this.relationType;
-    if (this.children != null) {
-      data['children'] = this.children!.map((v) => v.toJson()).toList();
+    data['label'] = label;
+    data['level'] = level;
+    data['spouseOf'] = spouseOf;
+    data['relationType'] = relationType;
+    if (children != null) {
+      data['children'] = children!.map((v) => v.toJson()).toList();
     }
-    data['spouse'] = this.spouse;
+    data['spouse'] = spouse;
     return data;
   }
 }
@@ -138,12 +138,12 @@ class LinkedUser {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['email'] = this.email;
-    data['name'] = this.name;
-    data['role'] = this.role;
-    data['profileImage'] = this.profileImage;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['email'] = email;
+    data['name'] = name;
+    data['role'] = role;
+    data['profileImage'] = profileImage;
     return data;
   }
 }
@@ -175,7 +175,7 @@ class Children {
     sId = json['_id'];
     parent = json['parent'];
     linkedUser = json['linkedUser'] != null
-        ? new LinkedUser.fromJson(json['linkedUser'])
+        ? LinkedUser.fromJson(json['linkedUser'])
         : null;
     label = json['label'];
     level = json['level'];
@@ -184,27 +184,27 @@ class Children {
     if (json['children'] != null) {
       children = <Children>[];
       json['children'].forEach((v) {
-        children!.add(new Children.fromJson(v));
+        children!.add(Children.fromJson(v));
       });
     }
     spouse = json['spouse'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['_id'] = this.sId;
-    data['parent'] = this.parent;
-    if (this.linkedUser != null) {
-      data['linkedUser'] = this.linkedUser!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['parent'] = parent;
+    if (linkedUser != null) {
+      data['linkedUser'] = linkedUser!.toJson();
     }
-    data['label'] = this.label;
-    data['level'] = this.level;
-    data['spouseOf'] = this.spouseOf;
-    data['relationType'] = this.relationType;
-    if (this.children != null) {
-      data['children'] = this.children!.map((v) => v.toJson()).toList();
+    data['label'] = label;
+    data['level'] = level;
+    data['spouseOf'] = spouseOf;
+    data['relationType'] = relationType;
+    if (children != null) {
+      data['children'] = children!.map((v) => v.toJson()).toList();
     }
-    data['spouse'] = this.spouse;
+    data['spouse'] = spouse;
     return data;
   }
 }
@@ -226,3 +226,4 @@ class Meta {
     this.onDelete,
   });
 }
+

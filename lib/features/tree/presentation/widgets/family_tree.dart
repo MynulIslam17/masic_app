@@ -4,6 +4,7 @@ import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
 import 'package:flutter_task/features/tree/data/models/tree_model.dart';
 import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
 import 'package:flutter_task/features/tree/presentation/widgets/Tree_card.dart';
+import 'package:get/get.dart' hide Node;
 import 'package:graphview/GraphView.dart';
 
 class FamilyTreeGraph extends StatefulWidget {
@@ -22,32 +23,172 @@ class FamilyTreeGraph extends StatefulWidget {
 
 class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
   final Graph _graph = Graph()..isTree = true;
-  final GraphViewController _ctrl = GraphViewController();
   final BuchheimWalkerConfiguration _config = BuchheimWalkerConfiguration();
 
   final Map<String, Meta> _meta = {};
   final Map<String, Node> _nodeMap = {};
+  final GlobalKey _graphKey = GlobalKey();
+  Size _graphSize = const Size(1500, 800);
 
   @override
   void initState() {
     super.initState();
     _config
       ..siblingSeparation = 8
-      ..levelSeparation = 80
+      ..levelSeparation = 40
       ..subtreeSeparation = 8
       ..orientation = BuchheimWalkerConfiguration.ORIENTATION_LEFT_RIGHT
       ..useCurvedConnections = false;
     _buildGraph();
+
+    WidgetsBinding.instance.addPostFrameCallback(_measureGraph);
+  }
+
+  void _measureGraph(_) {
+    final ctx = _graphKey.currentContext;
+    if (ctx != null) {
+      final size = ctx.size;
+      if (size != null && size != _graphSize) {
+        setState(() => _graphSize = size);
+      }
+    }
+  }
+
+  static String _label(String? a, String? b) =>
+      a?.isNotEmpty == true ? a! : (b ?? '');
+
+  @override
+  Widget build(BuildContext context) {
+    final linePaint = Paint()
+      ..color = AppColors.primaryColor.withOpacity(0.28)
+      ..strokeWidth = 1
+      ..strokeCap = StrokeCap.square
+      ..style = PaintingStyle.stroke;
+
+    final screenW = MediaQuery.sizeOf(context).width;
+    final screenH = MediaQuery.sizeOf(context).height;
+    final treeLeftOffset = -screenW * 0.12;
+    final graphLeftOffset = screenW * 0.12;
+
+    final totalW = (graphLeftOffset + _graphSize.width + 100).clamp(
+      screenW * 2,
+      double.infinity,
+    );
+    final totalH = (_graphSize.height + 200).clamp(screenH, double.infinity);
+    final treeTopOffset = (totalH - screenH) / 2;
+    final graphTopOffset = (totalH - _graphSize.height) / 2;
+
+    return InteractiveViewer(
+      boundaryMargin: const EdgeInsets.only(right: 200),
+      minScale: 0.1,
+      maxScale: 5,
+      constrained: false,
+      child: SizedBox(
+        width: totalW,
+        height: totalH,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Positioned(
+              left: treeLeftOffset,
+              top: treeTopOffset,
+              child: SizedBox(
+                width: screenW,
+                height: screenH,
+                child: Assets.icons.treeHome.svg(fit: BoxFit.contain),
+              ),
+            ),
+            Positioned(
+              left: graphLeftOffset,
+              top: graphTopOffset,
+              child: Obx(() {
+                // ✅ Obx দিয়ে wrap — collapsed state বদলালে শুধু graph rebuild হবে
+                final collapsedNodes = TreeController.to.collapsedNodes;
+
+                // collapsed nodes বাদ দিয়ে visible graph তৈরি করুন
+                final visibleGraph = _buildVisibleGraph(collapsedNodes);
+
+                return Container(
+                  key: _graphKey,
+                  child: GraphView(
+                    graph: visibleGraph,
+                    algorithm: BuchheimWalkerAlgorithm(
+                      _config,
+                      TreeEdgeRenderer(_config),
+                    ),
+                    animated: false,
+                    paint: linePaint,
+                    builder: (Node node) {
+                      final id = node.key!.value as String;
+                      final meta = _meta[id];
+                      if (meta == null) return const SizedBox.shrink();
+                      return NodeCard(
+                        meta: meta,
+                        isExpanded: !collapsedNodes.contains(id),
+                        onToggle: meta.hasChildren
+                            ? () => TreeController.to.toggleNode(id) // ✅ Controller দিয়ে toggle
+                            : null,
+                      );
+                    },
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ✅ Collapsed nodes বাদ দিয়ে নতুন graph তৈরি করে দেয়
+  Graph _buildVisibleGraph(Set<String> collapsedNodes) {
+    final visibleGraph = Graph()..isTree = true;
+
+    void addVisible(Node parent, List<Children> children) {
+      final parentId = parent.key!.value as String;
+
+      // parent collapsed থাকলে children add করব না
+      if (collapsedNodes.contains(parentId)) return;
+
+      for (final c in children) {
+        final id = c.sId ?? c.linkedUser?.sId ?? '';
+        final node = _nodeMap[id];
+        if (node == null) continue;
+
+        visibleGraph.addNode(node);
+        visibleGraph.addEdge(parent, node);
+
+        if (c.children?.isNotEmpty == true) {
+          addVisible(node, c.children!);
+        }
+      }
+    }
+
+    // root node সবসময় visible
+    final rootId = widget.root.sId ?? widget.root.linkedUser?.sId ?? 'root';
+    final rootNode = _nodeMap[rootId];
+    if (rootNode != null) {
+      visibleGraph.addNode(rootNode);
+      addVisible(rootNode, widget.root.children ?? []);
+    }
+
+    return visibleGraph;
   }
 
   // ── Graph construction ─────────────────────────────────────────────────────
-
   void _buildGraph() {
+    final hasKids = widget.root.children?.isNotEmpty == true;
+    final rootId = widget.root.sId ?? widget.root.linkedUser?.sId ?? 'root';
+
     final rootNode = _makeNode(
-      id: widget.root.sId ?? widget.root.linkedUser?.sId ?? 'root',
+      id: rootId,
       label: _label(widget.root.label, widget.root.linkedUser?.name),
       memberId: widget.root.sId ?? '',
       isRoot: true,
+      hasChildren: false,
+      onDelete: widget.onToggleEdit
+          ? () => TreeController.to.deleteUser(rootId)
+          : null,
     );
     _walkChildren(rootNode, widget.root.children ?? []);
   }
@@ -65,6 +206,8 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
             ? () => TreeController.to.deleteUser(id)
             : null,
       );
+      // ✅ _graph এ সব node রাখি (reference এর জন্য)
+      // visible graph আলাদা build হবে
       _graph.addEdge(parent, child);
       if (hasKids) _walkChildren(child, c.children!);
     }
@@ -90,46 +233,5 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
       onDelete: onDelete,
     );
     return node;
-  }
-
-  static String _label(String? a, String? b) =>
-      a?.isNotEmpty == true ? a! : (b ?? '');
-
-  @override
-  Widget build(BuildContext context) {
-    final linePaint = Paint()
-      ..color = AppColors.primaryColor.withOpacity(0.28)
-      ..strokeWidth = 1
-      ..strokeCap = StrokeCap.square
-      ..style = PaintingStyle.stroke;
-
-    return Stack(
-      children: [
-        Assets.icons.treeHome.svg(fit: BoxFit.cover),
-        GraphView.builder(
-          graph: _graph,
-          algorithm: BuchheimWalkerAlgorithm(
-            _config,
-            TreeEdgeRenderer(_config),
-          ),
-          controller: _ctrl,
-          animated: true,
-          toggleAnimationDuration: const Duration(milliseconds: 300),
-          paint: linePaint,
-          builder: (Node node) {
-            final id = node.key!.value as String;
-            final meta = _meta[id];
-            if (meta == null) return const SizedBox.shrink();
-            return NodeCard(
-              meta: meta,
-              isExpanded: !_ctrl.isNodeCollapsed(node),
-              onToggle: meta.hasChildren
-                  ? () => _ctrl.toggleNodeExpanded(_graph, node)
-                  : null,
-            );
-          },
-        ),
-      ],
-    );
   }
 }
