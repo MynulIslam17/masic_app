@@ -27,9 +27,3 @@ extension AppExceptionX on Object {
 }
 
 
-extension on Widget {
-  Widget get flipped {
-    return Transform.flip(flipX: true, child: this);
-  }
-}
-

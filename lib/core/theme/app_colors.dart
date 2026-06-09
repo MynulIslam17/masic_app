@@ -1,37 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Application color palette for consistent theming.
-///
-/// This class centralizes all color values used throughout the app, ensuring:
-/// - **Consistency:** All UI elements use the same color values
-/// - **Maintainability:** Change colors app-wide from a single location
-/// - **Design system:** Enforces the app's visual identity
-/// - **Accessibility:** Easy to update colors for contrast/accessibility
-///
-/// **Color Categories:**
-/// - Primary colors: Brand colors and main theme
-/// - Text colors: Typography colors for different contexts
-/// - Background colors: Surface and container colors
-/// - Utility colors: Shadows, overlays, and special effects
-///
-/// **Usage:**
-/// ```dart
-/// Container(
-///   color: AppColors.primary,
-///   child: Text(
-///     'Hello',
-///     style: TextStyle(color: AppColors.textDark),
-///   ),
-/// )
-/// ```
-///
-/// **Naming Convention:**
-/// - Use semantic names (e.g., `textDark`) not hex values
-/// - Group related colors with comments
-/// - Use `const` for static colors
-/// - Use non-const for colors with dynamic alpha values
 class AppColors {
-  // Private constructor to prevent instantiation
   AppColors._();
 
   // Primary colors
