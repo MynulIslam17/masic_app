@@ -1,5 +1,5 @@
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/features/privacy/data/repositories/privacy_repository.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/features/privacy/data/repositories/privacy_repository.dart';
 
 class PrivacyServices {
   final PrivacyRepository _repository;

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/constants/api_constants.dart';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/core/services/api_service.dart';
-import 'package:flutter_task/core/services/cache_service.dart';
-import 'package:flutter_task/features/admin/dashboard/data/models/dashboard_model.dart';
+import 'package:masic_generation/core/constants/api_constants.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/services/api_service.dart';
+import 'package:masic_generation/core/services/cache_service.dart';
+import 'package:masic_generation/features/admin/dashboard/data/models/dashboard_model.dart';
 
 class DashboardRepository {
   final ApiService _apiService;

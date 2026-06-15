@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/widgets/app_simmer.dart';
+import 'package:masic_generation/core/widgets/app_simmer.dart';
 
 class PollShimmer extends StatelessWidget {
   const PollShimmer({super.key});

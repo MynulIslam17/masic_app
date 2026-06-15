@@ -1,9 +1,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/widgets/custom_text.dart';
-import 'package:flutter_task/features/admin/dashboard/data/models/dashboard_model.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/custom_text.dart';
+import 'package:masic_generation/features/admin/dashboard/data/models/dashboard_model.dart';
 
 class CustomBarChart extends StatelessWidget {
   const CustomBarChart({

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/search/model/search_model.dart';
-import 'package:flutter_task/features/search/widgets/search_item.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/search/model/search_model.dart';
+import 'package:masic_generation/features/search/widgets/search_item.dart';
 
 class SearchListItem extends StatelessWidget {
   const SearchListItem({

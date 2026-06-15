@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/request/data/models/request_local_model.dart';
-import 'package:flutter_task/features/request/presentation/controllers/request_controller.dart';
-import 'package:flutter_task/features/request/presentation/widgets/request_widget.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/request/data/models/request_local_model.dart';
+import 'package:masic_generation/features/request/presentation/controllers/request_controller.dart';
+import 'package:masic_generation/features/request/presentation/widgets/request_widget.dart';
 import 'package:get/get.dart';
 
 class RequestScreen extends StatelessWidget {

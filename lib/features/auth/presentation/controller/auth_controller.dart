@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/helpers/toast_message_helper.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/features/auth/domain/services/auth_services.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/toast_message_helper.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/features/auth/domain/services/auth_services.dart';
 import 'package:get/get.dart';
 
 class AuthController extends GetxController {

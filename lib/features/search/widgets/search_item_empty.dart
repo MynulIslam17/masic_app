@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/widgets/custom_text.dart';
-import 'package:flutter_task/features/search/controller/search_controller.dart';
+import 'package:masic_generation/core/widgets/custom_text.dart';
+import 'package:masic_generation/features/search/controller/search_controller.dart';
 import 'package:get/get.dart';
 
 class SearchItemEmpty extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/features/ai_agent/ai_agent_screen.dart';
-import 'package:flutter_task/features/home/presentation/home_screen.dart';
-import 'package:flutter_task/features/profile/presentation/screens/user/profile_screen.dart';
-import 'package:flutter_task/features/tree/presentation/screens/tree_screen.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/features/ai_agent/ai_agent_screen.dart';
+import 'package:masic_generation/features/home/presentation/home_screen.dart';
+import 'package:masic_generation/features/profile/presentation/screens/user/profile_screen.dart';
+import 'package:masic_generation/features/tree/presentation/screens/tree_screen.dart';
 
 class NavItemModel {
   final String icon;

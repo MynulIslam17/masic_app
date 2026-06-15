@@ -1,4 +1,4 @@
-import 'package:flutter_task/features/profile/data/models/user_model.dart';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
 
 class CreateJobModel {
   String? user;

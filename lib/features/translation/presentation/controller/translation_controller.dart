@@ -1,8 +1,8 @@
 // lib/features/translation/controller/translation_controller.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/constants/language_constants.dart';
-import 'package:flutter_task/core/services/translation_service.dart';
+import 'package:masic_generation/core/constants/language_constants.dart';
+import 'package:masic_generation/core/services/translation_service.dart';
 import 'package:get/get.dart';
 
 /// GetX controller for language selection.

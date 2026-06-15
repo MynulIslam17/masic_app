@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/core/widgets/custom_search_field.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/profile/data/models/user_model.dart';
-import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:flutter_task/features/profile/presentation/widgets/filter_dialog.dart';
-import 'package:flutter_task/features/profile/presentation/widgets/user_card.dart';
-import 'package:flutter_task/features/search/model/search_model.dart';
-import 'package:flutter_task/features/search/search_screen.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/widgets/custom_search_field.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/features/profile/presentation/widgets/filter_dialog.dart';
+import 'package:masic_generation/features/profile/presentation/widgets/user_card.dart';
+import 'package:masic_generation/features/search/model/search_model.dart';
+import 'package:masic_generation/features/search/search_screen.dart';
 import 'package:get/get.dart';
 
 class AllUserScreen extends StatelessWidget {

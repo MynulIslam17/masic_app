@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/features/bottom_nav_bar/data/models/nav_item_model.dart';
-import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
-import 'package:flutter_task/features/bottom_nav_bar/presentation/widgets/bottom_nav_bar.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/features/bottom_nav_bar/data/models/nav_item_model.dart';
+import 'package:masic_generation/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
+import 'package:masic_generation/features/bottom_nav_bar/presentation/widgets/bottom_nav_bar.dart';
 import 'package:get/get.dart';
 
 class BottomNavUserBar extends StatelessWidget {

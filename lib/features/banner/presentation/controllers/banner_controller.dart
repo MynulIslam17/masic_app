@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/helpers/toast_message_helper.dart';
-import 'package:flutter_task/core/services/connectivity_service.dart';
-import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
-import 'package:flutter_task/features/announcement/data/models/create_request_model.dart';
-import 'package:flutter_task/features/announcement/domain/services/announcement_services.dart';
-import 'package:flutter_task/features/banner/data/models/banner_model.dart';
-import 'package:flutter_task/features/banner/domain/services/banner_services.dart';
-import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/toast_message_helper.dart';
+import 'package:masic_generation/core/services/connectivity_service.dart';
+import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
+import 'package:masic_generation/features/announcement/data/models/create_request_model.dart';
+import 'package:masic_generation/features/announcement/domain/services/announcement_services.dart';
+import 'package:masic_generation/features/banner/data/models/banner_model.dart';
+import 'package:masic_generation/features/banner/domain/services/banner_services.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 

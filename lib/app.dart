@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/routes/app_pages.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/theme/theme_data.dart';
+import 'package:masic_generation/core/routes/app_pages.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/theme/theme_data.dart';
 import 'package:get/get.dart';
 
 class MyApp extends StatelessWidget {

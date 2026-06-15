@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/constants/app_constants.dart';
-import 'package:flutter_task/core/services/translation_service.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:masic_generation/core/constants/app_constants.dart';
+import 'package:masic_generation/core/services/translation_service.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:get/get.dart';
 
 

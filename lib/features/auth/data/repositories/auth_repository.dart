@@ -1,4 +1,4 @@
-import 'package:flutter_task/features/auth/data/models/user_response_model.dart';
+import 'package:masic_generation/features/auth/data/models/user_response_model.dart';
 
 abstract class AuthRepository {
   Future<UserResponseModel> login({

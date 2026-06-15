@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
-import 'package:flutter_task/features/poll/data/models/poll_model.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
+import 'package:masic_generation/features/poll/data/models/poll_model.dart';
 import 'package:get/get.dart';
 import '../../../../core/exceptions/app_exceptions.dart';
 import '../../../../core/services/connectivity_service.dart';

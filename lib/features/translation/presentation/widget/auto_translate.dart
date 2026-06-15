@@ -1,7 +1,7 @@
 // lib/features/translation/widget/auto_translate.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_task/features/translation/presentation/controller/translation_controller.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
 import '../../../../core/services/translation_service.dart';
 

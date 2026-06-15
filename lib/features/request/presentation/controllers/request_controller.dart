@@ -1,17 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/helpers/toast_message_helper.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/services/connectivity_service.dart';
-import 'package:flutter_task/core/services/search_service.dart';
-import 'package:flutter_task/features/profile/data/models/user_model.dart';
-import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:flutter_task/features/request/data/models/create_job_model.dart';
-import 'package:flutter_task/features/request/data/models/request_model.dart';
-import 'package:flutter_task/features/request/domain/services/request_services.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/toast_message_helper.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/services/connectivity_service.dart';
+import 'package:masic_generation/core/services/search_service.dart';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/features/request/data/models/create_job_model.dart';
+import 'package:masic_generation/features/request/data/models/request_model.dart';
+import 'package:masic_generation/features/request/domain/services/request_services.dart';
 import 'package:get/get.dart';
 
 class RequestController extends GetxController {

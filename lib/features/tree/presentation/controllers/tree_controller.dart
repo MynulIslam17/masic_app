@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/core/services/connectivity_service.dart';
-import 'package:flutter_task/features/profile/data/models/user_model.dart';
-import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
-import 'package:flutter_task/features/tree/data/models/tree_model.dart';
-import 'package:flutter_task/features/tree/domain/services/tree_service.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/services/connectivity_service.dart';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/features/tree/data/models/tree_model.dart';
+import 'package:masic_generation/features/tree/domain/services/tree_service.dart';
 import 'package:get/get.dart';
 
 class TreeController extends GetxController {

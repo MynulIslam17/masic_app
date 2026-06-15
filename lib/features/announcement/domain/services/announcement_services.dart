@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
-import 'package:flutter_task/features/announcement/data/models/create_request_model.dart';
-import 'package:flutter_task/features/announcement/data/repositories/announcement_repository.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
+import 'package:masic_generation/features/announcement/data/models/create_request_model.dart';
+import 'package:masic_generation/features/announcement/data/repositories/announcement_repository.dart';
 
 class AnnouncementServices {
   final AnnouncementRepository _repository;

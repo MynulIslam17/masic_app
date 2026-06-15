@@ -1,6 +1,6 @@
-import 'package:flutter_task/core/constants/api_constants.dart';
+import 'package:masic_generation/core/constants/api_constants.dart';
 import 'package:get/get.dart';
-import 'package:flutter_task/core/services/cache_service.dart';
+import 'package:masic_generation/core/services/cache_service.dart';
 
 class SearchHistoryController extends GetxController {
 

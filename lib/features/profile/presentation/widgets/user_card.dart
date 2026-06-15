@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/helpers/menu_show_helper.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/profile/data/models/user_model.dart';
-import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/menu_show_helper.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 

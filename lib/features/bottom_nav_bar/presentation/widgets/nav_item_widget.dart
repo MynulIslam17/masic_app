@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/bottom_nav_bar/data/models/nav_item_model.dart';
-import 'package:flutter_task/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/bottom_nav_bar/data/models/nav_item_model.dart';
+import 'package:masic_generation/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:get/get.dart';
 
 class BottomNavItem extends StatelessWidget {

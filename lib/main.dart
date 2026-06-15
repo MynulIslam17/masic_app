@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_task/app.dart';
+import 'package:masic_generation/app.dart';
 import 'core/di/dependency_injection.dart';
 
 void main() async {

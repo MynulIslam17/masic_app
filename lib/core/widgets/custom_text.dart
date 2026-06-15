@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/utils/assets_path/fonts.gen.dart';
-import 'package:flutter_task/features/translation/presentation/widget/auto_translate.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/utils/assets_path/fonts.gen.dart';
+import 'package:masic_generation/features/translation/presentation/widget/auto_translate.dart';
 
 class CustomText extends StatelessWidget {
   const CustomText(

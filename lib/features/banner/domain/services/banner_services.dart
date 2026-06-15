@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/features/banner/data/models/banner_model.dart';
-import 'package:flutter_task/features/banner/data/repositories/banner_repository.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/features/banner/data/models/banner_model.dart';
+import 'package:masic_generation/features/banner/data/repositories/banner_repository.dart';
 
 class BannerServices {
   final BannerRepository _repository;

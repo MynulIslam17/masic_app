@@ -2,16 +2,16 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/admin/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:flutter_task/features/admin/dashboard/presentation/widgets/custom_bar_chart.dart';
-import 'package:flutter_task/features/admin/dashboard/presentation/widgets/custom_pie_chart.dart';
-import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
-import 'package:flutter_task/features/home/presentation/controllers/home_controller.dart';
-import 'package:flutter_task/features/home/presentation/widgets/home_announcement_card.dart';
-import 'package:flutter_task/features/home/presentation/widgets/poll_card_widget.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/admin/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:masic_generation/features/admin/dashboard/presentation/widgets/custom_bar_chart.dart';
+import 'package:masic_generation/features/admin/dashboard/presentation/widgets/custom_pie_chart.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/features/home/presentation/controllers/home_controller.dart';
+import 'package:masic_generation/features/home/presentation/widgets/home_announcement_card.dart';
+import 'package:masic_generation/features/home/presentation/widgets/poll_card_widget.dart';
 import 'package:get/get.dart';
 
 class HomeContent extends StatelessWidget {

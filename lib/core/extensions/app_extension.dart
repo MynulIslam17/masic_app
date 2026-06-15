@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 
 extension LoadingStateX on LoadingState {
   bool get isLoading => this == LoadingState.loading;

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/helpers/photo_picker_helper.dart';
-import 'package:flutter_task/core/helpers/time_format.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/core/widgets/empty_data_widget.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/announcement/presentation/widgets/announcement_simmer.dart';
-import 'package:flutter_task/features/banner/presentation/controllers/banner_controller.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/photo_picker_helper.dart';
+import 'package:masic_generation/core/helpers/time_format.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/announcement/presentation/widgets/announcement_simmer.dart';
+import 'package:masic_generation/features/banner/presentation/controllers/banner_controller.dart';
 import 'package:get/get.dart';
 
 class BannerScreen extends StatelessWidget {

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/core/widgets/admin_app_bar.dart';
-import 'package:flutter_task/core/widgets/custom_scaffold.dart';
-import 'package:flutter_task/core/widgets/empty_data_widget.dart';
-import 'package:flutter_task/features/admin/dashboard/presentation/controllers/dashboard_controller.dart';
-import 'package:flutter_task/features/admin/dashboard/presentation/widgets/custom_bar_chart.dart';
-import 'package:flutter_task/features/admin/dashboard/presentation/widgets/custom_pie_chart.dart';
-import 'package:flutter_task/features/home/presentation/widgets/home_simmer.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/widgets/admin_app_bar.dart';
+import 'package:masic_generation/core/widgets/custom_scaffold.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
+import 'package:masic_generation/features/admin/dashboard/presentation/controllers/dashboard_controller.dart';
+import 'package:masic_generation/features/admin/dashboard/presentation/widgets/custom_bar_chart.dart';
+import 'package:masic_generation/features/admin/dashboard/presentation/widgets/custom_pie_chart.dart';
+import 'package:masic_generation/features/home/presentation/widgets/home_simmer.dart';
 import 'package:get/get.dart';
 
 class AdminDashboardScreen extends StatefulWidget {

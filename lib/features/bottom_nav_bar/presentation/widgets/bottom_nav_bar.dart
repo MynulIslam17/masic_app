@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/bottom_nav_bar/data/models/nav_item_model.dart';
-import 'package:flutter_task/features/bottom_nav_bar/presentation/widgets/nav_item_widget.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/bottom_nav_bar/data/models/nav_item_model.dart';
+import 'package:masic_generation/features/bottom_nav_bar/presentation/widgets/nav_item_widget.dart';
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({super.key});

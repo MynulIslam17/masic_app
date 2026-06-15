@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/features/tree/data/models/tree_model.dart';
-import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
-import 'package:flutter_task/features/tree/presentation/widgets/Tree_card.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/features/tree/data/models/tree_model.dart';
+import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
+import 'package:masic_generation/features/tree/presentation/widgets/Tree_card.dart';
 import 'package:get/get.dart' hide Node;
 import 'package:graphview/GraphView.dart';
 

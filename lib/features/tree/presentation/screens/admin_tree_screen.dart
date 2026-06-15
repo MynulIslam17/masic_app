@@ -1,15 +1,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/core/widgets/custom_container.dart';
-import 'package:flutter_task/core/widgets/custom_loader.dart';
-import 'package:flutter_task/core/widgets/empty_data_widget.dart';
-import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
-import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
-import 'package:flutter_task/features/tree/presentation/widgets/family_tree.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/widgets/custom_container.dart';
+import 'package:masic_generation/core/widgets/custom_loader.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
+import 'package:masic_generation/features/tree/presentation/widgets/family_tree.dart';
 import 'package:get/get.dart';
 
 class AdminTreeScreen extends StatelessWidget {

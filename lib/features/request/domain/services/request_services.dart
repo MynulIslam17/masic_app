@@ -1,10 +1,10 @@
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/features/poll/data/models/poll_details_model.dart';
-import 'package:flutter_task/features/poll/data/models/poll_model.dart';
-import 'package:flutter_task/features/poll/data/repositories/poll_repository.dart';
-import 'package:flutter_task/features/request/data/models/create_job_model.dart';
-import 'package:flutter_task/features/request/data/models/request_model.dart';
-import 'package:flutter_task/features/request/data/repositories/request_repository.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/features/poll/data/models/poll_details_model.dart';
+import 'package:masic_generation/features/poll/data/models/poll_model.dart';
+import 'package:masic_generation/features/poll/data/repositories/poll_repository.dart';
+import 'package:masic_generation/features/request/data/models/create_job_model.dart';
+import 'package:masic_generation/features/request/data/models/request_model.dart';
+import 'package:masic_generation/features/request/data/repositories/request_repository.dart';
 
 class RequestServices {
   final RequestRepository _repository;

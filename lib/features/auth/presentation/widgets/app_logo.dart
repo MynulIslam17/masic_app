@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 
 class AppLogo extends StatelessWidget {
   const AppLogo({

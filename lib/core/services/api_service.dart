@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_task/core/constants/app_constants.dart';
-import 'package:flutter_task/core/services/cache_service.dart';
-import 'package:flutter_task/core/services/connectivity_service.dart';
+import 'package:masic_generation/core/constants/app_constants.dart';
+import 'package:masic_generation/core/services/cache_service.dart';
+import 'package:masic_generation/core/services/connectivity_service.dart';
 import '../constants/api_constants.dart';
 import '../exceptions/app_exceptions.dart';
 

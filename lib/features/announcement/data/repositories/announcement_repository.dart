@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter_task/core/constants/api_constants.dart';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/core/services/api_service.dart';
-import 'package:flutter_task/core/services/cache_service.dart';
-import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
-import 'package:flutter_task/features/announcement/data/models/create_request_model.dart';
+import 'package:masic_generation/core/constants/api_constants.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/services/api_service.dart';
+import 'package:masic_generation/core/services/cache_service.dart';
+import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
+import 'package:masic_generation/features/announcement/data/models/create_request_model.dart';
 
 class AnnouncementRepository {
   final ApiService _apiService;

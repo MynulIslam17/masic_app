@@ -1,6 +1,6 @@
-import 'package:flutter_task/features/announcement/data/models/announcement_model.dart';
-import 'package:flutter_task/features/banner/data/models/banner_model.dart';
-import 'package:flutter_task/features/poll/data/models/poll_model.dart';
+import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
+import 'package:masic_generation/features/banner/data/models/banner_model.dart';
+import 'package:masic_generation/features/poll/data/models/poll_model.dart';
 
 class HomeModel {
   final List<AnnouncementModel> announcements;

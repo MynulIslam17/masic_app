@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/utils/assets_path/assets.gen.dart';
-import 'package:flutter_task/features/search/controller/search_controller.dart';
-import 'package:flutter_task/features/search/model/search_model.dart';
-import 'package:flutter_task/features/search/widgets/custom_search_theme.dart';
-import 'package:flutter_task/features/search/widgets/search_item_empty.dart';
-import 'package:flutter_task/features/search/widgets/search_list_item.dart';
+import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/features/search/controller/search_controller.dart';
+import 'package:masic_generation/features/search/model/search_model.dart';
+import 'package:masic_generation/features/search/widgets/custom_search_theme.dart';
+import 'package:masic_generation/features/search/widgets/search_item_empty.dart';
+import 'package:masic_generation/features/search/widgets/search_list_item.dart';
 
 class SearchScreen extends SearchDelegate {
   SearchScreen({

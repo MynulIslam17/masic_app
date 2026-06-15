@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/exceptions/app_exceptions.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/helpers/toast_message_helper.dart';
-import 'package:flutter_task/core/services/connectivity_service.dart';
-import 'package:flutter_task/features/privacy/domain/services/privacy_services.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/toast_message_helper.dart';
+import 'package:masic_generation/core/services/connectivity_service.dart';
+import 'package:masic_generation/features/privacy/domain/services/privacy_services.dart';
 import 'package:get/get.dart';
 
 class PrivacyController extends GetxController {

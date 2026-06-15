@@ -1,7 +1,7 @@
-import 'package:flutter_task/features/announcement/data/repositories/announcement_repository.dart';
-import 'package:flutter_task/features/banner/data/repositories/banner_repository.dart';
-import 'package:flutter_task/features/home/data/models/home_model.dart';
-import 'package:flutter_task/features/poll/data/repositories/poll_repository.dart';
+import 'package:masic_generation/features/announcement/data/repositories/announcement_repository.dart';
+import 'package:masic_generation/features/banner/data/repositories/banner_repository.dart';
+import 'package:masic_generation/features/home/data/models/home_model.dart';
+import 'package:masic_generation/features/poll/data/repositories/poll_repository.dart';
 import '../../../../core/exceptions/app_exceptions.dart';
 
 class HomeService {

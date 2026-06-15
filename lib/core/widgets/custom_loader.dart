@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
 
 
 class CustomLoader extends StatelessWidget {

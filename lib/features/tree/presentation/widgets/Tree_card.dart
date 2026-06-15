@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/widgets/custom_button.dart';
-import 'package:flutter_task/core/widgets/custom_container.dart';
-import 'package:flutter_task/core/widgets/custom_text.dart';
-import 'package:flutter_task/features/tree/data/models/tree_model.dart';
-import 'package:flutter_task/features/tree/presentation/controllers/tree_controller.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/custom_button.dart';
+import 'package:masic_generation/core/widgets/custom_container.dart';
+import 'package:masic_generation/core/widgets/custom_text.dart';
+import 'package:masic_generation/features/tree/data/models/tree_model.dart';
+import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
 import 'package:get/get.dart';
 
 class NodeCard extends StatelessWidget {

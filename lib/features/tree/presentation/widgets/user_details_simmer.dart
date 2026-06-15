@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
 
 class UserDetailsShimmer extends StatelessWidget {
   const UserDetailsShimmer({super.key});

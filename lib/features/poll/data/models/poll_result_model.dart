@@ -1,4 +1,4 @@
-import 'package:flutter_task/features/poll/data/models/poll_details_model.dart';
+import 'package:masic_generation/features/poll/data/models/poll_details_model.dart';
 
 class PollResultModel {
   String? sId;

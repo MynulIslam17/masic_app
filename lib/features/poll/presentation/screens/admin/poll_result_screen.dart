@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/enums/loading_state.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/theme/app_colors.dart';
-import 'package:flutter_task/core/widgets/empty_data_widget.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
-import 'package:flutter_task/features/poll/presentation/controllers/poll_controller.dart';
-import 'package:flutter_task/features/poll/presentation/widgets/option_tile.dart';
-import 'package:flutter_task/features/poll/presentation/widgets/poll_simmer.dart';
-import 'package:flutter_task/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/features/poll/presentation/controllers/poll_controller.dart';
+import 'package:masic_generation/features/poll/presentation/widgets/option_tile.dart';
+import 'package:masic_generation/features/poll/presentation/widgets/poll_simmer.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class PollResultScreen extends StatelessWidget {

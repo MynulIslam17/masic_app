@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_task/core/extensions/app_extension.dart';
-import 'package:flutter_task/core/routes/app_routes.dart';
-import 'package:flutter_task/core/widgets/widgets.dart';
-import 'package:flutter_task/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:get/get.dart';
-import 'package:flutter_task/features/auth/presentation/widgets/app_logo.dart';
+import 'package:masic_generation/features/auth/presentation/widgets/app_logo.dart';
 
 class OtpScreen extends StatelessWidget {
   const OtpScreen({super.key});
