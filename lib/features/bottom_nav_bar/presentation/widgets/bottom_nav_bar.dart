@@ -12,7 +12,7 @@ class BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: 20.h),
+      padding: EdgeInsets.only(left: 16.w, right: 16.w, bottom: MediaQuery.of(context).padding.bottom + 10.h),
       child: CustomContainer(
         radiusAll: 100.r,
         paddingVertical: 10.h,
