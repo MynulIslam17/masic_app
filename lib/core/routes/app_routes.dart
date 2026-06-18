@@ -74,4 +74,7 @@ abstract class AppRoutes {
   // banner ──────────────────────────────────────────────────────────────
   static const String bannerScreen = '/home/banner';
 
+  // notification ──────────────────────────────────────────────────────────────
+  static const String notificationScreen = '/home/notification';
+
 }

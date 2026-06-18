@@ -31,7 +31,9 @@ class HomeScreen extends StatelessWidget {
                 Padding(
                   padding:  EdgeInsets.only(right: isAdmin ? 0 : 16.w),
                   child: GestureDetector(
-                      onTap: () {}, child: Assets.icons.noti.svg()),
+                    onTap: () => Get.toNamed(AppRoutes.notificationScreen),
+                    child: Assets.icons.noti.svg(),
+                  ),
                 ),
                 if(isAdmin)
                 IconButton(onPressed: () {

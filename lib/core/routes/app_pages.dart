@@ -2,6 +2,7 @@ import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/features/admin/dashboard/presentation/admin_dashboard_screen.dart';
 import 'package:masic_generation/features/banner/presentation/screens/admin/banner_screen.dart';
 import 'package:masic_generation/features/home/presentation/home_screen.dart';
+import 'package:masic_generation/features/notification/presentation/screens/notification_screen.dart';
 import 'package:masic_generation/features/poll/presentation/screens/admin/poll_result_screen.dart';
 import 'package:masic_generation/features/poll/presentation/screens/comon/create_poll_screen.dart';
 import 'package:masic_generation/features/poll/presentation/screens/comon/poll_screen.dart';
@@ -125,6 +126,10 @@ abstract class AppPages {
       page: () => MotherSelectScreen(),
     ),
     GetPage(name: AppRoutes.homeScreen, page: () => HomeScreen()),
+    GetPage(
+      name: AppRoutes.notificationScreen,
+      page: () => const NotificationScreen(),
+    ),
     GetPage(
       name: AppRoutes.jobSpecificationScreen,
       page: () => JobSpecificationScreen(),

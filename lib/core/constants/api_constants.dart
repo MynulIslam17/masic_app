@@ -58,6 +58,10 @@ class ApiConstants {
 
 
 
+  /// notification ──────────────────────────────────────────────
+  static String notifications(int page, int limit) =>
+      '/api/v1/notification?page=$page&limit=$limit';
+
   /// banner ──────────────────────────────────────────────
   static const String banner = '/api/v1/banner';
   static const String bannerCreate = '/api/v1/banner/upload';
@@ -101,6 +105,7 @@ class ApiConstants {
   static const String cachePolls = 'poll';
   static const String cacheRequests = 'requests';
   static const String cacheBanner = 'banner';
+  static const String cacheNotifications = 'notifications';
   static const String cacheTree = 'tree';
   static const String cacheDashboard = 'dashboard';
   static const String privacyPolicy = '/api/v1/privacy';

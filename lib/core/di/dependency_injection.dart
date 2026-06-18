@@ -17,6 +17,9 @@ import 'package:masic_generation/features/banner/data/repositories/banner_reposi
 import 'package:masic_generation/features/banner/domain/services/banner_services.dart';
 import 'package:masic_generation/features/banner/presentation/controllers/banner_controller.dart';
 import 'package:masic_generation/features/home/domain/services/home_service.dart';
+import 'package:masic_generation/features/notification/data/repositories/notification_repository.dart';
+import 'package:masic_generation/features/notification/domain/services/notification_services.dart';
+import 'package:masic_generation/features/notification/presentation/controllers/notification_controller.dart';
 import 'package:masic_generation/features/home/presentation/controllers/home_controller.dart';
 import 'package:masic_generation/features/poll/data/repositories/poll_repository.dart';
 import 'package:masic_generation/features/poll/domain/services/poll_services.dart';
@@ -212,6 +215,27 @@ class DependencyInjection {
     Get.lazyPut<RequestController>(
       () => RequestController(
         service: Get.find<RequestServices>(),
+        connectivityService: Get.find<ConnectivityService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<NotificationRepository>(
+      () => NotificationRepository(
+        apiService: Get.find<ApiService>(),
+        cacheService: Get.find<CacheService>(),
+      ),
+      fenix: true,
+    );
+
+    Get.lazyPut<NotificationServices>(
+      () => NotificationServices(repository: Get.find<NotificationRepository>()),
+      fenix: true,
+    );
+
+    Get.lazyPut<NotificationController>(
+      () => NotificationController(
+        service: Get.find<NotificationServices>(),
         connectivityService: Get.find<ConnectivityService>(),
       ),
       fenix: true,
