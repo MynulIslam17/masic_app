@@ -55,7 +55,7 @@ class HomeScreen extends StatelessWidget {
                     return GestureDetector(
                       onTap: () {
                         if(!isAdmin) {
-                          BottomNavBarController.to.onChange(2);
+                          BottomNavBarController.to.onChange(3);
                         }
                       },
                       child: Row(
