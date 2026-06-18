@@ -10,7 +10,6 @@ class NotificationShimmer extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
       itemCount: 6,
       itemBuilder: (context, index) => AppShimmer.wrap(
         child: Container(
