@@ -230,13 +230,7 @@ class PollController extends GetxController {
 
   // ─── Refresh  ──────────────────────────────────────────────────────
   @override
-  Future<void> refresh() async {
-    _polls.clear();
-    _currentPage = 1;
-    _hasMore.value = true;
-    _isLoadingMore.value = false;
-    await _loadData();
-  }
+  Future<void> refresh() async => _loadData();
 
   // ─── Poll Details ─────────────────────────────────────────────────────────
   Future<void> fetchPollDetails(String pollId, {bool showLoader = true}) async {

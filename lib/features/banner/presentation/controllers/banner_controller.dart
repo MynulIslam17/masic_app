@@ -109,9 +109,7 @@ class BannerController extends GetxController {
   }
 
   @override
-  Future<void> refresh() async {
-    await _loadData();
-  }
+  Future<void> refresh() async => _loadData();
 
   Future<void> createBanner() async {
     if (_selectedImage.value == null) return;

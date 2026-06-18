@@ -500,13 +500,7 @@ class ProfileController extends GetxController {
   Future<void> retry() => loadData();
 
   @override
-  Future<void> refresh() async {
-    _currentPage = 1;
-    _usersData.clear();
-    _userData.value = null;
-    _selectedDate = null;
-    await loadData();
-  }
+  Future<void> refresh() async => loadData();
 
   void clearAllFilters() {
     _genderFilter.value = '';

@@ -86,7 +86,5 @@ class DashboardController extends GetxController {
 
 
   @override
-  Future<void> refresh() async {
-    await _loadData();
-  }
+  Future<void> refresh() async => _loadData();
 }

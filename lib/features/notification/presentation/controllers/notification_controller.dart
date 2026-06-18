@@ -130,11 +130,7 @@ class NotificationController extends GetxController {
   }
 
   @override
-  Future<void> refresh() async {
-    _notifications.clear();
-    _isLoadingMore.value = false;
-    await _loadData();
-  }
+  Future<void> refresh() async => _loadData();
 
   @override
   void onClose() {
