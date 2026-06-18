@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:get/get.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/utils/assets_path/fonts.gen.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
+import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:masic_generation/features/privacy/presentation/controllers/privacy_controller.dart';
-import 'package:get/get.dart';
-import 'package:masic_generation/core/widgets/widgets.dart';
 
 class PrivacyPolicyAllScreen extends StatefulWidget {
   const PrivacyPolicyAllScreen({super.key});
@@ -56,21 +59,40 @@ class _PrivacyPolicyAllScreenState extends State<PrivacyPolicyAllScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Content ──────────────────────────────────────────────
-                  if(_isEditing.value == false)
-                  CustomText(text: controller.description),
+                  // ── HTML content (view mode) ───────────────────────────────
+                  Obx(
+                    () => _isEditing.value
+                        ? const SizedBox.shrink()
+                        : _PrivacyHtmlContent(
+                            html: controller.description,
+                          ),
+                  ),
 
-                  // ── TextField (editing mode only) ─────────────────────────
+                  // ── HTML editor (admin editing mode) ───────────────────────
                   if (isAdmin)
                     Obx(
-                          () => _isEditing.value
-                          ? CustomTextField(
-                            showShadow: false,
-                            controller: controller.desController,
-                            minLines: 20,
-                            maxLines: 20,
-                            hintText: 'Enter content...',
-                          )
+                      () => _isEditing.value
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                CustomText(
+                                  text: 'Edit HTML content',
+                                  textAlign: TextAlign.start,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: AppColors.textSecondary,
+                                  enableAutoTranslate: false,
+                                ),
+                                SizedBox(height: 8.h),
+                                CustomTextField(
+                                  showShadow: false,
+                                  controller: controller.desController,
+                                  minLines: 20,
+                                  maxLines: 20,
+                                  hintText: '<p>Enter HTML content...</p>',
+                                ),
+                              ],
+                            )
                           : const SizedBox.shrink(),
                     ),
                 ],
@@ -120,8 +142,7 @@ class _PrivacyPolicyAllScreenState extends State<PrivacyPolicyAllScreen> {
           )
               : CustomButton(
             onPressed: () {
-              controller.desController.text =
-                  controller.description;
+              controller.desController.text = controller.description;
               _isEditing.value = true;
             },
             label: 'Update',
@@ -129,6 +150,29 @@ class _PrivacyPolicyAllScreenState extends State<PrivacyPolicyAllScreen> {
         ),
       )
           : null,
+    );
+  }
+}
+
+class _PrivacyHtmlContent extends StatelessWidget {
+  const _PrivacyHtmlContent({required this.html});
+
+  final String html;
+
+  @override
+  Widget build(BuildContext context) {
+    if (html.trim().isEmpty) {
+      return const EmptyDataWidget(message: 'No content available.');
+    }
+
+    return HtmlWidget(
+      html,
+      textStyle: TextStyle(
+        fontSize: 14.sp,
+        fontFamily: FontFamily.poppins,
+        color: AppColors.darkColor,
+        height: 1.6,
+      ),
     );
   }
 }
