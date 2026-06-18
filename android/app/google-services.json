@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "16805625051",
+    "project_id": "masic-generation",
+    "storage_bucket": "masic-generation.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16805625051:android:f67512e922e09c550260fe",
+        "android_client_info": {
+          "package_name": "com.masicgeneration.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvsx1iwOw6REEl2WhoYPr6aZsll7JjL0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
