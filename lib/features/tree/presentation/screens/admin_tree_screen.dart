@@ -45,10 +45,10 @@ class AdminTreeScreen extends StatelessWidget {
                   case LoadingState.loaded:
                     final treeData = ctrl.treeData;
                     if (treeData == null || treeData.root == null) {
-                      return EmptyDataWidget(
-                        message: 'No tree data found.',
-                        onRefresh: () async => ctrl.loadData(),
-                      );
+                      return Stack(children: [
+                        Assets.icons.treeHome.svg(fit: BoxFit.cover),
+                        const Center(child: CustomLoader()),
+                      ]);
                     }
                     return FamilyTreeGraph(
                       key: ValueKey(treeData.hashCode),
