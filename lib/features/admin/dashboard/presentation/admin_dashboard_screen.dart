@@ -62,46 +62,60 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   children: [
                     SizedBox(height: 16.h),
                     // ── Age Range Bar Chart ──────────────────────────
-                    CustomBarChart(
-                      label: 'Age Range',
-                      chartData: dashboard?.ageRangeChartData ?? [],
-                    ),
+                    if (dashboard?.ageRangeChartData != null &&
+                        dashboard!.ageRangeChartData.isNotEmpty)
+                      CustomBarChart(
+                        label: 'Age Range',
+                        chartData: dashboard.ageRangeChartData,
+                      ),
 
                     // ── Male & Female Pie Chart ──────────────────────
-                    CustomPieChart(
-                      pieChartData: dashboard?.genderChartData ?? [],
-                      label: 'Male and Female user',
-                    ),
+                    if (dashboard?.genderChartData != null &&
+                        dashboard!.genderChartData.isNotEmpty)
+                      CustomPieChart(
+                        pieChartData: dashboard.genderChartData,
+                        label: 'Male and Female user',
+                      ),
 
                     // ── Common name Bar Chart ──────────────────────────
-                    CustomBarChart(
-                      label: 'Common name',
-                      chartData: dashboard?.commonNamesChartData ?? [],
-                    ),
+                    if (dashboard?.commonNamesChartData != null &&
+                        dashboard!.commonNamesChartData.isNotEmpty)
+                      CustomBarChart(
+                        label: 'Common name',
+                        chartData: dashboard.commonNamesChartData,
+                      ),
 
                     // ── Employment status Pie Chart ──────────────────────
-                    CustomPieChart(
-                      pieChartData: dashboard?.employmentStatusChartData ?? [],
-                      label: 'Employment status',
-                    ),
+                    if (dashboard?.employmentStatusChartData != null &&
+                        dashboard!.employmentStatusChartData.isNotEmpty)
+                      CustomPieChart(
+                        pieChartData: dashboard.employmentStatusChartData,
+                        label: 'Employment status',
+                      ),
 
                     // ── Field of work Bar Chart ──────────────────────────
-                    CustomBarChart(
-                      label: 'Field of work',
-                      chartData: dashboard?.fieldOfWorkChartData ?? [],
-                    ),
+                    if (dashboard?.fieldOfWorkChartData != null &&
+                        dashboard!.fieldOfWorkChartData.isNotEmpty)
+                      CustomBarChart(
+                        label: 'Field of work',
+                        chartData: dashboard.fieldOfWorkChartData,
+                      ),
 
                     // ── School or University student Pie Chart ──────────────────────
-                    CustomPieChart(
-                      pieChartData: dashboard?.educationLevelChartData ?? [],
-                      label: 'School or University student',
-                    ),
+                    if (dashboard?.educationLevelChartData != null &&
+                        dashboard!.educationLevelChartData.isNotEmpty)
+                      CustomPieChart(
+                        pieChartData: dashboard.educationLevelChartData,
+                        label: 'School or University student',
+                      ),
 
                     // ── Location Bar Chart ──────────────────────────
-                    CustomBarChart(
-                      label: 'Location',
-                      chartData: dashboard?.locationChartData ?? [],
-                    ),
+                    if (dashboard?.locationChartData != null &&
+                        dashboard!.locationChartData.isNotEmpty)
+                      CustomBarChart(
+                        label: 'Location',
+                        chartData: dashboard.locationChartData,
+                      ),
                   ],
                 ),
               ),
