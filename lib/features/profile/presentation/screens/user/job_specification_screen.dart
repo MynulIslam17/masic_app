@@ -18,17 +18,19 @@ class JobSpecificationScreen extends StatelessWidget {
     final controller = RequestController.to;
     return CustomScaffold(
       appBar: CustomAppBar(title: "Job specification"),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(16.r),
-        child:
-             CustomButton(
-              label: "Save",
-              onPressed: () {
-                if (!controller.formKey.currentState!.validate()) return;
-                Get.toNamed(AppRoutes.personalInfoScreen, arguments: requestType);
-              },
-            ),
-
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child:
+               CustomButton(
+                label: "Save",
+                onPressed: () {
+                  if (!controller.formKey.currentState!.validate()) return;
+                  Get.toNamed(AppRoutes.personalInfoScreen, arguments: requestType);
+                },
+              ),
+        
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
