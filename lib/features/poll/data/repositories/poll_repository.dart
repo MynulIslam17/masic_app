@@ -81,7 +81,11 @@ class PollRepository {
       final response = await _apiService.get(
         ApiConstants.pollDetails(pollId),
       );
-      return PollDetailsModel.fromJson(response.data['data']);
+      final data = response.data['data'];
+      if (data is! Map<String, dynamic>) {
+        throw UnknownException('Invalid poll details response');
+      }
+      return PollDetailsModel.fromJson(data);
     } on AppException {
       rethrow;
     } catch (e) {
@@ -91,10 +95,15 @@ class PollRepository {
 
   Future<PollResultModel> pollResult(String pollId) async {
     try {
+      // `/results` currently returns 500 from backend — use `/answers` instead.
       final response = await _apiService.get(
-        ApiConstants.pollResults(pollId),
+        ApiConstants.pollDetails(pollId),
       );
-      return PollResultModel.fromJson(response.data['data']);
+      final data = response.data['data'];
+      if (data is! Map<String, dynamic>) {
+        throw UnknownException('Invalid poll result response');
+      }
+      return PollResultModel.fromJson(data);
     } on AppException {
       rethrow;
     } catch (e) {

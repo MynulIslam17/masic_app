@@ -278,6 +278,8 @@ class PollController extends GetxController {
   Future<void> fetchPollResult(String pollId) async {
     try {
       _resultLoadingState.value = LoadingState.loading;
+      _pollResult.value = null;
+      _selectedOptionId.value = '';
       final poll = await _service.fetchPollResult(pollId);
       _pollResult.value = poll;
       _resultLoadingState.value = LoadingState.loaded;

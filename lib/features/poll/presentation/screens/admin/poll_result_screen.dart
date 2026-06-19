@@ -5,11 +5,9 @@ import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
-import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:masic_generation/features/poll/presentation/controllers/poll_controller.dart';
 import 'package:masic_generation/features/poll/presentation/widgets/option_tile.dart';
 import 'package:masic_generation/features/poll/presentation/widgets/poll_simmer.dart';
-import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class PollResultScreen extends StatelessWidget {
@@ -21,7 +19,7 @@ class PollResultScreen extends StatelessWidget {
     final controller = PollController.to;
     controller.fetchPollResult(pollId);
     return CustomScaffold(
-      appBar: CustomAppBar(title: "Polls Answers"),
+      appBar: CustomAppBar(title: 'Polls Answers'),
       body: Obx(() {
         final pollData = controller.pollResult;
 
@@ -34,7 +32,7 @@ class PollResultScreen extends StatelessWidget {
           case LoadingState.error:
             return EmptyDataWidget(
               message: 'Failed to load poll details. Please try again.',
-              onRefresh: () async => await controller.fetchPollDetails(pollId),
+              onRefresh: () async => await controller.fetchPollResult(pollId),
             );
 
           case LoadingState.loaded:
@@ -44,7 +42,6 @@ class PollResultScreen extends StatelessWidget {
                 children: [
                   SizedBox(height: 24.h),
 
-                  // ── Poll title ──────────────────────────────────────────
                   CustomText(
                     text: pollData?.title ?? '',
                     fontSize: 16.sp,
@@ -52,7 +49,6 @@ class PollResultScreen extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                   ),
 
-                  // ── Tagline ─────────────────────────────────────────────
                   CustomText(
                     textAlign: TextAlign.start,
                     color: AppColors.primaryColor,
@@ -74,7 +70,10 @@ class PollResultScreen extends StatelessWidget {
                       pollData?.options != null &&
                       pollData!.options!.isNotEmpty)
                     ...pollData.options!.asMap().entries.map(
-                      (e) => OptionTile(options: e.value, isReadOnly: true,)
+                      (e) => OptionTile(
+                        options: e.value,
+                        isReadOnly: true,
+                      ),
                     ),
                   if (pollData?.answerType == 'write-in' &&
                       pollData?.answers != null &&
@@ -101,7 +100,10 @@ class PollResultScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   CustomText(text: e.user?.name ?? ''),
-                                  CustomText(text: e.answer ?? '',fontSize: 10.sp,),
+                                  CustomText(
+                                    text: e.answer ?? '',
+                                    fontSize: 10.sp,
+                                  ),
                                 ],
                               ),
                             ),
@@ -116,33 +118,32 @@ class PollResultScreen extends StatelessWidget {
             );
         }
       }),
-
-      bottomNavigationBar:  SafeArea(child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 10.h),
-            child: CustomButton(
-              bordersColor: AppColors.errorColor,
-              foregroundColor: AppColors.errorColor,
-              backgroundColor: Colors.transparent,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => Obx(() {
-                      return CustomDialog(
-                        title: "Delete Poll",
-                        rightButtonLabel: 'Yes, Delete',
-                        isLoading: controller.deleteLoadingState.isLoading,
-                        onTapLeftButton: () => Get.back(),
-                        onTapRightButton: () => controller.deletePoll(pollId),
-                        description:
-                        'Are you sure want to delete your Poll?',
-                      );
-                    }
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+          child: CustomButton(
+            bordersColor: AppColors.errorColor,
+            foregroundColor: AppColors.errorColor,
+            backgroundColor: Colors.transparent,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => Obx(
+                  () => CustomDialog(
+                    title: 'Delete Poll',
+                    rightButtonLabel: 'Yes, Delete',
+                    isLoading: controller.deleteLoadingState.isLoading,
+                    onTapLeftButton: () => Get.back(),
+                    onTapRightButton: () => controller.deletePoll(pollId),
+                    description: 'Are you sure want to delete your Poll?',
                   ),
-                );
-
-              },label: 'Delete',),
-          ))
-
+                ),
+              );
+            },
+            label: 'Delete',
+          ),
+        ),
+      ),
     );
   }
 }

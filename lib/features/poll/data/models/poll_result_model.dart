@@ -22,27 +22,33 @@ class PollResultModel {
   });
 
   PollResultModel.fromJson(Map<String, dynamic> json) {
-    sId = json['_id'];
-    title = json['title'];
-    tagline = json['tagline'];
-    answerType = json['answerType'];
-    totalResponses = json['totalResponses'];
+    sId = json['_id']?.toString();
+    title = json['title']?.toString();
+    tagline = json['tagline']?.toString();
+    answerType = json['answerType']?.toString();
+    totalResponses = _parseInt(json['totalResponses']);
+    createdAt = json['createdAt']?.toString();
 
-    if (json['answers'] != null) {
-      answers = <Answers>[];
-      json['answers'].forEach((v) {
-        answers!.add(Answers.fromJson(v));
-      });
+    if (json['answers'] is List) {
+      answers = (json['answers'] as List)
+          .whereType<Map>()
+          .map((v) => Answers.fromJson(Map<String, dynamic>.from(v)))
+          .toList();
     }
 
-    if (json['options'] != null) {
-      options = <PollOption>[];
-      json['options'].forEach((v) {
-        options!.add(PollOption.fromJson(v));
-      });
+    if (json['options'] is List) {
+      options = (json['options'] as List)
+          .whereType<Map>()
+          .map((v) => PollOption.fromJson(Map<String, dynamic>.from(v)))
+          .toList();
     }
+  }
 
-    createdAt = json['createdAt'];
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse(value.toString());
   }
 
   Map<String, dynamic> toJson() {
