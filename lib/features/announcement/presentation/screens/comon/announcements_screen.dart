@@ -7,7 +7,6 @@ import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/custom_search_field.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
-import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
 import 'package:masic_generation/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:masic_generation/features/announcement/presentation/widgets/announcement_card.dart';
 import 'package:masic_generation/features/announcement/presentation/widgets/announcement_simmer.dart';
@@ -212,6 +211,17 @@ class AnnouncementsScreen extends StatelessWidget {
                   );
 
                 case LoadingState.loaded:
+                  if (controller.announcements.isEmpty) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyDataWidget(
+                        message: controller.selectedTab.value == 1
+                            ? 'You have no announcements yet.'
+                            : 'No announcements found.',
+                        onRefresh: () async => await controller.refresh(),
+                      ),
+                    );
+                  }
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => Padding(

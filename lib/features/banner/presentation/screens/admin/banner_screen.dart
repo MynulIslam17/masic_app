@@ -22,150 +22,167 @@ class BannerScreen extends StatelessWidget {
       appBar: CustomAppBar(title: 'Banner'),
       body: RefreshIndicator(
         onRefresh: controller.refresh,
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
           ),
-          child: Column(
-            children: [
-              Row(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Row(
                 children: [
                   Expanded(
                     child: Obx(
-                      () {
-                        return CustomText(
-                          textAlign: TextAlign.start,
-                          fontSize: 12.sp,
-                          text: 'Total events : ${controller.banners.length}',
-                        );
-                      }
+                      () => CustomText(
+                        textAlign: TextAlign.start,
+                        fontSize: 12.sp,
+                        text: 'Total events : ${controller.banners.length}',
+                      ),
                     ),
                   ),
                   CustomButton(
                     height: 38.h,
                     elevation: true,
                     borderWidth: 3,
-                    bordersColor: Color(0xffB0B0B0),
+                    bordersColor: const Color(0xffB0B0B0),
                     foregroundColor: AppColors.primaryColor,
                     backgroundColor: Colors.white,
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
                     width: 120.w,
                     onPressed: () {
-                      PhotoPickerHelper.showPhotoPicker(context: context, onImagePicked: (image) async => await controller.selectImage(image));
+                      PhotoPickerHelper.showPhotoPicker(
+                        context: context,
+                        onImagePicked: (image) async =>
+                            await controller.selectImage(image),
+                      );
                     },
                     label: 'Upload',
                   ),
                 ],
               ),
+            ),
+            SliverToBoxAdapter(child: SizedBox(height: 24.h)),
+            Obx(() {
+              switch (controller.loadingState) {
+                case LoadingState.initial:
+                case LoadingState.loading:
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: AnnouncementShimmer(),
+                  );
 
-              /// ============ > Events List < ============
-              SizedBox(height: 24.h),
-              Obx(() {
-                switch (controller.loadingState) {
-                  case LoadingState.initial:
-                  case LoadingState.loading:
-                    return AnnouncementShimmer();
-
-                  case LoadingState.offline:
-                  case LoadingState.error:
-                       return EmptyDataWidget(
+                case LoadingState.offline:
+                case LoadingState.error:
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
+                    child: EmptyDataWidget(
                       message: 'Failed to load data',
                       onRefresh: () async => await controller.refresh(),
-                    );
+                    ),
+                  );
 
-                  case LoadingState.loaded:
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: controller.banners.length,
-                      itemBuilder: (context, index) {
+                case LoadingState.loaded:
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
                         final banner = controller.banners[index];
-                        return Stack(
-
-                          children: [
-                            CustomNetworkImage(
-                              borderRadius: 32.r,
-                              imageUrl: banner.imageUrl,
-                              height: 225.h,
-                              width: double.infinity,
-                              fit: BoxFit.cover,),
-                            Positioned(
-                              bottom: 0,
-                              left: 0,
-                              right: 0,
-                              child: CustomContainer(
-                                radiusAll: 33.r,
-                                height: 112.h,
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            bottom: index < controller.banners.length - 1
+                                ? 16.h
+                                : 0,
+                          ),
+                          child: Stack(
+                            children: [
+                              CustomNetworkImage(
+                                borderRadius: 32.r,
+                                imageUrl: banner.imageUrl,
+                                height: 225.h,
                                 width: double.infinity,
-                                linearColors: [
-                                  AppColors.white.withValues(alpha: 0.0),
-                                  AppColors.white
-                                ],
-                              )
-                            ) ,
-
-
-                            Positioned(
-                              bottom: 10.h,
-                              left: 16.w,
-                              child: Row(
-                                children: [
-                                  CustomContainer(
-                                    shape: BoxShape.circle,
-                                    paddingAll: 14.r,
-                                    color: AppColors.colorD9D9D9,
-                                    child: CustomText(
-                                      textAlign: TextAlign.start,
-                                      color: AppColors.primaryColor,
-                                      fontSize: 16.sp,
-                                      text: '${index + 1}',
+                                fit: BoxFit.cover,
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                left: 0,
+                                right: 0,
+                                child: CustomContainer(
+                                  radiusAll: 32.r,
+                                  height: 112.h,
+                                  width: double.infinity,
+                                  linearColors: [
+                                    AppColors.white.withValues(alpha: 0.0),
+                                    AppColors.white,
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 10.h,
+                                left: 16.w,
+                                child: Row(
+                                  children: [
+                                    CustomContainer(
+                                      shape: BoxShape.circle,
+                                      paddingAll: 14.r,
+                                      color: AppColors.colorD9D9D9,
+                                      child: CustomText(
+                                        textAlign: TextAlign.start,
+                                        color: AppColors.primaryColor,
+                                        fontSize: 16.sp,
+                                        text: '${index + 1}',
+                                      ),
                                     ),
-                                  ),
-                                  CustomText(
-                                    left: 10.w,
+                                    CustomText(
+                                      left: 10.w,
                                       textAlign: TextAlign.start,
                                       color: AppColors.primaryColor,
                                       fontSize: 16.sp,
                                       fontWeight: FontWeight.w400,
-                                      text: 'Upload at ${TimeFormatHelper.formatDate(DateTime.parse(banner.createdAt ?? ''))}'
-                                  ),
-                                ],
-                              )
-                            ) ,
-
-
-                            Positioned(
-                              top: 4.h,
-                              right: 6.w,
-                              child: IconButton(onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => Obx(() {
-                                    return CustomDialog(
-                                      title: "Delete Banner",
-                                      rightButtonLabel: 'Yes, Delete',
-                                      isLoading: controller.deleteLoadingState.isLoading,
-                                      onTapLeftButton: () => Get.back(),
-                                      onTapRightButton: () => controller.deleteBanner(banner.sId ?? ''),
-                                      description:
-                                      'Are you sure want to delete your Banner?',
+                                      text:
+                                          'Upload at ${TimeFormatHelper.formatDate(DateTime.parse(banner.createdAt ?? ''))}',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Positioned(
+                                top: 4.h,
+                                right: 6.w,
+                                child: IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => Obx(
+                                        () => CustomDialog(
+                                          title: 'Delete Banner',
+                                          rightButtonLabel: 'Yes, Delete',
+                                          isLoading:
+                                              controller
+                                                  .deleteLoadingState
+                                                  .isLoading,
+                                          onTapLeftButton: () => Get.back(),
+                                          onTapRightButton: () =>
+                                              controller.deleteBanner(
+                                                banner.sId ?? '',
+                                              ),
+                                          description:
+                                              'Are you sure want to delete your Banner?',
+                                        ),
+                                      ),
                                     );
-                                  }
-                                  ),
-                                );
-                              }, icon: Assets.icons.delete.svg())
-                            )
-                          ],
+                                  },
+                                  icon: Assets.icons.delete.svg(),
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       },
-                      separatorBuilder: (context, index) => SizedBox(height: 16.h),
-                    );
-                }
-              }),
-              SizedBox(height: 24.h),
-            ],
-          ),
+                      childCount: controller.banners.length,
+                    ),
+                  );
+              }
+            }),
+            SliverToBoxAdapter(child: SizedBox(height: 24.h)),
+          ],
         ),
       ),
     );

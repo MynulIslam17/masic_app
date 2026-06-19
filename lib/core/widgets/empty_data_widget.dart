@@ -24,11 +24,7 @@ class EmptyDataWidget extends StatelessWidget {
           CustomText(text: message ?? 'No data found'),
           SizedBox(height:44.h),
           if(onRefresh != null)
-          CustomButton(
-            height: 38.h,
-              fontSize: 12.sp,
-              width: 100.w,
-              onPressed: onRefresh, label: 'Refresh'),
+            TextButton(onPressed: onRefresh, child: CustomText(text: 'Refresh',color: AppColors.primaryColor,fontWeight: FontWeight.w600,)),
       ],
       ),
     );

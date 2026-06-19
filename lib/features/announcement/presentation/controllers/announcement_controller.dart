@@ -114,16 +114,19 @@ class AnnouncementController extends GetxController {
 
       if (hasCache) {
         _loadFromCache();
-        if(_announcements.isEmpty){
-          _loadingState.value = LoadingState.error;
-          return;
-        }
-        _loadingState.value = LoadingState.loaded;
+        _loadingState.value = _announcements.isEmpty
+            ? LoadingState.loading
+            : LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.loading;
       }
 
-      if (!isOnline) return;
+      if (!isOnline) {
+        if (_announcements.isEmpty) {
+          _loadingState.value = LoadingState.error;
+        }
+        return;
+      }
 
       try {
         await _service.fetchAnnouncements(
@@ -135,11 +138,13 @@ class AnnouncementController extends GetxController {
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
-        if (!hasCache) _loadingState.value = LoadingState.error;
+        if (_announcements.isEmpty) {
+          _loadingState.value = LoadingState.error;
+        }
         if (kDebugMode) debugPrint('Fetch error: $e');
       }
     } catch (e) {
-      if (_service.hasCache(_currentType)) {
+      if (_service.hasCache(_currentType) && _announcements.isNotEmpty) {
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } else {
@@ -200,7 +205,9 @@ class AnnouncementController extends GetxController {
   }
 
   @override
-  Future<void> refresh() async => _loadData();
+  Future<void> refresh() async {
+    await _loadData();
+  }
 
   Future<void> createAnnouncement() async {
     if (!formKey.currentState!.validate()) return;

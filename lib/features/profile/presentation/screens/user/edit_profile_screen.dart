@@ -18,16 +18,18 @@ class EditProfileScreen extends StatelessWidget {
     final controller = ProfileController.to;
     return CustomScaffold(
       appBar: CustomAppBar(title: "Edit Profile"),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.all(16.r),
-        child: Obx(
-              () {
-            return CustomButton(
-              label: "Update Profile",
-              isLoading: controller.updateLoadingState.isLoading,
-              onPressed: controller.updateUserProfile,
-            );
-          },
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.all(16.r),
+          child: Obx(
+                () {
+              return CustomButton(
+                label: "Update Profile",
+                isLoading: controller.updateLoadingState.isLoading,
+                onPressed: controller.updateUserProfile,
+              );
+            },
+          ),
         ),
       ),
       body: SingleChildScrollView(

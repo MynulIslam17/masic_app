@@ -51,47 +51,64 @@ class ProfileInformationScreen extends StatelessWidget {
                 child: Column(
                  // spacing: 16.h,
                   children: [
-                    InfoRow(label: 'Name', value: user?.name ?? 'N/A'),
-                    InfoRow(label: 'Email', value: user?.email ?? 'N/A'),
-                    InfoRow(
-                      label: 'Phone no',
-                      value: user?.phone ?? 'N/A',
-                    ),
-                    InfoRow(
-                      label: 'Date of birth',
-                      value: TimeFormatHelper.formatDateTime(
-                        user?.dateOfBirth ?? '',
+                    if (user?.name != null && user!.name!.isNotEmpty)
+                      InfoRow(label: 'Name', value: user!.name),
+                    if (user?.email != null && user!.email!.isNotEmpty)
+                      InfoRow(label: 'Email', value: user!.email),
+                    if (user?.phone != null && user!.phone!.isNotEmpty)
+                      InfoRow(label: 'Phone no', value: user!.phone),
+                    if (user?.dateOfBirth != null &&
+                        user!.dateOfBirth!.isNotEmpty)
+                      InfoRow(
+                        label: 'Date of birth',
+                        value: TimeFormatHelper.formatDateTime(
+                          user!.dateOfBirth,
+                        ),
                       ),
-                    ),
-                    InfoRow(label: 'Gender', value: user?.gender ?? 'N/A'),
-                    InfoRow(
-                      label: 'Employment status',
-                      value: user?.employmentStatus ?? 'N/A',
-                    ),
-                    InfoRow(
-                      label: 'Education',
-                      value: user?.education ?? 'N/A',
-                    ),
-                    InfoRow(
-                      label: 'University name',
-                      value: user?.universityName ?? 'N/A',
-                    ),
-                    // InfoRow(
-                    //   label: 'Field of work',
-                    //   value: user?.fieldOfWork ?? 'N/A',
-                    // ),
-                    // InfoRow(
-                    //   label: 'Spouse name',
-                    //   value: user?.spouseName ?? 'N/A',
-                    // ),
-                    // InfoRow(
-                    //   label: 'Spouse number',
-                    //   value: user?.spousePhone ?? 'N/A',
-                    // ),
-                    // InfoRow(
-                    //   label: 'Linkedin link',
-                    //   value: user?.linkedinLink ?? 'N/A',
-                    // ),
+                    if (user?.gender != null && user!.gender!.isNotEmpty)
+                      InfoRow(label: 'Gender', value: user!.gender),
+                    if (user?.employmentStatus != null &&
+                        user!.employmentStatus!.isNotEmpty)
+                      InfoRow(
+                        label: 'Employment status',
+                        value: user!.employmentStatus,
+                      ),
+                    if (user?.education != null &&
+                        user!.education!.isNotEmpty)
+                      InfoRow(
+                        label: 'Education',
+                        value: user!.education,
+                      ),
+                    if (user?.universityName != null &&
+                        user!.universityName!.isNotEmpty)
+                      InfoRow(
+                        label: 'University name',
+                        value: user!.universityName,
+                      ),
+                    if (user?.fieldOfWork != null &&
+                        user!.fieldOfWork!.isNotEmpty)
+                      InfoRow(
+                        label: 'Field of work',
+                        value: user!.fieldOfWork,
+                      ),
+                    if (user?.spouseName != null &&
+                        user!.spouseName!.isNotEmpty)
+                      InfoRow(
+                        label: 'Spouse name',
+                        value: user!.spouseName,
+                      ),
+                    if (user?.spousePhone != null &&
+                        user!.spousePhone!.isNotEmpty)
+                      InfoRow(
+                        label: 'Spouse number',
+                        value: user!.spousePhone,
+                      ),
+                    if (user?.contact?.linkedin != null &&
+                        user!.contact!.linkedin!.isNotEmpty)
+                      InfoRow(
+                        label: 'Linkedin link',
+                        value: user!.contact!.linkedin,
+                      ),
                   ],
                 ),
               ),

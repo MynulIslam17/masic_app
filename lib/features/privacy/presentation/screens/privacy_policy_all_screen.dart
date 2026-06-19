@@ -37,8 +37,7 @@ class _PrivacyPolicyAllScreenState extends State<PrivacyPolicyAllScreen> {
   Widget build(BuildContext context) {
     final isAdmin = AuthController.to.isAdmin();
 
-    return Scaffold(
-      backgroundColor: const Color(0xffF6F5F1),
+    return CustomScaffold(
       appBar: CustomAppBar(title: title),
       body: Obx(() {
         switch (controller.loadingState) {
@@ -55,7 +54,6 @@ class _PrivacyPolicyAllScreenState extends State<PrivacyPolicyAllScreen> {
 
           case LoadingState.loaded:
             return SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -105,7 +103,7 @@ class _PrivacyPolicyAllScreenState extends State<PrivacyPolicyAllScreen> {
       bottomNavigationBar: isAdmin
           ? Obx(
             () => Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 24.h),
+          padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, MediaQuery.of(context).padding.bottom + 10.h),
           child: _isEditing.value
               ? Row(
             children: [

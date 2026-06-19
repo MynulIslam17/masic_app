@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
-import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
@@ -69,53 +68,50 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                     child: Column(
                       spacing: 16.h,
                       children: [
-                        _buildInfoRow(
-                          label: 'Name',
-                          value: user?.name ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'Email',
-                          value: user?.email ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'Phone no',
-                          value: user?.spousePhone ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'Date of birth',
-                          value: TimeFormatHelper.formatDateTime(
-                            user?.dateOfBirth ?? '',
+                        if (user?.name != null && user!.name!.isNotEmpty)
+                          _buildInfoRow(label: 'Name', value: user!.name),
+                        if (user?.email != null && user!.email!.isNotEmpty)
+                          _buildInfoRow(label: 'Email', value: user!.email),
+                        if (user?.phone != null && user!.phone!.isNotEmpty)
+                          _buildInfoRow(label: 'Phone no', value: user!.phone),
+                        if (user?.gender != null && user!.gender!.isNotEmpty)
+                          _buildInfoRow(label: 'Gender', value: user!.gender),
+                        if (user?.employmentStatus != null &&
+                            user!.employmentStatus!.isNotEmpty)
+                          _buildInfoRow(
+                            label: 'Employment status',
+                            value: user!.employmentStatus,
                           ),
-                        ),
-                        _buildInfoRow(
-                          label: 'Gender',
-                          value: user?.gender ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'Employment status',
-                          value: user?.employmentStatus ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'Education',
-                          value: user?.education ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'University name',
-                          value: user?.universityName ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'Field of work',
-                          value: user?.fieldOfWork ?? 'N/A',
-                        ),
-                        _buildInfoRow(
-                          label: 'Spouse name',
-                          value: user?.spouseName ?? 'N/A',
-                        ),
-                        //_buildInfoRow(label: 'Spouse number',     value: user?.spousePhone     ?? 'N/A'),
-                        _buildInfoRow(
-                          label: 'Linkedin link',
-                          value: user?.linkedinLink ?? 'N/A',
-                        ),
+                        if (user?.education != null &&
+                            user!.education!.isNotEmpty)
+                          _buildInfoRow(
+                            label: 'Education',
+                            value: user!.education,
+                          ),
+                        if (user?.universityName != null &&
+                            user!.universityName!.isNotEmpty)
+                          _buildInfoRow(
+                            label: 'University name',
+                            value: user!.universityName,
+                          ),
+                        if (user?.fieldOfWork != null &&
+                            user!.fieldOfWork!.isNotEmpty)
+                          _buildInfoRow(
+                            label: 'Field of work',
+                            value: user!.fieldOfWork,
+                          ),
+                        if (user?.spouseName != null &&
+                            user!.spouseName!.isNotEmpty)
+                          _buildInfoRow(
+                            label: 'Spouse name',
+                            value: user!.spouseName,
+                          ),
+                        if (user?.contact?.linkedin != null &&
+                            user!.contact!.linkedin!.isNotEmpty)
+                          _buildInfoRow(
+                            label: 'Linkedin link',
+                            value: user!.contact!.linkedin,
+                          ),
                       ],
                     ),
                   ),
