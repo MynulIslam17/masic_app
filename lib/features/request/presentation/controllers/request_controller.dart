@@ -4,7 +4,6 @@ import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/helpers/toast_message_helper.dart';
-import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
 import 'package:masic_generation/core/services/search_service.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
