@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/custom_search_field.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
@@ -19,117 +20,165 @@ class AllUserScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = ProfileController.to;
+    final bool isRtl = Directionality.of(context) == TextDirection.rtl;
+
     return CustomScaffold(
-      appBar: CustomAppBar(
-        title: 'Users',
-        actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => FilterDialog(),
-              );
-            },
-            icon: Assets.icons.filter.svg(),
-          ),
-        ],
-      ),
+      paddingSide: 0,
       body: RefreshIndicator(
+        edgeOffset: kToolbarHeight * 2.h,
         onRefresh: () => controller.refresh(),
-        child: SingleChildScrollView(
+        child: CustomScrollView(
           controller: controller.scrollController,
-          physics: AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          child: Column(
-            children: [
-              CustomSearchField(
-                readOnly: true,
-
-                onTap: () {
-                  showSearch(
-                    context: context,
-                    delegate: SearchScreen(
-                      onSearch: (String query) async {
-                        await controller.search.search(query);
-                        return controller.search.results
-                            .map(
-                              (a) => SearchModel(
-                            model: a,
-                            title: a.name,
-                            subtitle: a.email,
-                            image: a.profileImage ?? '',
-                          ),
-                        )
-                            .toList();
-                      },
-                      onResultTap: (result) {
-                        controller.search.clear();
-                        Get.toNamed(
-                          AppRoutes.profileDetailsScreen,
-                          arguments: result.model as UserModel,
-                        );
-                      },
-                    ),
-                  );
-                },
-
-                searchController: controller.searchController,
-                hintText: 'Search here . . .',
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          slivers: [
+            SliverAppBar(
+              backgroundColor: AppColors.bgColor,
+              pinned: true,
+              floating: false,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              expandedHeight: 100.h,
+              leading: IconButton(
+                icon: isRtl
+                    ? Assets.icons.backButton
+                          .svg(height: 24.h, width: 24.w)
+                          .flipped
+                    : Assets.icons.backButton.svg(height: 24.h, width: 24.w),
+                onPressed: () => Navigator.pop(context),
               ),
-              SizedBox(height: 10.h),
-              Row(
-                children: [
-                  Obx(() {
-                      return CustomText(
+              title: CustomText(
+                text: 'Users',
+                fontSize: 16.sp,
+                color: AppColors.appBarTitleColor,
+              ),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => FilterDialog(),
+                    );
+                  },
+                  icon: Assets.icons.filter.svg(),
+                ),
+              ],
+              flexibleSpace: FlexibleSpaceBar(
+                background: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 16.w,
+                      right: 16.w,
+                      top: kToolbarHeight,
+                    ),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: CustomSearchField(
+                        readOnly: true,
+                        onTap: () {
+                          showSearch(
+                            context: context,
+                            delegate: SearchScreen(
+                              onSearch: (String query) async {
+                                await controller.search.search(query);
+                                return controller.search.results
+                                    .map(
+                                      (a) => SearchModel(
+                                        model: a,
+                                        title: a.name,
+                                        subtitle: a.email,
+                                        image: a.profileImage ?? '',
+                                      ),
+                                    )
+                                    .toList();
+                              },
+                              onResultTap: (result) {
+                                controller.search.clear();
+                                Get.toNamed(
+                                  AppRoutes.profileDetailsScreen,
+                                  arguments: result.model as UserModel,
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        searchController: controller.searchController,
+                        hintText: 'Search here . . .',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 16.h),
+                    Obx(
+                      () => CustomText(
                         textAlign: TextAlign.start,
                         fontSize: 12.sp,
                         text: 'Total user : ${controller.usersData.length}',
-                      );
-                    }
-                  ),
-                ],
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                  ],
+                ),
               ),
-
-              /// ============ > Events List < ============
-              SizedBox(height: 24.h),
-              Obx(() {
-                switch (controller.loadingState) {
-                  case LoadingState.initial:
-                  case LoadingState.loading:
-                    return Center(child: CustomLoader());
-
-                  case LoadingState.offline:
-                  case LoadingState.error:
-                    return CustomText(text: '');
-
-                  case LoadingState.loaded:
-                    if (controller.usersData.isEmpty){
-                      return Center(child: CustomText(text: 'No Data Found'));
-                    }
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: controller.usersData.length,
-                      itemBuilder: (context, index) {
-                        final user = controller.usersData[index];
-                        return UserCard(user: user);
-                      },
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 10.h),
+            ),
+            Obx(() {
+              switch (controller.loadingState) {
+                case LoadingState.initial:
+                case LoadingState.loading:
+                  return SliverToBoxAdapter(
+                    child: Center(child: CustomLoader()),
+                  );
+                case LoadingState.offline:
+                case LoadingState.error:
+                  return const SliverToBoxAdapter(
+                    child: CustomText(text: ''),
+                  );
+                case LoadingState.loaded:
+                  if (controller.usersData.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: Center(child: CustomText(text: 'No Data Found')),
                     );
-                }
-              }),
-              Obx(
-                () => controller.isLoadingMore
+                  }
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => Padding(
+                        padding: EdgeInsets.only(bottom: 10.h,left: 16.w,right: 16.w),
+                        child: UserCard(user: controller.usersData[index]),
+                      ),
+                      childCount: controller.usersData.length,
+                    ),
+                  );
+              }
+            }),
+            Obx(
+              () => SliverToBoxAdapter(
+                child: controller.isLoadingMore
                     ? Padding(
                         padding: EdgeInsets.symmetric(vertical: 16.h),
-                        child: Center(child: CustomLoader()),
+                        child: const Center(child: CustomLoader()),
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink(),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+  }
+}
+
+extension on Widget {
+  Widget get flipped {
+    return Transform.flip(flipX: true, child: this);
   }
 }
