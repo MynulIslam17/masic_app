@@ -92,7 +92,8 @@ class NotificationScreen extends StatelessWidget {
                     return const SliverToBoxAdapter(child: NotificationShimmer());
                   case LoadingState.offline:
                   case LoadingState.error:
-                    return SliverToBoxAdapter(
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
                       child: EmptyDataWidget(
                         message:
                             'Failed to load notifications. Please try again.',
@@ -101,7 +102,8 @@ class NotificationScreen extends StatelessWidget {
                     );
                   case LoadingState.loaded:
                     if (controller.notifications.isEmpty) {
-                      return SliverToBoxAdapter(
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
                         child: EmptyDataWidget(
                           message: 'No notifications yet.',
                           onRefresh: () async => await controller.refresh(),

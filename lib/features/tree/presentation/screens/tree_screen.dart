@@ -37,11 +37,9 @@ class TreeScreen extends StatelessWidget {
             case LoadingState.loaded:
               final treeData = ctrl.treeData;
               if (treeData == null || treeData.root == null) {
-                return Stack(
-                  children: [
-                    Assets.icons.treeHome.svg(fit: BoxFit.cover),
-                    const Center(child: CustomLoader()),
-                  ],
+                return EmptyDataWidget(
+                  message: 'No tree data found.',
+                  onRefresh: () async => await ctrl.loadData(),
                 );
               }
               return FamilyTreeGraph(

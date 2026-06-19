@@ -181,7 +181,8 @@ class PollScreen extends StatelessWidget {
                   return const SliverToBoxAdapter(child: AnnouncementShimmer());
                 case LoadingState.offline:
                 case LoadingState.error:
-                  return SliverToBoxAdapter(
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
                     child: EmptyDataWidget(
                       message:
                           'Failed to load poll. Please try again.',
@@ -190,6 +191,15 @@ class PollScreen extends StatelessWidget {
                   );
 
                 case LoadingState.loaded:
+                  if (controller.polls.isEmpty) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyDataWidget(
+                        message: 'No poll found.',
+                        onRefresh: () async => await controller.refresh(),
+                      ),
+                    );
+                  }
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => Padding(

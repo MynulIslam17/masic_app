@@ -4,6 +4,7 @@ import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/filter_dialog.dart';
@@ -66,23 +67,47 @@ class MotherSelectScreen extends StatelessWidget {
                 switch (controller.loadingState) {
                   case LoadingState.initial:
                   case LoadingState.loading:
-                    return Center(child: CustomLoader());
+                    return SizedBox(
+                      height: MediaQuery.sizeOf(context).height * 0.45,
+                      child: const Center(child: CustomLoader()),
+                    );
 
                   case LoadingState.offline:
                   case LoadingState.error:
-                    return CustomText(text: '');
+                    return SizedBox(
+                      height: MediaQuery.sizeOf(context).height * 0.45,
+                      child: EmptyDataWidget(
+                        message: 'Failed to load users. Please try again.',
+                        onRefresh: () => controller.refresh(),
+                      ),
+                    );
 
                   case LoadingState.loaded:
+                    final users = motherId == null
+                        ? controller.usersData
+                            .where(
+                              (u) =>
+                                  u.role == 'user' &&
+                                  u.isDeleted != true &&
+                                  u.sId != ProfileController.to.userData?.sId,
+                            )
+                            .toList()
+                        : controller.usersData;
+
+                    if (users.isEmpty) {
+                      return SizedBox(
+                        height: MediaQuery.sizeOf(context).height * 0.45,
+                        child: EmptyDataWidget(
+                          message: 'No user found.',
+                          onRefresh: () => controller.refresh(),
+                        ),
+                      );
+                    }
+
                     return ListView.separated(
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        final users = motherId == null
-                            ? controller.usersData
-                            .where((u) => u.role == 'user' && u.isDeleted != true && u.sId != ProfileController.to.userData?.sId)
-                            .toList()
-                            : controller.usersData;
-
                         final user = users[index];
                         return MemberCard(
                           isTree: motherId != null,
@@ -90,13 +115,10 @@ class MotherSelectScreen extends StatelessWidget {
                           isMotherTree: motherId == null,
                         );
                       },
-                      itemCount: motherId == null
-                          ? controller.usersData
-                          .where((u) => u.role == 'user' && u.isDeleted != true && u.sId != ProfileController.to.userData?.sId)
-                          .length
-                          : controller.usersData.length,
+                      itemCount: users.length,
                       separatorBuilder: (context, index) => SizedBox(height: 10.h),
-                    );              }
+                    );
+                }
               }),
               Obx(
                 () => controller.isLoadingMore

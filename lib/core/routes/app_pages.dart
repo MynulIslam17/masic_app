@@ -36,7 +36,6 @@ import 'package:masic_generation/features/profile/presentation/screens/user/supp
 import 'package:masic_generation/features/request/presentation/screens/comon/reason_screen.dart';
 import 'package:masic_generation/features/request/presentation/screens/comon/request_details_screen.dart';
 import 'package:masic_generation/features/request/presentation/screens/comon/requested_screen.dart';
-import 'package:masic_generation/features/request/presentation/screens/user/request_screen.dart';
 import 'package:masic_generation/features/translation/presentation/language_screen.dart';
 import 'package:masic_generation/features/profile/setting/change%20password/setting_change_password.dart';
 import 'package:masic_generation/features/privacy/presentation/screens/privacy_policy_all_screen.dart';
@@ -153,7 +152,6 @@ abstract class AppPages {
     GetPage(name: AppRoutes.pollResultScreen, page: () => PollResultScreen()),
     GetPage(name: AppRoutes.createPollScreen, page: () => CreatePollScreen()),
     GetPage(name: AppRoutes.adminTreeScreen, page: () => AdminTreeScreen()),
-    GetPage(name: AppRoutes.requestScreen, page: () => RequestScreen()),
     GetPage(
       name: AppRoutes.requestDetailsScreen,
       page: () => RequestDetailsScreen(),

@@ -202,7 +202,8 @@ class AnnouncementsScreen extends StatelessWidget {
                   return const SliverToBoxAdapter(child: AnnouncementShimmer());
                 case LoadingState.offline:
                 case LoadingState.error:
-                  return SliverToBoxAdapter(
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
                     child: EmptyDataWidget(
                       message:
                           'Failed to load announcements. Please try again.',

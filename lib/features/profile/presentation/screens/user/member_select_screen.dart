@@ -4,6 +4,7 @@ import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/filter_dialog.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/member_card.dart';
@@ -62,13 +63,31 @@ class MemberSelectScreen extends StatelessWidget {
               switch (controller.loadingState) {
                 case LoadingState.initial:
                 case LoadingState.loading:
-                  return Center(child: CustomLoader());
+                  return SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.45,
+                    child: const Center(child: CustomLoader()),
+                  );
 
                 case LoadingState.offline:
                 case LoadingState.error:
-                  return CustomText(text: '');
+                  return SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.45,
+                    child: EmptyDataWidget(
+                      message: 'Failed to load users. Please try again.',
+                      onRefresh: () => controller.refresh(),
+                    ),
+                  );
 
                 case LoadingState.loaded:
+                  if (controller.usersData.isEmpty) {
+                    return SizedBox(
+                      height: MediaQuery.sizeOf(context).height * 0.45,
+                      child: EmptyDataWidget(
+                        message: 'No user found.',
+                        onRefresh: () => controller.refresh(),
+                      ),
+                    );
+                  }
                   return ListView.separated(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),

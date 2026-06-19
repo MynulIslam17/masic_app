@@ -136,7 +136,8 @@ class RequestedScreen extends StatelessWidget {
                   return const SliverToBoxAdapter(child: RequestShimmer());
                 case LoadingState.offline:
                 case LoadingState.error:
-                  return SliverToBoxAdapter(
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
                     child: EmptyDataWidget(
                       message: 'Failed to load Request. Please try again.',
                       onRefresh: () async => await controller.refresh(),
@@ -144,6 +145,15 @@ class RequestedScreen extends StatelessWidget {
                   );
 
                 case LoadingState.loaded:
+                  if (controller.requests.isEmpty) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyDataWidget(
+                        message: 'No request found.',
+                        onRefresh: () async => await controller.refresh(),
+                      ),
+                    );
+                  }
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) => Padding(

@@ -82,6 +82,15 @@ class BannerScreen extends StatelessWidget {
                   );
 
                 case LoadingState.loaded:
+                  if (controller.banners.isEmpty) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyDataWidget(
+                        message: 'No banner found.',
+                        onRefresh: () async => await controller.refresh(),
+                      ),
+                    );
+                  }
                   return SliverList(
                     delegate: SliverChildBuilderDelegate(
                       (context, index) {
