@@ -110,6 +110,7 @@ class FilterDialog extends StatelessWidget {
             return Obx(() {
               final isSelected = getter() == item;
               return GestureDetector(
+                behavior: HitTestBehavior.opaque,
                 onTap: () => setter(isSelected ? '' : item),
                 child: CustomContainer(
                   radiusAll: 100.r,

@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: CustomAppBar(
         actions: [
           Obx(() => GestureDetector(
+           behavior: HitTestBehavior.opaque,
            onTap: () => LanguagePicker.show(context),
             child: CustomContainer(
               bordersColor: Colors.white,
@@ -75,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 4.h),
                  GestureDetector(
+                   behavior: HitTestBehavior.opaque,
                    onTap: () => Get.toNamed(AppRoutes.forgotScreen),
                    child: CustomText(
                     fontSize: 12.sp,
@@ -109,6 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppColors.colorB0B0B0,
                   ),
                   GestureDetector(
+                   behavior: HitTestBehavior.opaque,
                    onTap: () => Get.toNamed(AppRoutes.signUpScreen),
                     child: CustomText(
                       text: "Sign up",

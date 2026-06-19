@@ -265,6 +265,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     : null,
                 suffixIcon: widget.isPassword
                     ? GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: _toggle,
                   child: _buildSuffixIcon(_obscureText
                       ? Icons.visibility_off_outlined

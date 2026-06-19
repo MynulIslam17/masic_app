@@ -13,6 +13,7 @@ class ItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
+      onTap: onUpdate,
       paddingHorizontal: 16.r,
       paddingVertical: 10.r,
       color: AppColors.bgColor,

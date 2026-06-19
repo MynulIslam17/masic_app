@@ -27,7 +27,7 @@ class AnnouncementsScreen extends StatelessWidget {
     return CustomScaffold(
       paddingSide: 0,
       body: RefreshIndicator(
-        edgeOffset: kToolbarHeight * 3.h,
+        edgeOffset: kToolbarHeight * (AuthController.to.isAdmin() ? 3.h : 2.h),
         onRefresh: () async => await controller.refresh(),
         child: CustomScrollView(
           controller: controller.scrollController,

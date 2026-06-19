@@ -77,6 +77,7 @@ class DetailsBottomNav extends StatelessWidget {
                 SizedBox(width: 8.w),
                 Expanded(
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () {
                       Get.toNamed(AppRoutes.reasonScreen, arguments: {
                         'requestId': requestId,

@@ -128,6 +128,7 @@ class SignUpScreen extends StatelessWidget {
                     color: AppColors.colorB0B0B0,
                   ),
                   GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: (){
                       Get.back();
                     },

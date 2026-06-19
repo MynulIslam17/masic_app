@@ -21,6 +21,7 @@ class BottomNavItem extends StatelessWidget {
       final isSelected = controller.selectedIndex == index;
 
       return GestureDetector(
+        behavior: HitTestBehavior.opaque,
         onTap: () => controller.onChange(index),
         child: CustomContainer(
           color: isSelected ? Colors.black26 : Colors.transparent,

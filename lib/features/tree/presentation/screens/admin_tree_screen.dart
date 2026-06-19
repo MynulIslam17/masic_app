@@ -66,6 +66,7 @@ class AdminTreeScreen extends StatelessWidget {
                 left: 16.w,
                 child: SafeArea(
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: Get.back,
                     child: CustomContainer(
                       paddingAll: 10.r,

@@ -41,6 +41,7 @@ class EditProfileScreen extends StatelessWidget {
             // ── Avatar Picker ──────────────────────────────────────────────
             Obx(() {
               return GestureDetector(
+                behavior: HitTestBehavior.opaque,
                 onTap: () {
                   PhotoPickerHelper.showPhotoPicker(
                     context: context,
@@ -130,6 +131,7 @@ class EditProfileScreen extends StatelessWidget {
             ),
 
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTapDown: (details) {
                 final value = MenuShowHelper.showCustomMenu(
                   context: context,
@@ -157,6 +159,7 @@ class EditProfileScreen extends StatelessWidget {
 
             // FIX #4 (employment): null-safe menu result
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTapDown: (details) {
                 final value = MenuShowHelper.showCustomMenu(
                   context: context,

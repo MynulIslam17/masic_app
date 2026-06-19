@@ -31,6 +31,7 @@ class HomeScreen extends StatelessWidget {
                 Padding(
                   padding:  EdgeInsets.only(right: isAdmin ? 0 : 16.w),
                   child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () => Get.toNamed(AppRoutes.notificationScreen),
                     child: Assets.icons.noti.svg(),
                   ),
@@ -55,6 +56,7 @@ class HomeScreen extends StatelessWidget {
                   return Obx(() {
                     final userData = ProfileController.to.userData;
                     return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
                       onTap: () {
                         if(!isAdmin) {
                           BottomNavBarController.to.onChange(3);

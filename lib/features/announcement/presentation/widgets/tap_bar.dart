@@ -30,6 +30,7 @@ class TabItem extends StatelessWidget {
         child: Padding(
           padding:  EdgeInsets.symmetric(horizontal: 16.w),
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () => onTap(index),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),

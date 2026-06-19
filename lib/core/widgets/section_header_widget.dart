@@ -24,6 +24,7 @@ class SectionHeaderWidget extends StatelessWidget {
           ),
           if (onTap != null)
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: onTap,
             child: CustomText(
               fontSize: 14.sp,

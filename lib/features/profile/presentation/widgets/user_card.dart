@@ -43,7 +43,7 @@ class UserCard extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                behavior: HitTestBehavior.translucent,
+                behavior: HitTestBehavior.opaque,
                 onTapDown: (details) async {
                   final selectedMenu = await MenuShowHelper.showCustomMenu(
                     context: context,

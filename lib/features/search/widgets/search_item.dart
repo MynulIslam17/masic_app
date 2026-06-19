@@ -30,6 +30,7 @@ class SearchItem extends StatelessWidget {
       itemBuilder: (context, index) {
         final data = results[index];
         return GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             if (onTap != null) {
               onTap!(data);

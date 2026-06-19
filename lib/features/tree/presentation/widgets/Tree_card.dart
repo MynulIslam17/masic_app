@@ -31,6 +31,7 @@ class NodeCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               debugPrint('CLICKED => ${meta.id}');
               Get.toNamed(AppRoutes.treeDetailsScreen, arguments: meta.id);
@@ -73,6 +74,7 @@ class NodeCard extends StatelessWidget {
                     if (meta.onDelete != null) ...[
                       SizedBox(width: 8.w),
                       GestureDetector(
+                        behavior: HitTestBehavior.opaque,
                         onTap: () => _showEditDialog(context),
                         child: Container(
                           width: 26.r,
@@ -98,6 +100,7 @@ class NodeCard extends StatelessWidget {
           if (meta.hasChildren) ...[
             SizedBox(width: 8.w),
             GestureDetector(
+              behavior: HitTestBehavior.opaque,
               onTap: onToggle,
               child: Container(
                 width: 26.r,
