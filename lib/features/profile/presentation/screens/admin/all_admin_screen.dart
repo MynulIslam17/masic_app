@@ -5,6 +5,7 @@ import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/custom_search_field.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
@@ -131,19 +132,37 @@ class AllAdminScreen extends StatelessWidget {
                 switch (controller.loadingState) {
                   case LoadingState.initial:
                   case LoadingState.loading:
-                    return SliverToBoxAdapter(
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
                       child: Center(child: CustomLoader()),
                     );
                   case LoadingState.offline:
                   case LoadingState.error:
-                    return const SliverToBoxAdapter(
-                      child: CustomText(text: ''),
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: EmptyDataWidget(
+                        message: 'Failed to load admins. Please try again.',
+                        onRefresh: () => controller.refresh(),
+                      ),
                     );
                   case LoadingState.loaded:
+                    if (controller.usersData.isEmpty) {
+                      return SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: EmptyDataWidget(
+                          message: 'No admin found.',
+                          onRefresh: () => controller.refresh(),
+                        ),
+                      );
+                    }
                     return SliverList(
                       delegate: SliverChildBuilderDelegate(
                         (context, index) => Padding(
-                          padding: EdgeInsets.only(bottom: 10.h,left: 16.w,right: 16.w),
+                          padding: EdgeInsets.only(
+                            bottom: 10.h,
+                            left: 16.w,
+                            right: 16.w,
+                          ),
                           child: UserCard(user: controller.usersData[index]),
                         ),
                         childCount: controller.usersData.length,
