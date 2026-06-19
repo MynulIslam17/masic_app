@@ -110,6 +110,7 @@ class PollController extends GetxController {
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
   final RxBool _hasMore = true.obs;
+  bool _isRefreshing = false;
 
   bool get isLoadingMore => _isLoadingMore.value;
 
@@ -141,13 +142,23 @@ class PollController extends GetxController {
   }
 
   void _onScroll() {
-    if (_scrollController == null) return;
+    if (_scrollController == null || _isRefreshing) return;
     final position = _scrollController!.position;
     if (position.pixels >= position.maxScrollExtent - 200 &&
         !_isLoadingMore.value &&
         hasMore) {
       _loadMore();
     }
+  }
+
+  void _resetPagination() {
+    _currentPage = 1;
+    _hasMore.value = true;
+    _isLoadingMore.value = false;
+  }
+
+  void _syncHasMoreAfterFirstPage() {
+    _hasMore.value = _polls.length >= _limit;
   }
 
   // ─── Poll List ────────────────────────────────────────────────────────────
@@ -168,6 +179,8 @@ class PollController extends GetxController {
       try {
         await _service.fetchPolls(1, _limit, search: searchController.text);
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
@@ -176,6 +189,8 @@ class PollController extends GetxController {
     } catch (e) {
       if (_service.hasCache()) {
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.error;
@@ -185,7 +200,7 @@ class PollController extends GetxController {
   }
 
   Future<void> _loadMore() async {
-    if (_isLoadingMore.value || !hasMore) return;
+    if (_isRefreshing || _isLoadingMore.value || !hasMore) return;
 
     try {
       _isLoadingMore.value = true;
@@ -230,7 +245,18 @@ class PollController extends GetxController {
 
   // ─── Refresh  ──────────────────────────────────────────────────────
   @override
-  Future<void> refresh() async => _loadData();
+  Future<void> refresh() async {
+    _resetPagination();
+    _isRefreshing = true;
+    if (_scrollController?.hasClients ?? false) {
+      _scrollController!.jumpTo(0);
+    }
+    try {
+      await _loadData();
+    } finally {
+      _isRefreshing = false;
+    }
+  }
 
   // ─── Poll Details ─────────────────────────────────────────────────────────
   Future<void> fetchPollDetails(String pollId, {bool showLoader = true}) async {

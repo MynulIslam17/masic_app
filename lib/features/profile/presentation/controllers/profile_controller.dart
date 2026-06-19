@@ -126,6 +126,7 @@ class ProfileController extends GetxController {
   int _currentPage = 1;
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
+  bool _isRefreshing = false;
 
   bool get isLoadingMore => _isLoadingMore.value;
 
@@ -180,13 +181,23 @@ class ProfileController extends GetxController {
   }
 
   void _onScroll() {
-    if (_scrollController == null) return;
+    if (_scrollController == null || _isRefreshing) return;
     final position = _scrollController!.position;
     if (position.pixels >= position.maxScrollExtent - 200 &&
         !_isLoadingMore.value &&
         hasMoreUsers) {
       loadMoreUsers();
     }
+  }
+
+  void _resetPagination() {
+    _currentPage = 1;
+    _hasMore.value = true;
+    _isLoadingMore.value = false;
+  }
+
+  void _syncHasMoreAfterFirstPage() {
+    _hasMore.value = _usersData.length >= _limit;
   }
 
   // ─── File & Image ──────────────────────────────────────────────────────────
@@ -248,7 +259,7 @@ class ProfileController extends GetxController {
 
       try {
         await _service.fetchUserProfile(
-          page: _currentPage,
+          page: 1,
           limit: _limit,
           gender: genderFilter,
           employmentStatus: employmentFilter,
@@ -258,6 +269,8 @@ class ProfileController extends GetxController {
           role: role,
         );
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
@@ -266,6 +279,8 @@ class ProfileController extends GetxController {
     } catch (e) {
       if (_service.hasCache()) {
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.error;
@@ -276,7 +291,7 @@ class ProfileController extends GetxController {
 
   // ─── Load More ─────────────────────────────────────────────────────────────
   Future<void> loadMoreUsers() async {
-    if (_isLoadingMore.value || !hasMoreUsers) return;
+    if (_isRefreshing || _isLoadingMore.value || !hasMoreUsers) return;
 
     try {
       _isLoadingMore.value = true;
@@ -497,10 +512,21 @@ class ProfileController extends GetxController {
     linkedinController.text = data.contact?.linkedin ?? '';
   }
 
-  Future<void> retry() => loadData();
+  Future<void> retry() => refresh();
 
   @override
-  Future<void> refresh() async => loadData();
+  Future<void> refresh() async {
+    _resetPagination();
+    _isRefreshing = true;
+    if (_scrollController?.hasClients ?? false) {
+      _scrollController!.jumpTo(0);
+    }
+    try {
+      await loadData();
+    } finally {
+      _isRefreshing = false;
+    }
+  }
 
   void clearAllFilters() {
     _genderFilter.value = '';

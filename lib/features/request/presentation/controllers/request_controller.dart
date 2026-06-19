@@ -52,6 +52,7 @@ class RequestController extends GetxController {
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
   final RxBool _hasMore = true.obs;
+  bool _isRefreshing = false;
 
   bool get isLoadingMore => _isLoadingMore.value;
 
@@ -93,13 +94,23 @@ class RequestController extends GetxController {
   }
 
   void _onScroll() {
-    if (scrollController == null) return;
+    if (scrollController == null || _isRefreshing) return;
     final position = scrollController!.position;
     if (position.pixels >= position.maxScrollExtent - 200 &&
         !_isLoadingMore.value &&
         hasMore) {
       _loadMore();
     }
+  }
+
+  void _resetPagination() {
+    _currentPage = 1;
+    _hasMore.value = true;
+    _isLoadingMore.value = false;
+  }
+
+  void _syncHasMoreAfterFirstPage() {
+    _hasMore.value = _requests.length >= _limit;
   }
 
   // ─── Poll List ───────────────────────────────────────────────────────────────
@@ -120,6 +131,8 @@ class RequestController extends GetxController {
       try {
         await _service.fetchRequests();
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
@@ -128,6 +141,8 @@ class RequestController extends GetxController {
     } catch (e) {
       if (_service.hasCache()) {
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.error;
@@ -137,7 +152,7 @@ class RequestController extends GetxController {
   }
 
   Future<void> _loadMore() async {
-    if (_isLoadingMore.value || !hasMore) return;
+    if (_isRefreshing || _isLoadingMore.value || !hasMore) return;
 
     try {
       _isLoadingMore.value = true;
@@ -304,7 +319,18 @@ class RequestController extends GetxController {
     return null; // All valid
   }
   @override
-  Future<void> refresh() async => _loadData();
+  Future<void> refresh() async {
+    _resetPagination();
+    _isRefreshing = true;
+    if (scrollController?.hasClients ?? false) {
+      scrollController!.jumpTo(0);
+    }
+    try {
+      await _loadData();
+    } finally {
+      _isRefreshing = false;
+    }
+  }
 
   @override
   void dispose() {

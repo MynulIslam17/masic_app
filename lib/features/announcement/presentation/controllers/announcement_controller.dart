@@ -63,6 +63,7 @@ class AnnouncementController extends GetxController {
   final int _limit = 10;
   final RxBool _isLoadingMore = false.obs;
   final RxBool _hasMore = true.obs;
+  bool _isRefreshing = false;
 
   bool get isLoadingMore => _isLoadingMore.value;
   bool get hasMore => _hasMore.value && !_isLoadingMore.value;
@@ -97,13 +98,23 @@ class AnnouncementController extends GetxController {
   }
 
   void _onScroll() {
-    if (_scrollController == null) return;
+    if (_scrollController == null || _isRefreshing) return;
     final position = _scrollController!.position;
     if (position.pixels >= position.maxScrollExtent - 200 &&
         !_isLoadingMore.value &&
         hasMore) {
       _loadMore();
     }
+  }
+
+  void _resetPagination() {
+    _currentPage = 1;
+    _hasMore.value = true;
+    _isLoadingMore.value = false;
+  }
+
+  void _syncHasMoreAfterFirstPage() {
+    _hasMore.value = _announcements.length >= _limit;
   }
 
   Future<void> _loadData() async {
@@ -136,6 +147,8 @@ class AnnouncementController extends GetxController {
           type: type,
         );
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (_announcements.isEmpty) {
@@ -146,6 +159,8 @@ class AnnouncementController extends GetxController {
     } catch (e) {
       if (_service.hasCache(_currentType) && _announcements.isNotEmpty) {
         _loadFromCache();
+        _currentPage = 1;
+        _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.error;
@@ -155,7 +170,7 @@ class AnnouncementController extends GetxController {
   }
 
   Future<void> _loadMore() async {
-    if (_isLoadingMore.value || !hasMore) return;
+    if (_isRefreshing || _isLoadingMore.value || !hasMore) return;
     try {
       _isLoadingMore.value = true;
       _currentPage++;
@@ -206,7 +221,16 @@ class AnnouncementController extends GetxController {
 
   @override
   Future<void> refresh() async {
-    await _loadData();
+    _resetPagination();
+    _isRefreshing = true;
+    if (_scrollController?.hasClients ?? false) {
+      _scrollController!.jumpTo(0);
+    }
+    try {
+      await _loadData();
+    } finally {
+      _isRefreshing = false;
+    }
   }
 
   Future<void> createAnnouncement() async {
