@@ -10,21 +10,43 @@ import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
+
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  bool get _isOnboarding => ProfileController.to.isOnboarding;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isOnboarding) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ProfileController.to.prepareOnboardingProfile();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final controller = ProfileController.to;
-    return CustomScaffold(
-      appBar: CustomAppBar(title: "Edit Profile"),
+    return PopScope(
+      canPop: !_isOnboarding,
+      child: CustomScaffold(
+      appBar: CustomAppBar(
+        title: _isOnboarding ? 'Complete Your Profile' : 'Edit Profile',
+        showLeading: !_isOnboarding,
+      ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.r),
           child: Obx(
                 () {
               return CustomButton(
-                label: "Update Profile",
+                label: _isOnboarding ? 'Continue' : 'Update Profile',
                 isLoading: controller.updateLoadingState.isLoading,
                 onPressed: controller.updateUserProfile,
               );
@@ -36,7 +58,20 @@ class EditProfileScreen extends StatelessWidget {
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
-            SizedBox(height: 24.h),
+            if (_isOnboarding) ...[
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: CustomText(
+                  text:
+                      'Please complete your profile before selecting your mother tree.',
+                  fontSize: 14.sp,
+                  textAlign: TextAlign.center,
+                  color: AppColors.colorB0B0B0,
+                ),
+              ),
+              SizedBox(height: 16.h),
+            ],
+            SizedBox(height: _isOnboarding ? 8.h : 24.h),
 
             // ── Avatar Picker ──────────────────────────────────────────────
             Obx(() {
@@ -93,6 +128,7 @@ class EditProfileScreen extends StatelessWidget {
               controller: controller.emailController,
               hintText: "Email address",
               keyboardType: TextInputType.emailAddress,
+              readOnly: _isOnboarding,
             ),
 
             CustomTextField(
@@ -235,6 +271,7 @@ class EditProfileScreen extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

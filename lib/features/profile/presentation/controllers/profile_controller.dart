@@ -10,6 +10,7 @@ import 'package:masic_generation/core/helpers/toast_message_helper.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
 import 'package:masic_generation/core/services/search_service.dart';
+import 'package:masic_generation/features/auth/domain/services/auth_services.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/domain/services/profile_service.dart';
 import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
@@ -109,7 +110,7 @@ class ProfileController extends GetxController {
 
   List<String> get selectedUserIds => _selectedUserIds;
 
-  final RxString _selectedUserId = 'gdh'.obs;
+  final RxString _selectedUserId = ''.obs;
 
   String get selectedUserId => _selectedUserId.value;
 
@@ -361,12 +362,67 @@ class ProfileController extends GetxController {
         .toList();
   }
 
-  // ─── Update Profile ────────────────────────────────────────────────────────
+  bool _isOnboardingFlow = false;
+
+  bool get isOnboarding => _isOnboardingFlow || Get.arguments == 'onboarding';
+
+  void beginOnboarding() {
+    _isOnboardingFlow = true;
+    _selectedUserId.value = '';
+  }
+
+  void finishOnboarding() {
+    _isOnboardingFlow = false;
+  }
+
+  Future<void> prepareOnboardingProfile() async {
+    try {
+      final user = await _service.fetchCurrentUser();
+      if (isClosed) return;
+
+      if (user != null) {
+        _userData.value = user;
+        _populateControllers(user);
+        return;
+      }
+
+      _seedProfileFromAuthCache();
+    } catch (e) {
+      if (isClosed) return;
+      _seedProfileFromAuthCache();
+      if (kDebugMode) debugPrint('Onboarding profile fetch error: $e');
+    }
+  }
+
+  void _seedProfileFromAuthCache() {
+    final authUser = Get.find<AuthService>().getCachedUser();
+    if (authUser == null) return;
+
+    final fallbackUser = UserModel(
+      sId: authUser.id,
+      name: authUser.name,
+      email: authUser.email,
+      role: authUser.role,
+    );
+    _userData.value = fallbackUser;
+    _populateControllers(fallbackUser);
+  }
   Future<void> updateUserProfile() async {
     final user = _userData.value;
     if (user == null) {
       ToastMessageHelper.show('User data not loaded yet. Please try again.');
       return;
+    }
+
+    if (isOnboarding) {
+      if (nameController.text.trim().isEmpty) {
+        ToastMessageHelper.show('Please enter your full name');
+        return;
+      }
+      if (phoneController.text.trim().isEmpty) {
+        ToastMessageHelper.show('Please enter your phone number');
+        return;
+      }
     }
 
     try {
@@ -475,8 +531,6 @@ class ProfileController extends GetxController {
         image: _selectedImage.value,
         cv: _selectedCV.value,
       );
-      Get.back(canPop: true);
-
       _userData.value = updatedUser;
 
       _selectedDate = null;
@@ -487,6 +541,14 @@ class ProfileController extends GetxController {
       clearJobControllers();
       _populateControllers(updatedUser);
       _updateLoadingState.value = LoadingState.loaded;
+
+      if (isOnboarding) {
+        finishOnboarding();
+        Get.offAllNamed(AppRoutes.motherSelectScreen);
+        loadData();
+      } else {
+        Get.back(canPop: true);
+      }
     } catch (e) {
       _updateLoadingState.value = LoadingState.error;
       debugPrint('❌ Update error: $e');
@@ -496,10 +558,10 @@ class ProfileController extends GetxController {
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
   void _populateControllers(UserModel? data) {
-    if (data == null) return;
+    if (data == null || isClosed) return;
     nameController.text = data.name ?? '';
     emailController.text = data.email ?? '';
-    phoneController.text = data.spousePhone ?? '';
+    phoneController.text = data.phone ?? '';
     dateOfBirthController.text = TimeFormatHelper.formatDateTime(
       data.dateOfBirth ?? '',
     );
@@ -553,6 +615,11 @@ class ProfileController extends GetxController {
 
 
   Future<void> motherTreeSelect() async {
+    if (_selectedUserId.value.isEmpty) {
+      ToastMessageHelper.show('Please select a mother tree member');
+      return;
+    }
+
     try {
       _motherTreeState.value = LoadingState.loading;
       await _service.motherTreeSelect(_selectedUserId.value);

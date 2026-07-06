@@ -148,12 +148,12 @@ class DependencyInjection {
       fenix: true,
     );
 
-    Get.lazyPut<ProfileController>(
-      () => ProfileController(
+    Get.put<ProfileController>(
+      ProfileController(
         service: Get.find<ProfileService>(),
         connectivityService: Get.find<ConnectivityService>(),
       ),
-      fenix: true,
+      permanent: true,
     );
 
     Get.lazyPut<AnnouncementRepository>(

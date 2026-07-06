@@ -4,6 +4,7 @@ import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:masic_generation/features/auth/presentation/widgets/app_logo.dart';
 
@@ -55,10 +56,11 @@ class OtpScreen extends StatelessWidget {
     final String role = Get.arguments as String;
 
     if (!await controller.otp()) return;
-    if(role == 'forgot'){
+    if (role == 'forgot') {
       Get.toNamed(AppRoutes.resetPasswordScreen);
-    }else{
-      Get.offAllNamed(AppRoutes.motherSelectScreen);
+    } else {
+      ProfileController.to.beginOnboarding();
+      Get.offAllNamed(AppRoutes.editProfileScreen, arguments: 'onboarding');
     }
   }
 }
