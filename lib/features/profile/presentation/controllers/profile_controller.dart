@@ -326,6 +326,49 @@ class ProfileController extends GetxController {
   }
 
   // ─── Cache ─────────────────────────────────────────────────────────────────
+  void _resolveCurrentUserFromAuth(String? authUserId) {
+    if (authUserId == null) return;
+    if (_userData.value?.sId == authUserId &&
+        (_userData.value?.treeJoinStatus?.isNotEmpty ?? false)) {
+      return;
+    }
+
+    for (final user in _usersData) {
+      if (user.sId == authUserId) {
+        _userData.value = user;
+        _populateControllers(user);
+        return;
+      }
+    }
+  }
+
+  Future<String?> resolveTreeJoinStatus({
+    required String? userId,
+    String? cachedStatus,
+  }) async {
+    if (cachedStatus == 'placed') return 'placed';
+
+    _loadFromCache();
+    _resolveCurrentUserFromAuth(userId);
+
+    final profileStatus = _userData.value?.treeJoinStatus;
+    if (profileStatus == 'placed') return 'placed';
+    if (profileStatus != null && profileStatus.isNotEmpty) return profileStatus;
+
+    try {
+      final user = await _service.fetchCurrentUser();
+      if (user != null) {
+        _userData.value = user;
+        _populateControllers(user);
+        return user.treeJoinStatus ?? cachedStatus;
+      }
+    } catch (e) {
+      if (kDebugMode) debugPrint('resolveTreeJoinStatus error: $e');
+    }
+
+    return cachedStatus;
+  }
+
   void _loadFromCache() {
     _populateControllers(_service.getCachedUserData());
     _userData.value = _service.getCachedUserData();
@@ -623,6 +666,12 @@ class ProfileController extends GetxController {
     try {
       _motherTreeState.value = LoadingState.loading;
       await _service.motherTreeSelect(_selectedUserId.value);
+      final user = await _service.fetchCurrentUser();
+      if (user != null) {
+        _userData.value = user;
+        _populateControllers(user);
+      }
+      await Get.find<AuthService>().syncTreeJoinStatus('placed');
       _motherTreeState.value = LoadingState.loaded;
       Get.offAllNamed(AppRoutes.bottomNavUserBar);
     } catch (e) {

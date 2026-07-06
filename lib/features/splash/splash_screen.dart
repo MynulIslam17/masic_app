@@ -17,18 +17,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
 
 
-  void _goNextScreen()async {
-    Future.delayed(const Duration(seconds: 2), () async {
-      if (AuthController.to.isLoggedIn()){
-        if( AuthController.to.isAdmin()){
-          Get.offAllNamed(AppRoutes.homeScreen);
-        }else{
-          Get.offAllNamed(AppRoutes.bottomNavUserBar);
-        }
-      }else{
-        Get.offAllNamed(AppRoutes.loginScreen);
-      }
-    });
+  void _goNextScreen() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+
+    if (AuthController.to.isLoggedIn()) {
+      await AuthController.to.navigateAuthenticatedUser();
+    } else {
+      Get.offAllNamed(AppRoutes.loginScreen);
+    }
   }
 
   @override

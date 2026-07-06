@@ -33,6 +33,8 @@ abstract class AuthRepository {
 
   UserResponseModel? getCachedUser();
 
+  Future<void> updateCachedUserTreeJoinStatus(String treeJoinStatus);
+
   /// ─── LOGOUT ──────────────────────────────────────
   Future<void> logout();
 }

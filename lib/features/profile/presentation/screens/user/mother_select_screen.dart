@@ -19,9 +19,15 @@ class MotherSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final String? motherId = Get.arguments as String?;
     final controller = ProfileController.to;
-    return CustomScaffold(
+    final isMandatory =
+        motherId == null && !AuthController.to.isAdmin();
+
+    return PopScope(
+      canPop: !isMandatory,
+      child: CustomScaffold(
       appBar: CustomAppBar(
         title: 'Select mother tree',
+        showLeading: !isMandatory,
         actions: [
           IconButton(
             onPressed: () {
@@ -150,6 +156,7 @@ class MotherSelectScreen extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

@@ -68,4 +68,12 @@ class AuthService {
   Future<void> logout() => _repository.logout();
 
   UserResponseModel? getCachedUser() => _repository.getCachedUser();
+
+  Future<void> syncTreeJoinStatus(String treeJoinStatus) =>
+      _repository.updateCachedUserTreeJoinStatus(treeJoinStatus);
+
+  bool isTreePlaced([UserResponseModel? user]) {
+    final currentUser = user ?? getCachedUser();
+    return currentUser?.treeJoinStatus == 'placed';
+  }
 }

@@ -4,7 +4,9 @@ import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/helpers/toast_message_helper.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
+import 'package:masic_generation/features/auth/data/models/user_response_model.dart';
 import 'package:masic_generation/features/auth/domain/services/auth_services.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class AuthController extends GetxController {
@@ -82,16 +84,9 @@ class AuthController extends GetxController {
       );
       _loginState = LoadingState.loaded;
       update();
-      if(userModel.isVerified == true){
-        // if(userModel.treeJoinStatus == 'unlinked' && userModel.role == 'user'){
-        //   Get.offAllNamed(AppRoutes.motherSelectScreen);
-        //   return;
-        // }
-        if(userModel.role == 'superAdmin'){
-          Get.offAllNamed(AppRoutes.homeScreen);
-        }else{
-        Get.offAllNamed(AppRoutes.bottomNavUserBar);}
-      }else{
+      if (userModel.isVerified == true) {
+        await navigateAuthenticatedUser(user: userModel);
+      } else {
         Get.toNamed(AppRoutes.otpScreen, arguments: 'signup');
       }
       clearControllers();
@@ -180,8 +175,9 @@ class AuthController extends GetxController {
       );
       _resetState = LoadingState.loaded;
       update();
-      Get.offAllNamed(AppRoutes.bottomNavUserBar);
       clearControllers();
+      await _authService.logout();
+      Get.offAllNamed(AppRoutes.loginScreen);
     } catch (e) {
       _resetState = LoadingState.error;
       update();
@@ -225,6 +221,34 @@ class AuthController extends GetxController {
       return user.role == 'superAdmin';
     }
     return false;
+  }
+
+  Future<void> navigateAuthenticatedUser({UserResponseModel? user}) async {
+    final currentUser = user ?? _authService.getCachedUser();
+    if (currentUser == null) {
+      Get.offAllNamed(AppRoutes.loginScreen);
+      return;
+    }
+
+    if (currentUser.role == 'superAdmin') {
+      Get.offAllNamed(AppRoutes.homeScreen);
+      return;
+    }
+
+    final treeStatus = await ProfileController.to.resolveTreeJoinStatus(
+      userId: currentUser.id,
+      cachedStatus: currentUser.treeJoinStatus,
+    );
+
+    if (treeStatus == 'placed') {
+      await _authService.syncTreeJoinStatus('placed');
+      Get.offAllNamed(AppRoutes.bottomNavUserBar);
+      ProfileController.to.loadData();
+      return;
+    }
+
+    Get.offAllNamed(AppRoutes.motherSelectScreen);
+    ProfileController.to.loadData();
   }
 
 

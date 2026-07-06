@@ -163,6 +163,17 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> updateCachedUserTreeJoinStatus(String treeJoinStatus) async {
+    final user = getCachedUser();
+    if (user == null) return;
+
+    await _cacheService.put(
+      AppConstants.cacheUser,
+      user.copyWith(treeJoinStatus: treeJoinStatus).toJson(),
+    );
+  }
+
+  @override
   Future<void> changePassword({
     required String oldPassword,
     required String newPassword,
