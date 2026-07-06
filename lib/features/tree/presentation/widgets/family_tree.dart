@@ -12,7 +12,7 @@ const double _kNodeWidthBase = 128.0;
 const double _kNodeHeight = 40.0;
 const double _kButtonExtraWidth = 34.0;
 const double _kTwoButtonsExtraWidth = 68.0;
-const double _kVerticalGap = 0.0;
+const double _kVerticalGap = 8.0;
 const double _kHorizontalGap = 8.0;
 const double _kStubLength = 24.0;
 
