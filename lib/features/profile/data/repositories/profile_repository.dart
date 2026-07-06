@@ -47,19 +47,44 @@ class ProfileRepository {
     }
   }
 
+  Future<UserModel?> fetchCurrentUserProfile({String? userId}) async {
+    try {
+      return await fetchUserProfile();
+    } on AppException {
+      final cached = getCachedUserData();
+      if (cached != null) return cached;
+      return getCachedUserFromList(userId);
+    }
+  }
+
+  Map<String, dynamic>? _readMapCache(String key) {
+    final raw = _cacheService.get(key);
+    if (raw == null) return null;
+    if (raw is Map) {
+      return Map<String, dynamic>.from(
+        raw.map((key, value) => MapEntry(key.toString(), value)),
+      );
+    }
+    return null;
+  }
+
   UserModel? getCachedUserData() {
     try {
-      final json = _cacheService.get<Map<String, dynamic>>(
-        ApiConstants.cacheUserProfile,
-        defaultValue: null,
-      );
-
+      final json = _readMapCache(ApiConstants.cacheUserProfile);
       if (json == null) return null;
       return UserModel.fromJson(json);
     } catch (e) {
       debugPrint('❌ Error getting cached user data: $e');
       return null;
     }
+  }
+
+  UserModel? getCachedUserFromList(String? userId) {
+    if (userId == null) return null;
+    for (final user in getCachedUsers('')) {
+      if (user.sId == userId) return user;
+    }
+    return null;
   }
 
   Future<List<UserModel>> fetchUsers({

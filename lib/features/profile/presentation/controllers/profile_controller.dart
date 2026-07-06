@@ -110,7 +110,7 @@ class ProfileController extends GetxController {
 
   List<String> get selectedUserIds => _selectedUserIds;
 
-  final RxString _selectedUserId = ''.obs;
+  final RxString _selectedUserId = 'khjk'.obs;
 
   String get selectedUserId => _selectedUserId.value;
 
@@ -149,6 +149,7 @@ class ProfileController extends GetxController {
   final employmentController = TextEditingController();
   final educationController = TextEditingController();
   final universityController = TextEditingController();
+  final fieldOfWorkController = TextEditingController();
   final bioController = TextEditingController();
   final numberController = TextEditingController();
   final linkedinController = TextEditingController();
@@ -356,7 +357,9 @@ class ProfileController extends GetxController {
     if (profileStatus != null && profileStatus.isNotEmpty) return profileStatus;
 
     try {
-      final user = await _service.fetchCurrentUser();
+      final user = await _service.fetchCurrentUser(
+        userId: Get.find<AuthService>().getCachedUser()?.id,
+      );
       if (user != null) {
         _userData.value = user;
         _populateControllers(user);
@@ -420,7 +423,9 @@ class ProfileController extends GetxController {
 
   Future<void> prepareOnboardingProfile() async {
     try {
-      final user = await _service.fetchCurrentUser();
+      final user = await _service.fetchCurrentUser(
+        userId: Get.find<AuthService>().getCachedUser()?.id,
+      );
       if (isClosed) return;
 
       if (user != null) {
@@ -560,7 +565,7 @@ class ProfileController extends GetxController {
           city: user.city,
           district: user.district,
           educationLevel: user.educationLevel,
-          fieldOfWork: user.fieldOfWork,
+          fieldOfWork: fieldOfWorkController.text.trim(),
           spouseName: user.spouseName,
           linkedinLink: user.linkedinLink,
           bio: bioController.text.trim(),
@@ -612,6 +617,7 @@ class ProfileController extends GetxController {
     employmentController.text = data.employmentStatus ?? '';
     educationController.text = data.education ?? '';
     universityController.text = data.universityName ?? '';
+    fieldOfWorkController.text = data.fieldOfWork ?? '';
     bioController.text = data.bio ?? '';
     numberController.text = data.contact?.phone ?? '';
     linkedinController.text = data.contact?.linkedin ?? '';
@@ -666,7 +672,9 @@ class ProfileController extends GetxController {
     try {
       _motherTreeState.value = LoadingState.loading;
       await _service.motherTreeSelect(_selectedUserId.value);
-      final user = await _service.fetchCurrentUser();
+      final user = await _service.fetchCurrentUser(
+        userId: Get.find<AuthService>().getCachedUser()?.id,
+      );
       if (user != null) {
         _userData.value = user;
         _populateControllers(user);
@@ -775,6 +783,7 @@ class ProfileController extends GetxController {
     employmentController.dispose();
     educationController.dispose();
     universityController.dispose();
+    fieldOfWorkController.dispose();
     bioController.dispose();
     numberController.dispose();
     linkedinController.dispose();

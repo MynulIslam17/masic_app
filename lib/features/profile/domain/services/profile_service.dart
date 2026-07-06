@@ -10,14 +10,8 @@ class ProfileService {
   ProfileService({required ProfileRepository repository})
     : _repository = repository;
 
-  Future<UserModel?> fetchCurrentUser() async {
-    try {
-      return await _repository.fetchUserProfile();
-    } on AppException {
-      return _repository.getCachedUserData();
-    } catch (_) {
-      return _repository.getCachedUserData();
-    }
+  Future<UserModel?> fetchCurrentUser({String? userId}) async {
+    return _repository.fetchCurrentUserProfile(userId: userId);
   }
 
   Future<void> fetchUserProfile({

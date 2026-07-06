@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/helpers/menu_show_helper.dart';
 import 'package:masic_generation/core/helpers/photo_picker_helper.dart';
-import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
@@ -265,6 +264,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               filColor: AppColors.bgColor,
               controller: controller.universityController,
               hintText: "University name",
+            ),
+
+            CustomTextField(
+              prefixIcon: Assets.icons.work.svg(color: AppColors.colorB0B0B0),
+              showShadow: false,
+              borderColor: AppColors.colorE6E6E6,
+              filColor: AppColors.bgColor,
+              controller: controller.fieldOfWorkController,
+              hintText: "Field of work",
             ),
 
             SizedBox(height: 32.h),
