@@ -275,6 +275,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               hintText: "Field of work",
             ),
 
+            CustomTextField(
+              prefixIcon: Assets.icons.person.svg(),
+              showShadow: false,
+              borderColor: AppColors.colorE6E6E6,
+              filColor: AppColors.bgColor,
+              controller: controller.spouseNameController,
+              hintText: "Spouse name",
+            ),
+
+            CustomTextField(
+              prefixIcon: Assets.icons.number.svg(),
+              showShadow: false,
+              borderColor: AppColors.colorE6E6E6,
+              filColor: AppColors.bgColor,
+              controller: controller.spousePhoneController,
+              hintText: "Spouse phone number",
+              keyboardType: TextInputType.phone,
+            ),
+
             SizedBox(height: 32.h),
           ],
         ),

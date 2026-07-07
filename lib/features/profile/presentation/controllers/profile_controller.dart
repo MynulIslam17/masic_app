@@ -150,6 +150,8 @@ class ProfileController extends GetxController {
   final educationController = TextEditingController();
   final universityController = TextEditingController();
   final fieldOfWorkController = TextEditingController();
+  final spouseNameController = TextEditingController();
+  final spousePhoneController = TextEditingController();
   final bioController = TextEditingController();
   final numberController = TextEditingController();
   final linkedinController = TextEditingController();
@@ -566,7 +568,8 @@ class ProfileController extends GetxController {
           district: user.district,
           educationLevel: user.educationLevel,
           fieldOfWork: fieldOfWorkController.text.trim(),
-          spouseName: user.spouseName,
+          spouseName: spouseNameController.text.trim(),
+          spousePhone: spousePhoneController.text.trim(),
           linkedinLink: user.linkedinLink,
           bio: bioController.text.trim(),
           contact: UserContact(
@@ -618,6 +621,8 @@ class ProfileController extends GetxController {
     educationController.text = data.education ?? '';
     universityController.text = data.universityName ?? '';
     fieldOfWorkController.text = data.fieldOfWork ?? '';
+    spouseNameController.text = data.spouseName ?? '';
+    spousePhoneController.text = data.spousePhone ?? '';
     bioController.text = data.bio ?? '';
     numberController.text = data.contact?.phone ?? '';
     linkedinController.text = data.contact?.linkedin ?? '';
@@ -784,6 +789,8 @@ class ProfileController extends GetxController {
     educationController.dispose();
     universityController.dispose();
     fieldOfWorkController.dispose();
+    spouseNameController.dispose();
+    spousePhoneController.dispose();
     bioController.dispose();
     numberController.dispose();
     linkedinController.dispose();
