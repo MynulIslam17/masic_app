@@ -44,5 +44,16 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Masic Generation needs camera access to take profile photos, banners, and announcement images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Masic Generation needs photo library access to select images for your profile, banners, and announcements.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+		<string>tel</string>
+		<string>mailto</string>
+	</array>
 </dict>
 </plist>
