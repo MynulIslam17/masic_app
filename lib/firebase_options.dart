@@ -63,6 +63,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '16805625051',
     projectId: 'masic-generation',
     storageBucket: 'masic-generation.firebasestorage.app',
-    iosBundleId: 'com.homecraft.service',
+    iosBundleId: 'com.masicgeneration.app',
   );
 }
