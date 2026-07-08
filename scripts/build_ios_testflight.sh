@@ -7,9 +7,17 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+run_flutter() {
+  if [ -f ".fvmrc" ] || [ -f ".fvm/fvm_config.json" ]; then
+    fvm flutter "$@"
+  else
+    flutter "$@"
+  fi
+}
+
 echo "==> Cleaning previous builds"
-flutter clean
-flutter pub get
+run_flutter clean
+run_flutter pub get
 
 echo "==> Installing CocoaPods"
 cd ios
@@ -17,7 +25,7 @@ pod install --repo-update
 cd "$ROOT_DIR"
 
 echo "==> Building iOS release IPA"
-flutter build ipa --release \
+run_flutter build ipa --release \
   --export-options-plist=ios/ExportOptions.plist
 
 echo ""

@@ -10,11 +10,35 @@ project 'Runner', {
   'Release' => :release,
 }
 
-def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+def generated_xcode_build_settings_path
+  File.expand_path(File.join('Flutter', 'Generated.xcconfig'), __dir__)
+end
+
+def ensure_flutter_generated_config!
+  return if File.exist?(generated_xcode_build_settings_path)
+
+  project_root = File.expand_path('..', __dir__)
+  commands = []
+  if File.exist?(File.join(project_root, '.fvmrc')) ||
+     File.exist?(File.join(project_root, '.fvm', 'fvm_config.json'))
+    commands << ['fvm', 'flutter', 'pub', 'get']
   end
+  commands << ['flutter', 'pub', 'get']
+
+  commands.each do |command|
+    puts "Running `#{command.join(' ')}` to generate ios/Flutter/Generated.xcconfig..."
+    Dir.chdir(project_root) do
+      if system(*command) && File.exist?(generated_xcode_build_settings_path)
+        return
+      end
+    end
+  end
+
+  raise "#{generated_xcode_build_settings_path} must exist. Run `fvm flutter pub get` or `flutter pub get` in #{project_root} first."
+end
+
+def flutter_root
+  ensure_flutter_generated_config!
 
   File.foreach(generated_xcode_build_settings_path) do |line|
     matches = line.match(/FLUTTER_ROOT\=(.*)/)
