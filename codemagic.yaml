@@ -1,0 +1,132 @@
+definitions:
+  env_versions: &env_versions
+    flutter: 3.38.5
+    xcode: latest
+    cocoapods: default
+  app_vars: &app_vars
+    APP_ID: com.masicgeneration.app
+    PACKAGE_NAME: com.masicgeneration.app
+  scripts:
+    - &disable_spm_and_install
+      name: Install Flutter dependencies
+      script: |
+        set -e
+        flutter config --no-enable-swift-package-manager
+        flutter pub get
+    - &analyze_project
+      name: Analyze project
+      script: |
+        set -e
+        flutter analyze
+    - &run_tests
+      name: Run tests
+      script: |
+        set -e
+        flutter test
+    - &install_pods
+      name: Install CocoaPods
+      script: |
+        set -e
+        find . -name "Podfile" -execdir pod install \;
+    - &build_ios_ipa
+      name: Build iOS IPA (TestFlight)
+      script: |
+        set -e
+        bash scripts/codemagic_ios_build.sh
+workflows:
+  flutter-ci:
+    name: Masic Generation — Flutter CI
+    instance_type: mac_mini_m2
+    max_build_duration: 30
+    environment:
+      <<: *env_versions
+      vars:
+        <<: *app_vars
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.pub-cache
+    triggering:
+      events:
+        - push
+        - pull_request
+      branch_patterns:
+        - pattern: "*"
+          include: true
+    scripts:
+      - *disable_spm_and_install
+      - *analyze_project
+      - *run_tests
+  ios-testflight:
+    name: Masic Generation — iOS TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    integrations:
+      app_store_connect: Codemagic
+    environment:
+      <<: *env_versions
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.masicgeneration.app
+      vars:
+        <<: *app_vars
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.pub-cache
+        - $HOME/Library/Caches/CocoaPods
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - *disable_spm_and_install
+      - *analyze_project
+      - *run_tests
+      - *install_pods
+      - *build_ios_ipa
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+  android-release:
+    name: Masic Generation — Android Release
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      <<: *env_versions
+      android_signing:
+        - keystore_reference
+      vars:
+        <<: *app_vars
+    cache:
+      cache_paths:
+        - $FLUTTER_ROOT/.pub-cache
+        - $HOME/.pub-cache
+        - $HOME/.gradle/caches
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - *disable_spm_and_install
+      - *analyze_project
+      - *run_tests
+      - name: Build Android App Bundle
+        script: |
+          set -e
+          flutter build appbundle \
+            --release \
+            --build-number=$PROJECT_BUILD_NUMBER
+    artifacts:
+      - build/app/outputs/bundle/release/*.aab
+      - build/app/outputs/flutter-apk/app-release.apk
+      - flutter_drive.log
