@@ -199,7 +199,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 final value = MenuShowHelper.showCustomMenu(
                   context: context,
                   details: details,
-                  options: ["employed", "unemployed"],
+                  options: ["employed", "unemployed","student"],
                 );
                 value.then((value) {
                   if (value != null) {

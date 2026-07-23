@@ -69,7 +69,10 @@ class RequestWidget extends StatelessWidget {
                             label: 'Request by profile data',
                             onPressed: () {
                               Get.back();
-                              Get.toNamed(AppRoutes.jobSpecificationScreen,arguments: request.type);
+                              Get.toNamed(
+                                AppRoutes.jobSpecificationScreen,
+                                arguments: request.type,
+                              );
                             },
                           ),
                           SizedBox(height: 10.h),
@@ -81,7 +84,10 @@ class RequestWidget extends StatelessWidget {
                             label: 'Request manually',
                             onPressed: () {
                               Get.back();
-                              Get.toNamed(AppRoutes.jobSpecificationScreen);
+                              Get.toNamed(
+                                AppRoutes.jobSpecificationScreen,
+                                arguments: request.type,
+                              );
                             },
                           ),
                         ],

@@ -12,12 +12,24 @@ import 'package:get/get.dart';
 class JobSpecificationScreen extends StatelessWidget {
   const JobSpecificationScreen({super.key});
 
+  String get _appBarTitle {
+    switch ((Get.arguments as String?)?.toLowerCase()) {
+      case 'volunteering':
+        return 'Volunteering';
+      case 'other':
+        return 'Other';
+      case 'job':
+      default:
+        return 'Job';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final requestType = Get.arguments as String?;
     final controller = RequestController.to;
     return CustomScaffold(
-      appBar: CustomAppBar(title: "Job specification"),
+      appBar: CustomAppBar(title: '$_appBarTitle Specification'),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.r),
@@ -43,7 +55,7 @@ class JobSpecificationScreen extends StatelessWidget {
             Form(
               key: controller.formKey,
               child: CustomTextField(
-                labelText: 'Add your Job specification.',
+                labelText: 'Add your $_appBarTitle specification.',
                 showShadow: false,
                 borderColor: AppColors.colorE6E6E6,
                 filColor: AppColors.bgColor,
