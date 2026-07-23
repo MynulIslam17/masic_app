@@ -12,6 +12,18 @@ import 'package:get/get.dart';
 class PersonalInfoScreen extends StatelessWidget {
   const PersonalInfoScreen({super.key});
 
+  String get _specificationTitle {
+    switch ((Get.arguments as String?)?.toLowerCase()) {
+      case 'volunteering':
+        return 'Volunteering';
+      case 'other':
+        return 'Other';
+      case 'job':
+      default:
+        return 'Job';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final String? requestType = Get.arguments as String?;
@@ -38,17 +50,27 @@ class PersonalInfoScreen extends StatelessWidget {
                   onPressed: () => Get.toNamed(AppRoutes.addBioScreen),
                 ),
 
-              if(requestType != null)...[
-                CustomText(text: 'Job specification', bottom: 10.h, top: 10.h),
+              if (requestType != null) ...[
+                CustomText(
+                  text: '$_specificationTitle specification',
+                  bottom: 10.h,
+                  top: 10.h,
+                ),
                 if (RequestController.to.jobSpecTEController.text.isNotEmpty)
                   ItemCard(
                     subtitle: RequestController.to.jobSpecTEController.text,
-                    onUpdate: () => Get.toNamed(AppRoutes.jobSpecificationScreen),
+                    onUpdate: () => Get.toNamed(
+                      AppRoutes.jobSpecificationScreen,
+                      arguments: requestType,
+                    ),
                   )
                 else
                   _addOutlineButton(
-                    label: 'Job specification',
-                    onPressed: () => Get.toNamed(AppRoutes.jobSpecificationScreen),
+                    label: '$_specificationTitle specification',
+                    onPressed: () => Get.toNamed(
+                      AppRoutes.jobSpecificationScreen,
+                      arguments: requestType,
+                    ),
                   ),
               ],
 
