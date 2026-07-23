@@ -26,7 +26,7 @@ class FamilyTreeGraph extends StatefulWidget {
 class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
   late FamilyTreeLayoutBuilder _layoutBuilder;
   List<TreeLayoutNode> _allNodes = [];
-  String? _lastCollapsedKey;
+  String? _lastExpandedKey;
   bool _pendingMeasure = true;
 
   @override
@@ -51,10 +51,10 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
     }
   }
 
-  void _scheduleMeasureIfNeeded(String collapsedKey) {
-    if (!_pendingMeasure && _lastCollapsedKey == collapsedKey) return;
+  void _scheduleMeasureIfNeeded(String expandedKey) {
+    if (!_pendingMeasure && _lastExpandedKey == expandedKey) return;
 
-    _lastCollapsedKey = collapsedKey;
+    _lastExpandedKey = expandedKey;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
@@ -88,10 +88,10 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
       maxScale: 5,
       constrained: false,
       child: Obx(() {
-        final collapsedNodes = TreeController.to.collapsedNodes;
-        final collapsedKey = (collapsedNodes.toList()..sort()).join(',');
+        final expandedNodes = TreeController.to.expandedNodes;
+        final expandedKey = (expandedNodes.toList()..sort()).join(',');
 
-        final layoutRoot = _layoutBuilder.buildLayoutTree(collapsedNodes);
+        final layoutRoot = _layoutBuilder.buildLayoutTree(expandedNodes);
         TreeLayoutEngine().run(layoutRoot);
 
         final allNodes = collectTreeNodes(layoutRoot);
@@ -99,7 +99,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
         _layoutBuilder.pruneMeasurementCache(allNodes.map((n) => n.id).toSet());
 
         final graphSize = computeTreeGraphSize(allNodes);
-        _scheduleMeasureIfNeeded(collapsedKey);
+        _scheduleMeasureIfNeeded(expandedKey);
 
         final totalW = (graphLeftOffset + graphSize.width + 48).clamp(
           screenW * 2,
@@ -131,7 +131,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
                   nodes: allNodes,
                   graphSize: graphSize,
                   linePaint: linePaint,
-                  collapsedNodes: collapsedNodes,
+                  expandedNodes: expandedNodes,
                   onToggleNode: _onToggleNode,
                 ),
               ),

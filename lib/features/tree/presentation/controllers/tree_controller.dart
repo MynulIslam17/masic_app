@@ -22,19 +22,32 @@ class TreeController extends GetxController {
 
 
 
-  // ─── Collapsed Nodes ───────────────────────────────────────────────────────
-  final RxSet<String> _collapsedNodes = <String>{}.obs;
+  // ─── Expanded Nodes (first-level under root open; deeper only on tap) ───────
+  final RxSet<String> _expandedNodes = <String>{}.obs;
+  bool _didExpandRoot = false;
 
-  Set<String> get collapsedNodes => _collapsedNodes;
+  Set<String> get expandedNodes => _expandedNodes;
 
-  bool isNodeCollapsed(String id) => _collapsedNodes.contains(id);
+  bool isNodeExpanded(String id) => _expandedNodes.contains(id);
 
   void toggleNode(String id) {
-    if (_collapsedNodes.contains(id)) {
-      _collapsedNodes.remove(id);
+    if (_expandedNodes.contains(id)) {
+      _expandedNodes.remove(id);
     } else {
-      _collapsedNodes.add(id);
+      _expandedNodes.add(id);
     }
+  }
+
+  void _ensureRootExpanded() {
+    if (_didExpandRoot) return;
+    final root = _treeData.value?.root;
+    if (root == null) return;
+
+    final rootId = root.sId ?? root.linkedUser?.sId;
+    if (rootId == null || rootId.isEmpty) return;
+
+    _expandedNodes.add(rootId);
+    _didExpandRoot = true;
   }
   // ─── Loading State ─────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
@@ -102,6 +115,7 @@ class TreeController extends GetxController {
   // ─── Cache ─────────────────────────────────────────────────────────────────
   void _loadFromCache() {
     _treeData.value = _service.getCachedUserData();
+    _ensureRootExpanded();
     assert(() {
       if (kDebugMode) {
         print('📦 Loaded from cache:');

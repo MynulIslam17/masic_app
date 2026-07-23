@@ -8,7 +8,7 @@ class FamilyTreeGraphCanvas extends StatelessWidget {
   final List<TreeLayoutNode> nodes;
   final Size graphSize;
   final Paint linePaint;
-  final Set<String> collapsedNodes;
+  final Set<String> expandedNodes;
   final ValueChanged<String> onToggleNode;
 
   const FamilyTreeGraphCanvas({
@@ -17,7 +17,7 @@ class FamilyTreeGraphCanvas extends StatelessWidget {
     required this.nodes,
     required this.graphSize,
     required this.linePaint,
-    required this.collapsedNodes,
+    required this.expandedNodes,
     required this.onToggleNode,
   });
 
@@ -53,7 +53,7 @@ class FamilyTreeGraphCanvas extends StatelessWidget {
         child: NodeCard(
           key: node.nodeKey,
           meta: node.meta,
-          isExpanded: !collapsedNodes.contains(node.id),
+          isExpanded: expandedNodes.contains(node.id),
           onToggle: node.meta.hasChildren
               ? () => onToggleNode(node.id)
               : null,

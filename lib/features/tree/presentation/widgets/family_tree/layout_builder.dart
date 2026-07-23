@@ -23,19 +23,20 @@ class FamilyTreeLayoutBuilder {
   void rebuildMeta() {
     meta.clear();
 
+    final rootChildren = root.children ?? [];
     final rootId = root.sId ?? root.linkedUser?.sId ?? 'root';
     meta[rootId] = Meta(
       id: rootId,
       memberId: root.sId ?? '',
       label: _label(root.label, root.linkedUser?.name),
       isRoot: true,
-      hasChildren: false,
+      hasChildren: rootChildren.isNotEmpty,
       onDelete: onToggleEdit
           ? () => TreeController.to.deleteUser(rootId)
           : null,
     );
 
-    _walkChildrenMeta(root.children ?? []);
+    _walkChildrenMeta(rootChildren);
   }
 
   void resetMeasurement() {
@@ -78,7 +79,7 @@ class FamilyTreeLayoutBuilder {
     return changed;
   }
 
-  TreeLayoutNode buildLayoutTree(Set<String> collapsedNodes) {
+  TreeLayoutNode buildLayoutTree(Set<String> expandedNodes) {
     final rootId = root.sId ?? root.linkedUser?.sId ?? 'root';
     final rootMeta = meta[rootId];
 
@@ -94,7 +95,7 @@ class FamilyTreeLayoutBuilder {
       id: rootId,
       meta: rootMeta,
       childrenData: root.children,
-      collapsedNodes: collapsedNodes,
+      expandedNodes: expandedNodes,
     );
   }
 
@@ -135,11 +136,11 @@ class FamilyTreeLayoutBuilder {
     required String id,
     required Meta meta,
     required List<Children>? childrenData,
-    required Set<String> collapsedNodes,
+    required Set<String> expandedNodes,
   }) {
     final childLayouts = <TreeLayoutNode>[];
 
-    if (!collapsedNodes.contains(id) && childrenData != null) {
+    if (expandedNodes.contains(id) && childrenData != null) {
       for (final child in childrenData) {
         final childId = child.sId ?? child.linkedUser?.sId ?? '';
         if (childId.isEmpty) continue;
@@ -152,7 +153,7 @@ class FamilyTreeLayoutBuilder {
             id: childId,
             meta: childMeta,
             childrenData: child.children,
-            collapsedNodes: collapsedNodes,
+            expandedNodes: expandedNodes,
           ),
         );
       }
