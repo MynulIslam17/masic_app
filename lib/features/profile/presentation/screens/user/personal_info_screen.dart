@@ -75,17 +75,17 @@ class PersonalInfoScreen extends StatelessWidget {
               ],
 
 
-              // ── Contact Information ────────────────────────────────────────
-              CustomText(text: 'Contact information', bottom: 10.h, top: 10.h),
-              if (user?.contact != null)
+              // ── LinkedIn ───────────────────────────────────────────────────
+              CustomText(text: 'LinkedIn', bottom: 10.h, top: 10.h),
+              if (user?.contact?.linkedin != null &&
+                  user!.contact!.linkedin!.isNotEmpty)
                 ItemCard(
-                  title: user?.contact?.phone ?? '',
-                  subtitle: user?.contact?.linkedin ?? '',
+                  subtitle: user.contact!.linkedin!,
                   onUpdate: () => Get.toNamed(AppRoutes.addContactScreen),
                 )
               else
                 _addOutlineButton(
-                  label: 'Add contact information',
+                  label: 'Add LinkedIn',
                   onPressed: () => Get.toNamed(AppRoutes.addContactScreen),
                 ),
 

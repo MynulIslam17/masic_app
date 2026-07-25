@@ -13,7 +13,7 @@ class AddContactScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = ProfileController.to;
     return CustomScaffold(
-      appBar: CustomAppBar(title: "Contact"),
+      appBar: CustomAppBar(title: "LinkedIn"),
 
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -21,19 +21,8 @@ class AddContactScreen extends StatelessWidget {
           children: [
             SizedBox(height: 24.h),
 
-            // ── Fields ─────────────────────────────────────────────────────
             CustomTextField(
-              labelText: 'Phone no',
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.numberController,
-              keyboardType: TextInputType.phone,
-              hintText: "Write here...",
-            ),
-
-            CustomTextField(
-              labelText: 'Linkedin link',
+              labelText: 'LinkedIn link',
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
