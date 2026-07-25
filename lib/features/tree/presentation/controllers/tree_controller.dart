@@ -4,6 +4,7 @@ import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/features/search/model/search_model.dart';
 import 'package:masic_generation/features/tree/data/models/tree_model.dart';
 import 'package:masic_generation/features/tree/domain/services/tree_service.dart';
 import 'package:get/get.dart';
@@ -123,6 +124,70 @@ class TreeController extends GetxController {
       }
       return true;
     }());
+  }
+
+  // ─── Search ───────────────────────────────────────────────────────────────────
+  Future<List<SearchModel>> searchMembers(String query) async {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return [];
+
+    final root = _treeData.value?.root;
+    if (root == null) return [];
+
+    final results = <SearchModel>[];
+    final seen = <String>{};
+
+    void addMember({
+      required String? id,
+      required LinkedUser? linkedUser,
+      required String? label,
+      String? relationType,
+    }) {
+      final memberId = id ?? linkedUser?.sId;
+      if (memberId == null || memberId.isEmpty || !seen.add(memberId)) return;
+
+      final name = linkedUser?.name?.trim().isNotEmpty == true
+          ? linkedUser!.name!
+          : (label ?? '');
+      final email = linkedUser?.email ?? '';
+      final haystack = '$name $email ${relationType ?? ''}'.toLowerCase();
+      if (!haystack.contains(q)) return;
+
+      results.add(
+        SearchModel(
+          model: memberId,
+          title: name.isNotEmpty ? name : 'Unknown',
+          subtitle: relationType?.isNotEmpty == true
+              ? relationType
+              : (email.isNotEmpty ? email : null),
+          image: linkedUser?.profileImage,
+        ),
+      );
+    }
+
+    void walk(Children child) {
+      addMember(
+        id: child.sId,
+        linkedUser: child.linkedUser,
+        label: child.label,
+        relationType: child.relationType,
+      );
+      for (final c in child.children ?? const <Children>[]) {
+        walk(c);
+      }
+    }
+
+    addMember(
+      id: root.sId,
+      linkedUser: root.linkedUser,
+      label: root.label,
+      relationType: root.relationType,
+    );
+    for (final child in root.children ?? const <Children>[]) {
+      walk(child);
+    }
+
+    return results;
   }
 
   // ─── User Details ─────────────────────────────────────────────────────────────
