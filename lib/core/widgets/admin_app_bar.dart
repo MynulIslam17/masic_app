@@ -46,7 +46,7 @@ class AdminAppBar extends  StatelessWidget implements PreferredSizeWidget {
                       ),
                       CustomText(
                         textAlign: TextAlign.start,
-                        text: 'welcome to MASIC generation',
+                        text: 'Welcome to MASIC Generation',
                         fontSize: 10.sp,
                       ),
                     ],
