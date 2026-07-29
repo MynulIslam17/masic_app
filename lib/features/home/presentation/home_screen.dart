@@ -91,7 +91,7 @@ class HomeScreen extends StatelessWidget {
                                       ? AppColors.primaryColor
                                       : Colors.white,
                                   textAlign: TextAlign.start,
-                                  text: 'welcome to MASIC generation',
+                                  text: 'Welcome to MASIC Generation',
                                   fontSize: 10.sp,
                                 ),
                               ],

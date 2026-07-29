@@ -109,6 +109,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/number.svg
   SvgGenImage get number => const SvgGenImage('assets/icons/number.svg');
 
+  /// File path: assets/icons/origin.svg
+  SvgGenImage get origin => const SvgGenImage('assets/icons/origin.svg');
+
   /// File path: assets/icons/password.svg
   SvgGenImage get password => const SvgGenImage('assets/icons/password.svg');
 
@@ -203,6 +206,7 @@ class $AssetsIconsGen {
     menu,
     noti,
     number,
+    origin,
     password,
     person,
     personal,
@@ -240,6 +244,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/img.png
   AssetGenImage get img => const AssetGenImage('assets/images/img.png');
 
+  /// File path: assets/images/logo.png
+  AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
+
   /// File path: assets/images/profile.png
   AssetGenImage get profile => const AssetGenImage('assets/images/profile.png');
 
@@ -252,6 +259,7 @@ class $AssetsImagesGen {
     bannerDesign,
     homeBanner,
     img,
+    logo,
     profile,
     supportBg,
   ];
