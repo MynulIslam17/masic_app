@@ -231,7 +231,8 @@ class AuthController extends GetxController {
     }
 
     if (currentUser.role == 'superAdmin') {
-      Get.offAllNamed(AppRoutes.homeScreen);
+      Get.offAllNamed(AppRoutes.adminBottomNavBar);
+      ProfileController.to.loadData();
       return;
     }
 

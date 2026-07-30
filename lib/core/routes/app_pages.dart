@@ -12,6 +12,7 @@ import 'package:masic_generation/features/auth/presentation/pages/login/log_in_s
 import 'package:masic_generation/features/auth/presentation/pages/otp/otp_screen.dart';
 import 'package:masic_generation/features/auth/presentation/pages/reset_pass/reset_password_screen.dart';
 import 'package:masic_generation/features/auth/presentation/pages/sign_up/sign_up_screen.dart';
+import 'package:masic_generation/features/bottom_nav_bar/presentation/bottom_nav_admin.dart';
 import 'package:masic_generation/features/bottom_nav_bar/presentation/bottom_nav_user.dart';
 import 'package:masic_generation/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:masic_generation/features/poll/presentation/screens/user/poll_details_screen.dart';
@@ -67,6 +68,11 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.bottomNavUserBar,
       page: () => BottomNavUserBar(),
+      binding: BottomNavBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.adminBottomNavBar,
+      page: () => BottomNavAdminBar(),
       binding: BottomNavBinding(),
     ),
 

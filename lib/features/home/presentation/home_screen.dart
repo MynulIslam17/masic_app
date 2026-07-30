@@ -20,7 +20,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final HomeController controller = HomeController.to;
-    final isAdmin  = AuthController.to.isAdmin();
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       body: NestedScrollView(
@@ -29,17 +28,13 @@ class HomeScreen extends StatelessWidget {
             SliverAppBar(
               actions: [
                 Padding(
-                  padding:  EdgeInsets.only(right: isAdmin ? 0 : 16.w),
+                  padding:  EdgeInsets.only(right:  16.w),
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => Get.toNamed(AppRoutes.notificationScreen),
                     child: Assets.icons.noti.svg(),
                   ),
                 ),
-                if(isAdmin)
-                IconButton(onPressed: () {
-                  Get.toNamed(AppRoutes.adminProfileScreen);
-                }, icon: Assets.icons.menu.svg()),
               ],
               expandedHeight: 110.h,
               floating: false,
@@ -55,50 +50,42 @@ class HomeScreen extends StatelessWidget {
                   final isCollapsed = settings?.isScrolledUnder ?? false;
                   return Obx(() {
                     final userData = ProfileController.to.userData;
-                    return GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        if(!isAdmin) {
-                          BottomNavBarController.to.onChange(3);
-                        }
-                      },
-                      child: Row(
-                        children: [
-                          CustomNetworkImage(
-                            boxShape: BoxShape.circle,
-                            height: 42.r,
-                            width: 42.r,
-                            imageUrl: userData?.profileImage,
-                            fallbackAsset: Assets.images.profile.image(),
+                    return Row(
+                      children: [
+                        CustomNetworkImage(
+                          boxShape: BoxShape.circle,
+                          height: 42.r,
+                          width: 42.r,
+                          imageUrl: userData?.profileImage,
+                          fallbackAsset: Assets.images.profile.image(),
+                        ),
+                        SizedBox(width: 8.w),
+                        Flexible(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              CustomText(
+                                enableAutoTranslate: false,
+                                fontSize: 14.sp,
+                                color: isCollapsed
+                                    ? AppColors.primaryColor
+                                    : Colors.white,
+                                textAlign: TextAlign.start,
+                                text: userData?.name ?? '',
+                              ),
+                              CustomText(
+                                color: isCollapsed
+                                    ? AppColors.primaryColor
+                                    : Colors.white,
+                                textAlign: TextAlign.start,
+                                text: 'Welcome to MASIC Generation',
+                                fontSize: 10.sp,
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 8.w),
-                          Flexible(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CustomText(
-                                  enableAutoTranslate: false,
-                                  fontSize: 14.sp,
-                                  color: isCollapsed
-                                      ? AppColors.primaryColor
-                                      : Colors.white,
-                                  textAlign: TextAlign.start,
-                                  text: userData?.name ?? '',
-                                ),
-                                CustomText(
-                                  color: isCollapsed
-                                      ? AppColors.primaryColor
-                                      : Colors.white,
-                                  textAlign: TextAlign.start,
-                                  text: 'Welcome to MASIC Generation',
-                                  fontSize: 10.sp,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     );
                   });
                 },

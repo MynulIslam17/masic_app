@@ -14,6 +14,7 @@ abstract class AppRoutes {
 
   // ─── Bottom Nav ───────────────────────────────────────────────────────────
   static const String bottomNavUserBar = '/bottomNavUserBar';
+  static const String adminBottomNavBar = '/adminBottomNavBar';
 
   // ─── Profile ──────────────────────────────────────────────────────────────
   static const String languageScreen = '/language';

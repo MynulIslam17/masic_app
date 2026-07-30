@@ -17,12 +17,7 @@ class AdminProfileScreen extends StatelessWidget {
       appBar: AdminAppBar(
         showLeading: false,
         actions: [
-          IconButton(
-            onPressed: () {
-              Get.back();
-            },
-            icon: Assets.icons.clean.svg(height: 24.r, width: 24.r),
-          ),
+
         ],
       ),
       body: SingleChildScrollView(
@@ -52,13 +47,7 @@ class AdminProfileScreen extends StatelessWidget {
                  Get.toNamed(AppRoutes.allUserScreen);
               },
             ),
-            ProfileListTile(
-              icon: Assets.icons.tree.path,
-              title: "Tree",
-              onTap: () {
-                 Get.toNamed(AppRoutes.adminTreeScreen);
-              },
-            ),
+
             ProfileListTile(
               icon: Assets.icons.poll.path,
               title: "Poll",
