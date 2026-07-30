@@ -16,9 +16,9 @@ class BannerRepository {
   }) : _apiService = apiService,
         _cacheService = cacheService;
 
-  Future<List<BannerModel>> fetchBanner() async {
+  Future<List<BannerModel>> fetchBanner({bool isAll = false}) async {
     try {
-      final response = await _apiService.get(ApiConstants.banner);
+      final response = await _apiService.get(isAll ? ApiConstants.bannerAll : ApiConstants.banner);
       final data = response.data['data'];
 
       final banners = _parseBanners(data);

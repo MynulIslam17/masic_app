@@ -64,6 +64,7 @@ class ApiConstants {
 
   /// banner ──────────────────────────────────────────────
   static const String banner = '/api/v1/banner';
+  static const String bannerAll = '/api/v1/banner/all';
   static const String bannerCreate = '/api/v1/banner/upload';
   static  String bannerDelete(String bannerId) => '/api/v1/banner/$bannerId/delete';
 

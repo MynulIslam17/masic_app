@@ -11,7 +11,7 @@ class BannerServices {
 
   Future<void> fetchBanner(int currentPage, int limit, {String? search}) async {
     try {
-      await Future.wait([_repository.fetchBanner()]);
+      await Future.wait([_repository.fetchBanner(isAll: true)]);
     } on AppException {
       if (!_repository.hasCache()) {
         rethrow;
