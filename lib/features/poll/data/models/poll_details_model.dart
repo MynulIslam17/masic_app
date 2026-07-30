@@ -14,6 +14,8 @@ class PollDetailsModel {
   // write-in type
   final String? answer;
 
+  final List<PollResponse>? responses;
+
   PollDetailsModel({
     this.id,
     this.title,
@@ -24,6 +26,7 @@ class PollDetailsModel {
     this.answered,
     this.myAnswer,
     this.answer,
+    this.responses,
   });
 
   factory PollDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -43,6 +46,11 @@ class PollDetailsModel {
           ? MyAnswer.fromJson(json['myAnswer'])
           : null,
       answer: json['answer'],
+      responses: json['responses'] != null
+          ? List<PollResponse>.from(
+        json['responses'].map((x) => PollResponse.fromJson(x)),
+      )
+          : [],
     );
   }
 
@@ -57,6 +65,67 @@ class PollDetailsModel {
       'answered': answered,
       'myAnswer': myAnswer?.toJson(),
       'answer': answer,
+      'responses': responses?.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+class PollResponse {
+  final PollUser? user;
+  final String? optionId; // For selector type
+  final String? answer;   // For write-in type
+  final String? answeredAt;
+
+  PollResponse({
+    this.user,
+    this.optionId,
+    this.answer,
+    this.answeredAt,
+  });
+
+  factory PollResponse.fromJson(Map<String, dynamic> json) {
+    return PollResponse(
+      user: json['user'] != null ? PollUser.fromJson(json['user']) : null,
+      optionId: json['optionId'],
+      answer: json['answer'],
+      answeredAt: json['answeredAt'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'user': user?.toJson(),
+      'optionId': optionId,
+      'answer': answer,
+      'answeredAt': answeredAt,
+    };
+  }
+}
+
+class PollUser {
+  final String? id;
+  final String? name;
+  final String? profileImage;
+
+  PollUser({
+    this.id,
+    this.name,
+    this.profileImage,
+  });
+
+  factory PollUser.fromJson(Map<String, dynamic> json) {
+    return PollUser(
+      id: json['_id'],
+      name: json['name'],
+      profileImage: json['profileImage'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'profileImage': profileImage,
     };
   }
 }

@@ -8,6 +8,7 @@ import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/poll/presentation/controllers/poll_controller.dart';
 import 'package:masic_generation/features/poll/presentation/widgets/option_tile.dart';
 import 'package:masic_generation/features/poll/presentation/widgets/poll_simmer.dart';
+import 'package:masic_generation/features/poll/presentation/widgets/poll_response_list.dart';
 import 'package:get/get.dart';
 
 class PollDetailsScreen extends StatelessWidget {
@@ -143,6 +144,9 @@ class PollDetailsScreen extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                   ],
+
+                  if (pollData != null)
+                    PollResponseList(pollData: pollData),
 
                   SizedBox(height: 32.h),
                 ],
