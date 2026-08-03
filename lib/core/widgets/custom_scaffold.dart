@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class CustomScaffold extends StatelessWidget {
-  const CustomScaffold(
-      {super.key,
-      this.appBar,
-      this.body,
-      this.floatingActionButton,
-      this.bottomNavigationBar,
-      this.paddingSide, this.resizeToAvoidBottomInset, this.endDrawer});
+  const CustomScaffold({
+    super.key,
+    this.appBar,
+    this.body,
+    this.floatingActionButton,
+    this.bottomNavigationBar,
+    this.paddingSide,
+    this.resizeToAvoidBottomInset,
+    this.endDrawer,
+    this.backgroundColor,
+  });
 
   final PreferredSizeWidget? appBar;
   final Widget? body;
@@ -16,21 +21,26 @@ class CustomScaffold extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final double? paddingSide;
   final bool? resizeToAvoidBottomInset;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xffF6F5F1),
+      backgroundColor: backgroundColor ?? const Color(0xffF6F5F1),
       appBar: appBar,
       body: SafeArea(
-          child: Padding(
-        padding: EdgeInsets.only(left: paddingSide ?? 16.w,right: paddingSide ?? 16.w),
-        child: body,
-      )),
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: paddingSide ?? 16.w,
+            right: paddingSide ?? 16.w,
+          ),
+          child: body,
+        ),
+      ),
       floatingActionButton: floatingActionButton,
       endDrawer: endDrawer,
       bottomNavigationBar: bottomNavigationBar,
-        resizeToAvoidBottomInset: resizeToAvoidBottomInset
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
     );
   }
 }

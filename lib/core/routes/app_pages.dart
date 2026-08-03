@@ -35,7 +35,9 @@ import 'package:masic_generation/features/profile/presentation/screens/user/pers
 import 'package:masic_generation/features/profile/presentation/screens/user/profile_information_screen.dart';
 import 'package:masic_generation/features/profile/presentation/screens/user/support_screen.dart';
 import 'package:masic_generation/features/request/presentation/screens/comon/reason_screen.dart';
+import 'package:masic_generation/features/request/presentation/controllers/request_pdf_preview_controller.dart';
 import 'package:masic_generation/features/request/presentation/screens/comon/request_details_screen.dart';
+import 'package:masic_generation/features/request/presentation/screens/comon/request_pdf_preview_screen.dart';
 import 'package:masic_generation/features/request/presentation/screens/comon/requested_screen.dart';
 import 'package:masic_generation/features/request/presentation/screens/user/request_screen.dart';
 import 'package:masic_generation/features/translation/presentation/language_screen.dart';
@@ -162,6 +164,13 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.requestDetailsScreen,
       page: () => RequestDetailsScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.requestPdfPreviewScreen,
+      page: () => const RequestPdfPreviewScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => RequestPdfPreviewController());
+      }),
     ),
     GetPage(name: AppRoutes.requestScreen, page: () => RequestScreen()),
     GetPage(name: AppRoutes.treeDetailsScreen, page: () => TreeDetailsScreen()),
