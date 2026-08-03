@@ -5,32 +5,80 @@ import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/custom_text.dart';
 import 'package:masic_generation/features/admin/dashboard/data/models/dashboard_model.dart';
 
-class CustomBarChart extends StatelessWidget {
+class CustomBarChart extends StatefulWidget {
   const CustomBarChart({
     super.key,
     required this.chartData,
     required this.label,
+    this.onBarTap,
   });
 
   final List<BarChartModel> chartData;
   final String label;
+  final ValueChanged<String>? onBarTap;
+
+  @override
+  State<CustomBarChart> createState() => _CustomBarChartState();
+}
+
+class _CustomBarChartState extends State<CustomBarChart> {
+  int? _pressedIndex;
+
+  void _handleTap(String label) {
+    widget.onBarTap?.call(label);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final chartData = widget.chartData;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CustomText(
           textAlign: TextAlign.start,
-            text: label, fontSize: 16.sp, bottom: 16.h),
+          text: widget.label,
+          fontSize: 16.sp,
+          bottom: 16.h,
+        ),
         SizedBox(
           height: 229.h,
           child: BarChart(
             BarChartData(
               maxY: 100,
               barTouchData: BarTouchData(
-                enabled: false,
-                handleBuiltInTouches: false,
+                enabled: true,
+                handleBuiltInTouches: widget.onBarTap == null,
+                touchCallback: (event, response) {
+                  if (widget.onBarTap == null) return;
+
+                  final index = response?.spot?.touchedBarGroupIndex;
+
+                  if (event is FlTapDownEvent ||
+                      event is FlLongPressStart ||
+                      event is FlPanDownEvent) {
+                    if (index != null &&
+                        index >= 0 &&
+                        index < chartData.length) {
+                      _pressedIndex = index;
+                    }
+                  }
+
+                  if (event is FlTapUpEvent) {
+                    final tapIndex =
+                        (index != null &&
+                            index >= 0 &&
+                            index < chartData.length)
+                        ? index
+                        : _pressedIndex;
+                    if (tapIndex != null &&
+                        tapIndex >= 0 &&
+                        tapIndex < chartData.length) {
+                      _handleTap(chartData[tapIndex].label);
+                    }
+                    _pressedIndex = null;
+                  }
+                },
                 touchTooltipData: BarTouchTooltipData(
                   getTooltipColor: (_) => Colors.white,
                   tooltipBorder: const BorderSide(
@@ -80,11 +128,18 @@ class CustomBarChart extends StatelessWidget {
                       if (index < 0 || index >= chartData.length) {
                         return const SizedBox.shrink();
                       }
-                      return CustomText(
-                        top: 6.h,
-                        text: chartData[index].label,
-                        fontSize: 10.sp,
-                        color: Colors.black.withOpacity(0.70),
+                      final item = chartData[index];
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: widget.onBarTap == null
+                            ? null
+                            : () => _handleTap(item.label),
+                        child: CustomText(
+                          top: 6.h,
+                          text: item.label,
+                          fontSize: 10.sp,
+                          color: Colors.black.withOpacity(0.70),
+                        ),
                       );
                     },
                   ),
@@ -121,9 +176,7 @@ class CustomBarChart extends StatelessWidget {
             ),
           ),
         ),
-
         SizedBox(height: 18.h),
-
       ],
     );
   }

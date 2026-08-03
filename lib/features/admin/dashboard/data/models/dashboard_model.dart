@@ -102,10 +102,10 @@ class DashboardModel {
   List<BarChartModel> get genderChartData => (gender ?? [])
       .map(
         (e) => BarChartModel(
-      label: e.gender ?? '',
-      value: (e.percentage ?? 0).toDouble(),
-    ),
-  )
+          label: e.gender ?? '',
+          value: (e.count ?? e.percentage ?? 0).toDouble(),
+        ),
+      )
       .toList();
 
   List<BarChartModel> get commonNamesChartData => (commonNames ?? [])
@@ -120,10 +120,10 @@ class DashboardModel {
   List<BarChartModel> get employmentStatusChartData => (employmentStatus ?? [])
       .map(
         (e) => BarChartModel(
-      label: e.status ?? '',
-      value: (e.percentage ?? 0).toDouble(),
-    ),
-  )
+          label: e.status ?? '',
+          value: (e.count ?? e.percentage ?? 0).toDouble(),
+        ),
+      )
       .toList();
 
   List<BarChartModel> get fieldOfWorkChartData => (fieldOfWork ?? [])

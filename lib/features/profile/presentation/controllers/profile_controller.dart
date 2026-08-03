@@ -230,6 +230,73 @@ class ProfileController extends GetxController {
   void setEmploymentFilter(String value) => _employmentFilter.value = value;
   void setEducationFilter(String value) => _educationFilter.value = value;
 
+  String _normalizeGender(String label) {
+    final lower = label.trim().toLowerCase();
+    if (lower.startsWith('f')) return 'Female';
+    if (lower.startsWith('m')) return 'Male';
+    return label.trim();
+  }
+
+  String _normalizeAge(String label) {
+    final cleaned = label.trim().replaceAll(' ', '');
+    const ranges = ['01-20', '21-40', '41-60', '61-80', '81-100'];
+    if (ranges.contains(cleaned)) return cleaned;
+
+    final parts = cleaned.split(RegExp(r'[-–—]'));
+    if (parts.length == 2) {
+      final start = parts[0].padLeft(2, '0');
+      final end = parts[1];
+      final candidate = '$start-$end';
+      if (ranges.contains(candidate)) return candidate;
+    }
+    return cleaned;
+  }
+
+  String _normalizeEmployment(String label) {
+    final lower = label.trim().toLowerCase();
+    if (lower.contains('self')) return 'Self-employed';
+    if (lower.contains('unemploy')) return 'Unemployed';
+    if (lower.contains('employ')) return 'Employed';
+    return label.trim();
+  }
+
+  Future<void> openUsersWithFilters({
+    String gender = '',
+    String age = '',
+    String employment = '',
+    String education = '',
+  }) async {
+    _genderFilter.value = gender;
+    _ageFilter.value = age;
+    _employmentFilter.value = employment;
+    _educationFilter.value = education;
+
+    final needsManualRefresh = _roleFilter.value.isEmpty;
+    if (!needsManualRefresh) {
+      _roleFilter.value = '';
+    }
+
+    Get.toNamed(AppRoutes.allUserScreen);
+
+    if (needsManualRefresh) {
+      await refresh();
+    }
+  }
+
+  Future<void> openUsersFilteredByGender(String genderLabel) {
+    return openUsersWithFilters(gender: _normalizeGender(genderLabel));
+  }
+
+  Future<void> openUsersFilteredByAge(String ageLabel) {
+    return openUsersWithFilters(age: _normalizeAge(ageLabel));
+  }
+
+  Future<void> openUsersFilteredByEmployment(String employmentLabel) {
+    return openUsersWithFilters(
+      employment: _normalizeEmployment(employmentLabel),
+    );
+  }
+
 
   bool isUserSelected(String userId) => _selectedUserIds.contains(userId);
 

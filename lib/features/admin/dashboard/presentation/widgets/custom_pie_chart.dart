@@ -6,29 +6,42 @@ import 'package:masic_generation/core/widgets/custom_container.dart';
 import 'package:masic_generation/core/widgets/custom_text.dart';
 import 'package:masic_generation/features/admin/dashboard/data/models/dashboard_model.dart';
 
-class CustomPieChart extends StatelessWidget {
+class CustomPieChart extends StatefulWidget {
   const CustomPieChart({
     super.key,
     required this.pieChartData,
     required this.label,
+    this.onSectionTap,
   });
 
   final List<BarChartModel> pieChartData;
   final String label;
+  final ValueChanged<String>? onSectionTap;
+
+  @override
+  State<CustomPieChart> createState() => _CustomPieChartState();
+}
+
+class _CustomPieChartState extends State<CustomPieChart> {
+  int touchedIndex = -1;
+  int? _pressedIndex;
+
+  static const List<Color> _defaultColors = [
+    Color(0xFF6A89BD),
+    Color(0xFF98AED2),
+    Color(0xFF4CAF50),
+    Color(0xFFFF9800),
+    Color(0xFFE91E63),
+    Color(0xFF9C27B0),
+  ];
+
+  void _handleTap(String label) {
+    widget.onSectionTap?.call(label);
+  }
 
   @override
   Widget build(BuildContext context) {
-    int touchedIndex = -1;
-
-    // Default colors — add more if needed
-    final List<Color> defaultColors = [
-      Color(0xFF6A89BD),
-      Color(0xFF98AED2),
-      Color(0xFF4CAF50),
-      Color(0xFFFF9800),
-      Color(0xFFE91E63),
-      Color(0xFF9C27B0),
-    ];
+    final pieChartData = widget.pieChartData;
     final total = pieChartData.fold<num>(0, (sum, item) => sum + item.value);
 
     return Column(
@@ -36,13 +49,12 @@ class CustomPieChart extends StatelessWidget {
       children: [
         CustomText(
           textAlign: TextAlign.start,
-          text: label,
+          text: widget.label,
           fontSize: 16.sp,
           bottom: 16.h,
         ),
         Row(
           children: [
-            // Pie Chart
             SizedBox(
               height: 173.r,
               width: 173.r,
@@ -51,12 +63,60 @@ class CustomPieChart extends StatelessWidget {
                   sectionsSpace: 0,
                   centerSpaceRadius: 0,
                   startDegreeOffset: -90,
+                  pieTouchData: PieTouchData(
+                    enabled: widget.onSectionTap != null,
+                    touchCallback: (event, response) {
+                      final index =
+                          response?.touchedSection?.touchedSectionIndex;
+
+                      // Keep pressed section from down/press events.
+                      if (event is FlTapDownEvent ||
+                          event is FlLongPressStart ||
+                          event is FlPanDownEvent) {
+                        if (index != null &&
+                            index >= 0 &&
+                            index < pieChartData.length) {
+                          _pressedIndex = index;
+                          setState(() => touchedIndex = index);
+                        }
+                      }
+
+                      // On mobile FlTapUpEvent is NOT "interested for interactions",
+                      // so handle navigation before that early-out.
+                      if (event is FlTapUpEvent) {
+                        final tapIndex =
+                            (index != null &&
+                                index >= 0 &&
+                                index < pieChartData.length)
+                            ? index
+                            : _pressedIndex;
+                        if (tapIndex != null &&
+                            tapIndex >= 0 &&
+                            tapIndex < pieChartData.length) {
+                          _handleTap(pieChartData[tapIndex].label);
+                        }
+                        _pressedIndex = null;
+                        setState(() => touchedIndex = -1);
+                        return;
+                      }
+
+                      if (!event.isInterestedForInteractions ||
+                          response?.touchedSection == null) {
+                        setState(() => touchedIndex = -1);
+                        return;
+                      }
+
+                      if (index != null && index >= 0) {
+                        setState(() => touchedIndex = index);
+                      }
+                    },
+                  ),
                   sections: List.generate(pieChartData.length, (index) {
                     final item = pieChartData[index];
                     final pct = total == 0
                         ? 0
                         : (item.value / total * 100).round();
-                    final color = defaultColors[index % defaultColors.length];
+                    final color = _defaultColors[index % _defaultColors.length];
                     final isTouched = index == touchedIndex;
 
                     return PieChartSectionData(
@@ -74,26 +134,35 @@ class CustomPieChart extends StatelessWidget {
                 ),
               ),
             ),
-
             SizedBox(width: 44.w),
-
-            // Legend
             Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(pieChartData.length, (index) {
                   final item = pieChartData[index];
-                  final color = defaultColors[index % defaultColors.length];
-              
+                  final color = _defaultColors[index % _defaultColors.length];
+
                   return Padding(
                     padding: EdgeInsets.only(
                       bottom: index < pieChartData.length - 1 ? 12 : 0,
                     ),
-                    child: _buildLegendItem(
-                      color: color,
-                      label: item.label,
-                      count: item.value.toInt(),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: widget.onSectionTap == null
+                            ? null
+                            : () => _handleTap(item.label),
+                        borderRadius: BorderRadius.circular(8.r),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 4.h),
+                          child: _buildLegendItem(
+                            color: color,
+                            label: item.label,
+                            count: item.value.toInt(),
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 }),
@@ -101,7 +170,6 @@ class CustomPieChart extends StatelessWidget {
             ),
           ],
         ),
-
         SizedBox(height: 18.h),
       ],
     );

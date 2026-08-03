@@ -9,6 +9,7 @@ import 'package:masic_generation/features/admin/dashboard/presentation/controlle
 import 'package:masic_generation/features/admin/dashboard/presentation/widgets/custom_bar_chart.dart';
 import 'package:masic_generation/features/admin/dashboard/presentation/widgets/custom_pie_chart.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_simmer.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
@@ -67,6 +68,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       CustomBarChart(
                         label: 'Age Range',
                         chartData: dashboard.ageRangeChartData,
+                        onBarTap: (age) {
+                          ProfileController.to.openUsersFilteredByAge(age);
+                        },
                       ),
 
                     // ── Male & Female Pie Chart ──────────────────────
@@ -75,6 +79,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       CustomPieChart(
                         pieChartData: dashboard.genderChartData,
                         label: 'Male and Female user',
+                        onSectionTap: (gender) {
+                          ProfileController.to.openUsersFilteredByGender(gender);
+                        },
                       ),
 
                     // ── Common name Bar Chart ──────────────────────────
@@ -91,6 +98,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       CustomPieChart(
                         pieChartData: dashboard.employmentStatusChartData,
                         label: 'Employment status',
+                        onSectionTap: (status) {
+                          ProfileController.to
+                              .openUsersFilteredByEmployment(status);
+                        },
                       ),
 
                     // ── Field of work Bar Chart ──────────────────────────

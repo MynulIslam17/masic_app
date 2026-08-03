@@ -12,6 +12,7 @@ import 'package:masic_generation/features/auth/presentation/controller/auth_cont
 import 'package:masic_generation/features/home/presentation/controllers/home_controller.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_announcement_card.dart';
 import 'package:masic_generation/features/home/presentation/widgets/poll_card_widget.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class HomeContent extends StatelessWidget {
@@ -205,6 +206,9 @@ class HomeContent extends StatelessWidget {
                          CustomBarChart(
                            label: 'Age Range',
                            chartData: dashboard.ageRangeChartData,
+                           onBarTap: (age) {
+                             ProfileController.to.openUsersFilteredByAge(age);
+                           },
                          ),
 
                        // ── Male & Female Pie Chart ──────────────────────
@@ -213,6 +217,10 @@ class HomeContent extends StatelessWidget {
                          CustomPieChart(
                            pieChartData: dashboard.genderChartData,
                            label: 'Male and Female user',
+                           onSectionTap: (gender) {
+                             ProfileController.to
+                                 .openUsersFilteredByGender(gender);
+                           },
                          ),
 
                        // ── Common name Bar Chart ──────────────────────────
@@ -229,6 +237,10 @@ class HomeContent extends StatelessWidget {
                          CustomPieChart(
                            pieChartData: dashboard.employmentStatusChartData,
                            label: 'Employment status',
+                           onSectionTap: (status) {
+                             ProfileController.to
+                                 .openUsersFilteredByEmployment(status);
+                           },
                          ),
 
                        // ── Field of work Bar Chart ──────────────────────────
