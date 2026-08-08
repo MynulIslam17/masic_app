@@ -102,6 +102,8 @@ class RequestDetailsScreen extends StatelessWidget {
               _buildCard(
                 children: [
                   InfoRow(label: 'Name', value: request.user?.name ?? 'N/A'),
+                  if (request.user?.arabicName != null && request.user!.arabicName!.isNotEmpty)
+                    InfoRow(label: 'Arabic Name', value: request.user!.arabicName),
                   InfoRow(
                     label: 'Email',
                     value: request.contact?.email ?? 'N/A',

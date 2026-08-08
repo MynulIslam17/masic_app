@@ -40,7 +40,7 @@ class LanguageScreen extends StatelessWidget {
                     enableAutoTranslate: false,
                     textAlign: TextAlign.start,
                     color: AppColors.appGreyColor,
-                    text: '${lang.flag}  ${lang.name}',
+                    text: lang.name,
                   ),
                   trailing: isSelected
                       ? Assets.icons.selected.svg()

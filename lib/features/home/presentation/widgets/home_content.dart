@@ -229,6 +229,9 @@ class HomeContent extends StatelessWidget {
                          CustomBarChart(
                            label: 'Common name',
                            chartData: dashboard.commonNamesChartData,
+                           onBarTap: (name) {
+                             ProfileController.to.openUsersFilteredByName(name);
+                           },
                          ),
 
                        // ── Employment status Pie Chart ──────────────────────
@@ -249,6 +252,10 @@ class HomeContent extends StatelessWidget {
                          CustomBarChart(
                            label: 'Field of work',
                            chartData: dashboard.fieldOfWorkChartData,
+                           onBarTap: (field) {
+                             ProfileController.to
+                                 .openUsersFilteredByFieldOfWork(field);
+                           },
                          ),
 
                        // ── School or University student Pie Chart ──────────────────────

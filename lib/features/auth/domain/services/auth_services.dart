@@ -19,12 +19,14 @@ class AuthService {
   /// ─── REGISTER ──────────────────────────
   Future<UserResponseModel> register({
     required String name,
+    required String arabicName,
     required String email,
     required String phone,
     required String confirmPassword,
   }) async {
     return await _repository.register(
       name: name,
+      arabicName: arabicName,
       email: email,
       phone: phone,
       password: confirmPassword,

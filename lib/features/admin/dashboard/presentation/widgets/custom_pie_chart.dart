@@ -1,10 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:masic_generation/core/services/translation_service.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/custom_container.dart';
 import 'package:masic_generation/core/widgets/custom_text.dart';
 import 'package:masic_generation/features/admin/dashboard/data/models/dashboard_model.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
+import 'package:get/get.dart';
 
 class CustomPieChart extends StatefulWidget {
   const CustomPieChart({
@@ -26,6 +29,10 @@ class _CustomPieChartState extends State<CustomPieChart> {
   int touchedIndex = -1;
   int? _pressedIndex;
 
+  /// Translated labels for pie sections (parallel to widget.pieChartData)
+  List<String> _translatedLabels = [];
+  Worker? _worker;
+
   static const List<Color> _defaultColors = [
     Color(0xFF6A89BD),
     Color(0xFF98AED2),
@@ -35,8 +42,49 @@ class _CustomPieChartState extends State<CustomPieChart> {
     Color(0xFF9C27B0),
   ];
 
-  void _handleTap(String label) {
-    widget.onSectionTap?.call(label);
+  @override
+  void initState() {
+    super.initState();
+    _translatedLabels = widget.pieChartData.map((e) => e.label).toList();
+    _translateAll();
+
+    // Re-translate whenever language changes
+    _worker = ever(TranslationController.to.retranslateTrigger, (_) {
+      _translateAll();
+    });
+  }
+
+  @override
+  void didUpdateWidget(CustomPieChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.pieChartData != widget.pieChartData) {
+      _translatedLabels = widget.pieChartData.map((e) => e.label).toList();
+      _translateAll();
+    }
+  }
+
+  @override
+  void dispose() {
+    _worker?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _translateAll() async {
+    final targetCode = TranslationController.to.currentCode;
+    final results = await Future.wait(
+      widget.pieChartData.map(
+        (item) => TranslationService().translate(item.label, targetCode: targetCode),
+      ),
+    );
+    if (mounted) {
+      setState(() {
+        _translatedLabels = results;
+      });
+    }
+  }
+
+  void _handleTap(String originalLabel) {
+    widget.onSectionTap?.call(originalLabel);
   }
 
   @override
@@ -69,7 +117,6 @@ class _CustomPieChartState extends State<CustomPieChart> {
                       final index =
                           response?.touchedSection?.touchedSectionIndex;
 
-                      // Keep pressed section from down/press events.
                       if (event is FlTapDownEvent ||
                           event is FlLongPressStart ||
                           event is FlPanDownEvent) {
@@ -81,8 +128,6 @@ class _CustomPieChartState extends State<CustomPieChart> {
                         }
                       }
 
-                      // On mobile FlTapUpEvent is NOT "interested for interactions",
-                      // so handle navigation before that early-out.
                       if (event is FlTapUpEvent) {
                         final tapIndex =
                             (index != null &&
@@ -113,6 +158,9 @@ class _CustomPieChartState extends State<CustomPieChart> {
                   ),
                   sections: List.generate(pieChartData.length, (index) {
                     final item = pieChartData[index];
+                    final translatedLabel = index < _translatedLabels.length
+                        ? _translatedLabels[index]
+                        : item.label;
                     final pct = total == 0
                         ? 0
                         : (item.value / total * 100).round();
@@ -123,7 +171,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                       value: item.value.toDouble(),
                       color: color,
                       radius: isTouched ? 95 : 88,
-                      title: '${item.label}\n$pct%',
+                      title: '$translatedLabel\n$pct%',
                       titleStyle: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -141,6 +189,9 @@ class _CustomPieChartState extends State<CustomPieChart> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(pieChartData.length, (index) {
                   final item = pieChartData[index];
+                  final translatedLabel = index < _translatedLabels.length
+                      ? _translatedLabels[index]
+                      : item.label;
                   final color = _defaultColors[index % _defaultColors.length];
 
                   return Padding(
@@ -158,7 +209,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                           padding: EdgeInsets.symmetric(vertical: 4.h),
                           child: _buildLegendItem(
                             color: color,
-                            label: item.label,
+                            label: translatedLabel,
                             count: item.value.toInt(),
                           ),
                         ),
@@ -190,6 +241,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
         ),
         Flexible(
           child: CustomText(
+            enableAutoTranslate: false, // already translated above
             textAlign: TextAlign.start,
             left: 8.w,
             text: '$label  :  $count',

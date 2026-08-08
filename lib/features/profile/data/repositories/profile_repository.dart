@@ -97,6 +97,8 @@ class ProfileRepository {
     String? age,
     String? role,
     String? search,
+    String? fieldOfWork,
+    String? name,
   }) async {
     final cacheKey = _cacheKey(role ?? '');
 
@@ -114,6 +116,9 @@ class ProfileRepository {
           'educationLevel': educationLevel,
         if (age != null && age.isNotEmpty) 'age': age,
         if (role != null && role.isNotEmpty) 'role': role,
+        if (fieldOfWork != null && fieldOfWork.isNotEmpty)
+          'fieldOfWork': fieldOfWork,
+        if (name != null && name.isNotEmpty) 'name': name,
       };
       final response = await _apiService.get(
         ApiConstants.usersProfile,
@@ -156,6 +161,8 @@ class ProfileRepository {
     String? searchTerm,
     String? age,
     String? role,
+    String? fieldOfWork,
+    String? name,
   }) async {
     final cacheKey = _cacheKey(role ?? '');
     final response = await fetchUsers(
@@ -167,6 +174,8 @@ class ProfileRepository {
       searchTerm: searchTerm,
       age: age,
       role: role,
+      fieldOfWork: fieldOfWork,
+      name: name,
     );
     if (response.isNotEmpty) {
       final currentCached = getCachedUsers(cacheKey);

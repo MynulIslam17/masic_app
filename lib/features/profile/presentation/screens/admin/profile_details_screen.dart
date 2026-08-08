@@ -38,6 +38,8 @@ class ProfileDetailsScreen extends StatelessWidget {
                 // spacing: 16.h,
                 children: [
                   InfoRow(label: 'Name', value: user?.name ?? 'N/A'),
+                  if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
+                    InfoRow(label: 'Arabic Name', value: user!.arabicName),
                   InfoRow(label: 'Email', value: user?.email ?? 'N/A'),
                   InfoRow(label: 'Phone no', value: user?.phone ?? 'N/A'),
                   InfoRow(
@@ -46,14 +48,16 @@ class ProfileDetailsScreen extends StatelessWidget {
                       user?.dateOfBirth ?? '',
                     ),
                   ),
-                  InfoRow(label: 'Gender', value: user?.gender ?? 'N/A'),
+                  InfoRow(label: 'Gender', value: user?.gender ?? 'N/A', translateValue: true),
                   InfoRow(
                     label: 'Employment status',
                     value: user?.employmentStatus ?? 'N/A',
+                    translateValue: true,
                   ),
                   InfoRow(
                     label: 'Education',
                     value: user?.education ?? 'N/A',
+                    translateValue: true,
                   ),
                   InfoRow(
                     label: 'University name',
@@ -62,6 +66,7 @@ class ProfileDetailsScreen extends StatelessWidget {
                   InfoRow(
                     label: 'Field of work',
                     value: user?.fieldOfWork ?? 'N/A',
+                    translateValue: true,
                   ),
                   InfoRow(
                     label: 'Spouse name',

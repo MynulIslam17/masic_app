@@ -24,6 +24,8 @@ class ProfileService {
     String? age,
     String? role,
     String? search,
+    String? fieldOfWork,
+    String? name,
   }) async {
     try {
       await Future.wait([
@@ -33,11 +35,13 @@ class ProfileService {
           limit: limit,
           search: search,
           gender: gender?.toLowerCase(),
-          employmentStatus: employmentStatus?.toLowerCase(),
+          employmentStatus: _fixEmploymentCase(employmentStatus),
           educationLevel: educationLevel?.toLowerCase(),
           searchTerm: searchTerm,
           age: age?.toLowerCase(),
           role: role,
+          fieldOfWork: fieldOfWork,
+          name: name,
         ),
       ]);
     } on AppException {
@@ -58,17 +62,30 @@ class ProfileService {
     String? searchTerm,
     String? age,
     String? role,
+    String? fieldOfWork,
+    String? name,
   }) async {
     return await _repository.fetchUsersMore(
       page: page,
       limit: limit,
       gender: gender?.toLowerCase(),
-      employmentStatus: employmentStatus?.toLowerCase(),
+      employmentStatus: employmentStatus,
       educationLevel: educationLevel?.toLowerCase(),
       searchTerm: searchTerm,
       age: age?.toLowerCase(),
       role: role,
+      fieldOfWork: fieldOfWork,
+      name: name,
     );
+  }
+
+  /// Lowercase employment status for the API, except 'student' which the
+  /// backend expects as 'Student' (capital S).
+  String? _fixEmploymentCase(String? value) {
+    if (value == null || value.isEmpty) return value;
+    final lower = value.toLowerCase();
+    if (lower == 'student') return 'Student';
+    return lower;
   }
 
   Future<UserModel> updateUserProfile(UserModel user, {File? image, File? cv,File? certificate}) async {

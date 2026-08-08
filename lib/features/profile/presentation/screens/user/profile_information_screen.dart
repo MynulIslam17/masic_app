@@ -53,6 +53,8 @@ class ProfileInformationScreen extends StatelessWidget {
                   children: [
                     if (user?.name != null && user!.name!.isNotEmpty)
                       InfoRow(label: 'Name', value: user!.name),
+                    if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
+                      InfoRow(label: 'Arabic Name', value: user!.arabicName),
                     if (user?.email != null && user!.email!.isNotEmpty)
                       InfoRow(label: 'Email', value: user!.email),
                     if (user?.phone != null && user!.phone!.isNotEmpty)
@@ -66,18 +68,20 @@ class ProfileInformationScreen extends StatelessWidget {
                         ),
                       ),
                     if (user?.gender != null && user!.gender!.isNotEmpty)
-                      InfoRow(label: 'Gender', value: user!.gender),
+                      InfoRow(label: 'Gender', value: user!.gender, translateValue: true),
                     if (user?.employmentStatus != null &&
                         user!.employmentStatus!.isNotEmpty)
                       InfoRow(
                         label: 'Employment status',
                         value: user!.employmentStatus,
+                        translateValue: true,
                       ),
                     if (user?.education != null &&
                         user!.education!.isNotEmpty)
                       InfoRow(
                         label: 'Education',
                         value: user!.education,
+                        translateValue: true,
                       ),
                     if (user?.universityName != null &&
                         user!.universityName!.isNotEmpty)
@@ -90,6 +94,7 @@ class ProfileInformationScreen extends StatelessWidget {
                       InfoRow(
                         label: 'Field of work',
                         value: user!.fieldOfWork,
+                        translateValue: true,
                       ),
                     if (user?.spouseName != null &&
                         user!.spouseName!.isNotEmpty)

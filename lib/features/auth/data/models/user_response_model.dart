@@ -3,6 +3,7 @@ class UserResponseModel {
   final String? email;
   final String? password;
   final String? name;
+  final String? arabicName;
   final String? role;
   final String? country;
   final String? countryCode;
@@ -26,6 +27,7 @@ class UserResponseModel {
     this.email,
     this.password,
     this.name,
+    this.arabicName,
     this.role,
     this.country,
     this.countryCode,
@@ -89,6 +91,7 @@ class UserResponseModel {
       email: _parseString(json['email']),
       password: _parseString(json['password']),
       name: _parseString(json['name']),
+      arabicName: _parseString(json['arabicName']),
       role: _parseString(json['role']),
       country: _parseString(json['country']),
       countryCode: _parseString(json['countryCode']),
@@ -114,6 +117,7 @@ class UserResponseModel {
     if (email != null) 'email': email,
     if (password != null) 'password': password,
     if (name != null) 'name': name,
+    if (arabicName != null) 'arabicName': arabicName,
     if (role != null) 'role': role,
     if (country != null) 'country': country,
     if (countryCode != null) 'countryCode': countryCode,
@@ -138,6 +142,7 @@ class UserResponseModel {
     String? email,
     String? password,
     String? name,
+    String? arabicName,
     String? role,
     String? country,
     String? countryCode,
@@ -161,6 +166,7 @@ class UserResponseModel {
       email: email ?? this.email,
       password: password ?? this.password,
       name: name ?? this.name,
+      arabicName: arabicName ?? this.arabicName,
       role: role ?? this.role,
       country: country ?? this.country,
       countryCode: countryCode ?? this.countryCode,

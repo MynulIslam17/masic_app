@@ -81,6 +81,8 @@ class ProfileController extends GetxController {
   final RxString _employmentFilter = ''.obs;
   final RxString _educationFilter = ''.obs;
   final RxString _ageFilter = ''.obs;
+  final RxString _fieldOfWorkFilter = ''.obs;
+  final RxString _nameFilter = ''.obs;
   final RxBool _isJobOngoings = false.obs;
   final RxBool _isEducationOngoings = false.obs;
   final RxString _roleFilter = ''.obs;
@@ -94,6 +96,10 @@ class ProfileController extends GetxController {
   String get educationFilter => _educationFilter.value;
 
   String get ageFilter => _ageFilter.value;
+
+  String get fieldOfWorkFilter => _fieldOfWorkFilter.value;
+
+  String get nameFilter => _nameFilter.value;
 
   bool get isJobOngoings => _isJobOngoings.value;
 
@@ -229,6 +235,8 @@ class ProfileController extends GetxController {
   void setAgeFilter(String value) => _ageFilter.value = value;
   void setEmploymentFilter(String value) => _employmentFilter.value = value;
   void setEducationFilter(String value) => _educationFilter.value = value;
+  void setFieldOfWorkFilter(String value) => _fieldOfWorkFilter.value = value;
+  void setNameFilter(String value) => _nameFilter.value = value;
 
   String _normalizeGender(String label) {
     final lower = label.trim().toLowerCase();
@@ -256,6 +264,7 @@ class ProfileController extends GetxController {
     final lower = label.trim().toLowerCase();
     if (lower.contains('self')) return 'Self-employed';
     if (lower.contains('unemploy')) return 'Unemployed';
+    if (lower.contains('student')) return 'Student';
     if (lower.contains('employ')) return 'Employed';
     return label.trim();
   }
@@ -265,11 +274,15 @@ class ProfileController extends GetxController {
     String age = '',
     String employment = '',
     String education = '',
+    String fieldOfWork = '',
+    String name = '',
   }) async {
     _genderFilter.value = gender;
     _ageFilter.value = age;
     _employmentFilter.value = employment;
     _educationFilter.value = education;
+    _fieldOfWorkFilter.value = fieldOfWork;
+    _nameFilter.value = name;
 
     final needsManualRefresh = _roleFilter.value.isEmpty;
     if (!needsManualRefresh) {
@@ -295,6 +308,14 @@ class ProfileController extends GetxController {
     return openUsersWithFilters(
       employment: _normalizeEmployment(employmentLabel),
     );
+  }
+
+  Future<void> openUsersFilteredByFieldOfWork(String fieldOfWorkLabel) {
+    return openUsersWithFilters(fieldOfWork: fieldOfWorkLabel.trim());
+  }
+
+  Future<void> openUsersFilteredByName(String nameLabel) {
+    return openUsersWithFilters(name: nameLabel.trim());
   }
 
 
@@ -338,6 +359,8 @@ class ProfileController extends GetxController {
           searchTerm: searchController.text,
           age: ageFilter,
           role: role,
+          fieldOfWork: fieldOfWorkFilter,
+          name: nameFilter,
         );
         _loadFromCache();
         _currentPage = 1;
@@ -376,6 +399,8 @@ class ProfileController extends GetxController {
         educationLevel: educationFilter,
         age: ageFilter,
         role: roleFilter,
+        fieldOfWork: fieldOfWorkFilter,
+        name: nameFilter,
       );
 
       if (newUsers.isNotEmpty) {
@@ -470,6 +495,8 @@ class ProfileController extends GetxController {
       educationLevel: educationFilter,
       age: ageFilter,
       role: roleFilter,
+      fieldOfWork: fieldOfWorkFilter,
+      name: nameFilter,
     );
     return _service
         .getCachedUsers(roleFilter)
@@ -716,6 +743,8 @@ class ProfileController extends GetxController {
     _employmentFilter.value = '';
     _educationFilter.value = '';
     _ageFilter.value = '';
+    _fieldOfWorkFilter.value = '';
+    _nameFilter.value = '';
     retry();
   }
 

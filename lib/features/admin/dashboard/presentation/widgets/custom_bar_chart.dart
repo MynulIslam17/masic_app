@@ -1,9 +1,12 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:masic_generation/core/services/translation_service.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/custom_text.dart';
 import 'package:masic_generation/features/admin/dashboard/data/models/dashboard_model.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
+import 'package:get/get.dart';
 
 class CustomBarChart extends StatefulWidget {
   const CustomBarChart({
@@ -24,8 +27,53 @@ class CustomBarChart extends StatefulWidget {
 class _CustomBarChartState extends State<CustomBarChart> {
   int? _pressedIndex;
 
-  void _handleTap(String label) {
-    widget.onBarTap?.call(label);
+  /// Translated bottom-axis labels (parallel to widget.chartData)
+  List<String> _translatedLabels = [];
+  Worker? _worker;
+
+  @override
+  void initState() {
+    super.initState();
+    _translatedLabels = widget.chartData.map((e) => e.label).toList();
+    _translateAll();
+
+    // Re-translate whenever language changes
+    _worker = ever(TranslationController.to.retranslateTrigger, (_) {
+      _translateAll();
+    });
+  }
+
+  @override
+  void didUpdateWidget(CustomBarChart oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.chartData != widget.chartData) {
+      _translatedLabels = widget.chartData.map((e) => e.label).toList();
+      _translateAll();
+    }
+  }
+
+  @override
+  void dispose() {
+    _worker?.dispose();
+    super.dispose();
+  }
+
+  Future<void> _translateAll() async {
+    final targetCode = TranslationController.to.currentCode;
+    final results = await Future.wait(
+      widget.chartData.map(
+        (item) => TranslationService().translate(item.label, targetCode: targetCode),
+      ),
+    );
+    if (mounted) {
+      setState(() {
+        _translatedLabels = results;
+      });
+    }
+  }
+
+  void _handleTap(String originalLabel) {
+    widget.onBarTap?.call(originalLabel);
   }
 
   @override
@@ -113,6 +161,7 @@ class _CustomBarChartState extends State<CustomBarChart> {
                     interval: 20,
                     reservedSize: 24.w,
                     getTitlesWidget: (value, meta) => CustomText(
+                      enableAutoTranslate: false,
                       text: value.toInt().toString(),
                       fontSize: 10.sp,
                       color: Colors.black.withOpacity(0.70),
@@ -128,15 +177,19 @@ class _CustomBarChartState extends State<CustomBarChart> {
                       if (index < 0 || index >= chartData.length) {
                         return const SizedBox.shrink();
                       }
-                      final item = chartData[index];
+                      final originalLabel = chartData[index].label;
+                      final displayLabel = index < _translatedLabels.length
+                          ? _translatedLabels[index]
+                          : originalLabel;
                       return GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: widget.onBarTap == null
                             ? null
-                            : () => _handleTap(item.label),
+                            : () => _handleTap(originalLabel),
                         child: CustomText(
+                          enableAutoTranslate: false, // already translated
                           top: 6.h,
-                          text: item.label,
+                          text: displayLabel,
                           fontSize: 10.sp,
                           color: Colors.black.withOpacity(0.70),
                         ),

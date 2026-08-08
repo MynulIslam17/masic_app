@@ -49,7 +49,7 @@ class ProfileScreen extends StatelessWidget {
             ),
             ProfileListTile(
               icon: Assets.icons.requested.path,
-              title: "Requested",
+              title: "Requests",
               onTap: () {
                 Get.toNamed(AppRoutes.requestedScreen);
               },

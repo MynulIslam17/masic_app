@@ -49,6 +49,7 @@ class AuthController extends GetxController {
 
   final  fastNameController = TextEditingController();
   final  lastNameController = TextEditingController();
+  final  arabicNameController = TextEditingController();
   final emailController = TextEditingController(text: kDebugMode ? 'mohammad@gmail.com' : '');
   final currentController = TextEditingController();
   final passwordController = TextEditingController(text: kDebugMode ? '123456' : '');
@@ -106,6 +107,7 @@ class AuthController extends GetxController {
     try {
       await _authService.register(
         name: '${fastNameController.text.trim()} ${lastNameController.text.trim()}',
+        arabicName: arabicNameController.text.trim(),
         email: emailController.text.trim(),
         phone: phoneController.text.trim(),
         confirmPassword: confirmPasswordController.text,
@@ -260,11 +262,11 @@ class AuthController extends GetxController {
     confirmPasswordController.clear();
     otpController.clear();
     currentController.clear();
-    //emailController.clear();
     passwordController.clear();
     phoneController.clear();
     fastNameController.clear();
     lastNameController.clear();
+    arabicNameController.clear();
   }
 
   /// ─── DISPOSE ───────────────────────────
@@ -277,6 +279,7 @@ class AuthController extends GetxController {
     phoneController.dispose();
     fastNameController.dispose();
     lastNameController.dispose();
+    arabicNameController.dispose();
     currentController.dispose();
     super.onClose();
   }

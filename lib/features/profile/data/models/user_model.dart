@@ -4,6 +4,7 @@ class UserModel {
   String? sId;
   String? email;
   String? name;
+  String? arabicName;
   String? role;
   String? country;
   String? countryCode;
@@ -46,6 +47,7 @@ class UserModel {
     this.sId,
     this.email,
     this.name,
+    this.arabicName,
     this.role,
     this.country,
     this.countryCode,
@@ -98,6 +100,7 @@ class UserModel {
     sId = json['_id'];
     email = json['email'];
     name = json['name'];
+    arabicName = json['arabicName'];
     role = json['role'];
     country = json['country'];
     countryCode = json['countryCode'];
@@ -164,6 +167,7 @@ class UserModel {
     addIfNotNull('_id', sId);
     addIfNotNull('email', email);
     addIfNotNull('name', name);
+    addIfNotNull('arabicName', arabicName);
     addIfNotNull('role', role);
     addIfNotNull('country', country);
     addIfNotNull('countryCode', countryCode);

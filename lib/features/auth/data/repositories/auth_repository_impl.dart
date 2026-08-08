@@ -20,6 +20,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<UserResponseModel> register({
     required String name,
+    required String arabicName,
     required String email,
     required String phone,
     required String password,
@@ -29,9 +30,10 @@ class AuthRepositoryImpl implements AuthRepository {
         ApiConstants.register,
         data: {
           "name": name,
+          "arabicName": arabicName,
           "email": email,
           "password": password,
-          "phone": phone
+          "phone": phone,
         },
       );
 

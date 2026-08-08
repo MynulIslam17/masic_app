@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
             SliverAppBar(
               actions: [
                 Padding(
-                  padding:  EdgeInsets.only(right:  16.w),
+                  padding: EdgeInsetsDirectional.only(end: 16.w),
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => Get.toNamed(AppRoutes.notificationScreen),

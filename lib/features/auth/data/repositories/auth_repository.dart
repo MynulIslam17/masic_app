@@ -8,6 +8,7 @@ abstract class AuthRepository {
 
   Future<UserResponseModel> register({
     required String name,
+    required String arabicName,
     required String email,
     required String phone,
     required String password,

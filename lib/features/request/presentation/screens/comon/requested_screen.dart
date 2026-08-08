@@ -49,7 +49,7 @@ class RequestedScreen extends StatelessWidget {
               ),
 
               title: CustomText(
-                text: 'Requested',
+                text: 'Requests',
                 fontSize: 16.sp,
                 color: AppColors.appBarTitleColor,
               ),

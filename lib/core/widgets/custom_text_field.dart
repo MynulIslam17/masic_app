@@ -44,6 +44,7 @@ class CustomTextField extends StatefulWidget {
   final int? minLines;
   final bool showShadow;
   final ValueChanged<String>? onFieldSubmitted;
+  final bool forceRtl;
 
   const CustomTextField({
     super.key,
@@ -81,6 +82,7 @@ class CustomTextField extends StatefulWidget {
     this.maxLines,
     this.showShadow = true,
     this.onFieldSubmitted, this.labelColor,
+    this.forceRtl = false,
   });
 
   @override
@@ -183,7 +185,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     _syncLocale();
 
     return Obx(() {
-      final isRtl = _currentLang.value == 'ar';
+      final isRtl = widget.forceRtl || _currentLang.value == 'ar';
       final textDir = isRtl ? TextDirection.rtl : TextDirection.ltr;
       final hintText = _translatedHint.value.isNotEmpty
           ? _translatedHint.value

@@ -61,12 +61,16 @@ class TranslationController extends GetxController {
       }) async {
     if (currentLanguage.value.code == language.code) return;
 
+    // Clear stale cache for the new target language so any previously
+    // wrong translations (e.g. "Poll") get re-fetched fresh.
+    await TranslationService().clearCacheForLanguage(language.code);
+
     currentLanguage.value = language;
     await TranslationService().setLanguage(language);
 
     _updateFlutterLocale(language);
 
-    // Signal all AutoTranslate widgets
+    // Signal all AutoTranslate widgets to re-translate
     retranslateTrigger.value++;
 
     onChange?.call();

@@ -34,7 +34,7 @@ class AdminProfileScreen extends StatelessWidget {
             ),
             ProfileListTile(
               icon: Assets.icons.allAdmin.path,
-              title: "All admin",
+              title: "All admins",
               onTap: () {
                 ProfileController.to.setRoleFilter('admin');
                   Get.toNamed(AppRoutes.allAdminScreen);
@@ -64,7 +64,7 @@ class AdminProfileScreen extends StatelessWidget {
             ),
             ProfileListTile(
               icon: Assets.icons.requested.path,
-              title: "Requested",
+              title: "Requests",
               onTap: () {
                 Get.toNamed(AppRoutes.requestedScreen);
               },

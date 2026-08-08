@@ -104,14 +104,16 @@ class User {
   String? sId;
   String? email;
   String? name;
+  String? arabicName;
   String? profileImage;
 
-  User({this.sId, this.email, this.name, this.profileImage});
+  User({this.sId, this.email, this.name, this.arabicName, this.profileImage});
 
   User.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     email = json['email'];
     name = json['name'];
+    arabicName = json['arabicName'];
     profileImage = json['profileImage'];
   }
 
@@ -120,6 +122,7 @@ class User {
     data['_id'] = sId;
     data['email'] = email;
     data['name'] = name;
+    data['arabicName'] = arabicName;
     data['profileImage'] = profileImage;
     return data;
   }

@@ -69,48 +69,56 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                       spacing: 16.h,
                       children: [
                         if (user?.name != null && user!.name!.isNotEmpty)
-                          _buildInfoRow(label: 'Name', value: user!.name),
+                          _buildInfoRow(label: 'Name', value: user!.name, translateValue: false),
+                        if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
+                          _buildInfoRow(label: 'Arabic Name', value: user!.arabicName, translateValue: false),
                         if (user?.email != null && user!.email!.isNotEmpty)
-                          _buildInfoRow(label: 'Email', value: user!.email),
+                          _buildInfoRow(label: 'Email', value: user!.email, translateValue: false),
                         if (user?.phone != null && user!.phone!.isNotEmpty)
-                          _buildInfoRow(label: 'Phone no', value: user!.phone),
+                          _buildInfoRow(label: 'Phone no', value: user!.phone, translateValue: false),
                         if (user?.gender != null && user!.gender!.isNotEmpty)
-                          _buildInfoRow(label: 'Gender', value: user!.gender),
+                          _buildInfoRow(label: 'Gender', value: user!.gender, translateValue: true),
                         if (user?.employmentStatus != null &&
                             user!.employmentStatus!.isNotEmpty)
                           _buildInfoRow(
                             label: 'Employment status',
                             value: user!.employmentStatus,
+                            translateValue: true,
                           ),
                         if (user?.education != null &&
                             user!.education!.isNotEmpty)
                           _buildInfoRow(
                             label: 'Education',
                             value: user!.education,
+                            translateValue: true,
                           ),
                         if (user?.universityName != null &&
                             user!.universityName!.isNotEmpty)
                           _buildInfoRow(
                             label: 'University name',
                             value: user!.universityName,
+                            translateValue: false,
                           ),
                         if (user?.fieldOfWork != null &&
                             user!.fieldOfWork!.isNotEmpty)
                           _buildInfoRow(
                             label: 'Field of work',
                             value: user!.fieldOfWork,
+                            translateValue: true,
                           ),
                         if (user?.spouseName != null &&
                             user!.spouseName!.isNotEmpty)
                           _buildInfoRow(
                             label: 'Spouse name',
                             value: user!.spouseName,
+                            translateValue: false,
                           ),
                         if (user?.contact?.linkedin != null &&
                             user!.contact!.linkedin!.isNotEmpty)
                           _buildInfoRow(
                             label: 'Linkedin link',
                             value: user!.contact!.linkedin,
+                            translateValue: false,
                           ),
                       ],
                     ),
@@ -129,6 +137,7 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
     required String label,
     String? value,
     Widget? valueWidget,
+    bool translateValue = false,
   }) {
     return Row(
       children: [
@@ -147,7 +156,7 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
           child:
               valueWidget ??
               CustomText(
-                enableAutoTranslate: false,
+                enableAutoTranslate: translateValue,
                 text: value ?? '',
                 fontSize: 12.sp,
                 textAlign: TextAlign.start,

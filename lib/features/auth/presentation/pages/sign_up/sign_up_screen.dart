@@ -38,12 +38,33 @@ class SignUpScreen extends StatelessWidget {
                 labelText: 'First Name',
                 controller: to.fastNameController,
                 hintText: "Enter your first name",
-              ), CustomTextField(
+              ),
+              CustomTextField(
                 showShadow: false,
                 prefixIcon: Assets.icons.person.svg(),
                 labelText: 'Last Name',
                 controller: to.lastNameController,
                 hintText: "Enter your last name",
+              ),
+              CustomTextField(
+                showShadow: false,
+                prefixIcon: Assets.icons.person.svg(),
+                labelText: 'Arabic Name',
+                controller: to.arabicNameController,
+                hintText: "أدخل اسمك بالعربية",
+                keyboardType: TextInputType.name,
+                forceRtl: true,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Arabic name is required';
+                  }
+                  // Only Arabic letters and spaces allowed
+                  final arabicOnly = RegExp(r'^[\u0600-\u06FF\s]+$');
+                  if (!arabicOnly.hasMatch(value.trim())) {
+                    return 'Please enter name in Arabic only (e.g. أحمد علي)';
+                  }
+                  return null;
+                },
               ),
 
               CustomTextField(
