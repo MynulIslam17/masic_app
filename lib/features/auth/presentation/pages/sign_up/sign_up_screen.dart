@@ -53,16 +53,16 @@ class SignUpScreen extends StatelessWidget {
                 controller: to.arabicNameController,
                 hintText: "أدخل اسمك بالعربية",
                 keyboardType: TextInputType.name,
-                forceRtl: true,
+                isAlwaysRtl: true,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Arabic name is required';
+                    return 'الاسم باللغة العربية مطلوب';
                   }
-                  // Only Arabic letters and spaces allowed
                   final arabicOnly = RegExp(r'^[\u0600-\u06FF\s]+$');
                   if (!arabicOnly.hasMatch(value.trim())) {
-                    return 'Please enter name in Arabic only (e.g. أحمد علي)';
+                    return 'يرجى إدخال الاسم باللغة العربية فقط (مثال: أحمد علي)';
                   }
+
                   return null;
                 },
               ),
@@ -100,14 +100,6 @@ class SignUpScreen extends StatelessWidget {
                 controller: to.confirmPasswordController,
                 hintText: "Confirm Password",
                 isPassword: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Confirm password is required';
-                  } else if (value != to.passwordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
               ),
               Row(
                 children: [

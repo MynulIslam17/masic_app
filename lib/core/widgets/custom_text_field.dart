@@ -44,7 +44,7 @@ class CustomTextField extends StatefulWidget {
   final int? minLines;
   final bool showShadow;
   final ValueChanged<String>? onFieldSubmitted;
-  final bool forceRtl;
+  final bool isAlwaysRtl;
 
   const CustomTextField({
     super.key,
@@ -82,7 +82,7 @@ class CustomTextField extends StatefulWidget {
     this.maxLines,
     this.showShadow = true,
     this.onFieldSubmitted, this.labelColor,
-    this.forceRtl = false,
+    this.isAlwaysRtl = false,
   });
 
   @override
@@ -185,16 +185,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
     _syncLocale();
 
     return Obx(() {
-      final isRtl = widget.forceRtl || _currentLang.value == 'ar';
+      final isLangRtl = _currentLang.value == 'ar';
+      final isRtl = widget.isAlwaysRtl || isLangRtl;
       final textDir = isRtl ? TextDirection.rtl : TextDirection.ltr;
       final hintText = _translatedHint.value.isNotEmpty
           ? _translatedHint.value
           : widget.hintText;
 
-      return Column(
+      Widget child = Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment:
-        isRtl ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.labelText != null)
             CustomText(
@@ -206,7 +206,98 @@ class _CustomTextFieldState extends State<CustomTextField> {
               fontWeight: FontWeight.w500,
             ),
 
-          DecoratedBox(
+          widget.isAlwaysRtl
+              ? DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(widget.borderRadio ?? 10.r),
+                    boxShadow: widget.showShadow
+                        ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 4),
+                      ),
+                    ]
+                        : [],
+                  ),
+                  child: TextFormField(
+                    textDirection: textDir,
+                    textAlign: TextAlign.right,
+                    onFieldSubmitted: widget.onFieldSubmitted,
+                    autofocus: widget.autofocus,
+                    enabled: widget.enabled,
+                    maxLength: widget.maxLength,
+                    onChanged: widget.onChanged,
+                    onTap: widget.isDatePicker ? null : widget.onTap,
+                    readOnly: widget.readOnly ?? false,
+                    controller: widget.controller,
+                    keyboardType: widget.keyboardType,
+                    inputFormatters: widget.inputFormatter,
+                    textInputAction: widget.textInputAction,
+                    obscuringCharacter: widget.obscure!,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    minLines: widget.isPassword ? 1 : (widget.minLines ?? 1),
+                    maxLines: widget.isPassword ? 1 : (widget.maxLines ?? 8),
+                    contextMenuBuilder: (context, editableTextState) {
+                      if (widget.readOnly == true) return const SizedBox.shrink();
+                      return AdaptiveTextSelectionToolbar.editableText(
+                        editableTextState: editableTextState,
+                      );
+                    },
+                    validator: widget.validator ?? _defaultValidator,
+                    cursorColor: widget.cursorColor ?? AppColors.colorB0B0B0,
+                    obscureText: widget.isPassword ? _obscureText : false,
+                    style: TextStyle(
+                      color: widget.hintextColor ?? AppColors.colorB0B0B0,
+                      fontSize: widget.hintextSize ?? 12.h,
+                      fontFamily: widget.fontFamily,
+                    ),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: widget.contentPaddingHorizontal ?? 20.w,
+                        vertical: widget.contentPaddingVertical ?? 14.h,
+                      ),
+                      fillColor: widget.filColor ?? Colors.transparent,
+                      filled: widget.filColor == null ? false : true,
+                      // LTR context: icon as suffixIcon (right)
+                      // RTL context: icon as prefixIcon (right in RTL)
+                      prefixIcon: isLangRtl && widget.prefixIcon != null
+                          ? Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: widget.prefixIcon,
+                      )
+                          : null,
+                      suffixIcon: !isLangRtl && widget.prefixIcon != null
+                          ? Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: widget.prefixIcon,
+                      )
+                          : null,
+                      prefixIconConstraints:
+                      BoxConstraints(minHeight: 24.w, minWidth: 24.w),
+                      suffixIconConstraints: BoxConstraints(minHeight: 24.w, minWidth: 24.w),
+                      hintText: hintText,
+                      hintStyle: TextStyle(
+                        color: widget.hintextColor ?? AppColors.colorB0B0B0,
+                        fontSize: widget.hintextSize ?? 12.h,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      errorStyle: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12.h,
+                        height: 1.6,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      focusedBorder: _focusedBorder(),
+                      enabledBorder: _enabledBorder(),
+                      errorBorder: _errorBorder(),
+                      border: _focusedBorder(),
+                      focusedErrorBorder: _errorBorder(),
+                    ),
+                  ),
+                )
+              : DecoratedBox(
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(widget.borderRadio ?? 10.r),
@@ -273,9 +364,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined),
                 )
-                    : widget.suffixIcon,
+                    : widget.suffixIcon != null ? Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: widget.suffixIcon,
+                ) : null,
                 prefixIconConstraints:
                 BoxConstraints(minHeight: 24.w, minWidth: 24.w),
+                suffixIconConstraints: BoxConstraints(minHeight: 24.w, minWidth: 24.w),
                 hintText: hintText,
                 hintStyle: TextStyle(
                   color: widget.hintextColor ?? AppColors.colorB0B0B0,
@@ -300,6 +395,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
           SizedBox(height: 6.h),
         ],
       );
+
+      return child;
     });
   }
 
