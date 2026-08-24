@@ -51,7 +51,7 @@ class CustomSearchField extends StatelessWidget {
                 side: const BorderSide(color: Color(0xFFE6E6E6)),
               ),
             ),
-            padding: WidgetStateProperty.all(EdgeInsets.only(left: 16.w)),
+            padding: WidgetStateProperty.all(EdgeInsets.symmetric(horizontal: 16.w)),
             textStyle: WidgetStateProperty.all(
               TextStyle(fontSize: 12.sp, color: AppColors.colorB0B0B0),
             ),
