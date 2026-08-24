@@ -87,6 +87,7 @@ class TreeScreen extends StatelessWidget {
                         shape: BoxShape.circle,
                         color: AppColors.white,
                         child: Assets.icons.search.svg(
+                          colorFilter: ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn),
                           height: 20.h,
                           width: 20.w,
                         ),

@@ -6,8 +6,6 @@ import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
-import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
-import 'package:masic_generation/features/bottom_nav_bar/presentation/controller/bottom_nav_bar_controller.dart';
 import 'package:masic_generation/features/home/presentation/controllers/home_controller.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_content.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_simmer.dart';

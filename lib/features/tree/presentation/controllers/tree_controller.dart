@@ -157,10 +157,8 @@ class TreeController extends GetxController {
         SearchModel(
           model: memberId,
           title: name.isNotEmpty ? name : 'Unknown',
-          subtitle: relationType?.isNotEmpty == true
-              ? relationType
-              : (email.isNotEmpty ? email : null),
-          image: linkedUser?.profileImage,
+          subtitle: email.isNotEmpty ? email : null,
+          image: linkedUser?.profileImage ?? 're',
         ),
       );
     }
