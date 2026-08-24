@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'https://mihad4173.merinasib.shop';
+  static const String baseUrl = 'https://mihad4173.ssh.bd';
 
   /// ─── Auth Marker ───────────────────────────
   static const String requiresAuthHeader = 'X-Requires-Auth';
