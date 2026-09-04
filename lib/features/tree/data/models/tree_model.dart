@@ -124,15 +124,17 @@ class LinkedUser {
   String? sId;
   String? email;
   String? name;
+  String? arabicName;
   String? role;
   String? profileImage;
 
-  LinkedUser({this.sId, this.email, this.name, this.role, this.profileImage});
+  LinkedUser({this.sId, this.email, this.name, this.arabicName, this.role, this.profileImage});
 
   LinkedUser.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     email = json['email'];
     name = json['name'];
+    arabicName = json['arabicName'];
     role = json['role'];
     profileImage = json['profileImage'];
   }
@@ -142,6 +144,7 @@ class LinkedUser {
     data['_id'] = sId;
     data['email'] = email;
     data['name'] = name;
+    data['arabicName'] = arabicName;
     data['role'] = role;
     data['profileImage'] = profileImage;
     return data;

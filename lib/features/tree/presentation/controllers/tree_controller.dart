@@ -149,8 +149,9 @@ class TreeController extends GetxController {
       final name = linkedUser?.name?.trim().isNotEmpty == true
           ? linkedUser!.name!
           : (label ?? '');
+      final arabicName = linkedUser?.arabicName ?? '';
       final email = linkedUser?.email ?? '';
-      final haystack = '$name $email ${relationType ?? ''}'.toLowerCase();
+      final haystack = '$name $arabicName $email ${relationType ?? ''}'.toLowerCase();
       if (!haystack.contains(q)) return;
 
       results.add(
