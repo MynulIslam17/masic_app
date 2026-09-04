@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/opt/homebrew/share/flutter"
+export "FLUTTER_ROOT=/Users/tanvirhridoy/fvm/versions/3.38.5"
 export "FLUTTER_APPLICATION_PATH=/Users/tanvirhridoy/Desktop/OfficeProjects/masic"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"
