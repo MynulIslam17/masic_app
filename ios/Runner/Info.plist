@@ -37,6 +37,8 @@
 	<string>Masic Generation needs camera access to take profile photos, banners, and announcement images.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Masic Generation needs photo library access to select images for your profile, banners, and announcements.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Masic Generation needs access to your location to provide localized features and improve your experience.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

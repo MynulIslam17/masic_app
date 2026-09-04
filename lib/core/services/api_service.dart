@@ -564,6 +564,9 @@ class ApiService {
           return ServerException('HTTP error occurred', null, error.message);
         }
         return UnknownException(error.message);
+      case DioExceptionType.transformTimeout:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 
