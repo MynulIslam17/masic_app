@@ -69,15 +69,15 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                       spacing: 16.h,
                       children: [
                         if (user?.name != null && user!.name!.isNotEmpty)
-                          _buildInfoRow(label: 'Name', value: user!.name, translateValue: false),
-                        if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
-                          _buildInfoRow(label: 'Arabic Name', value: user!.arabicName, translateValue: false),
+                          _buildInfoRow(label: 'Name', value: user.name, translateValue: false),
+                        // if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
+                        //   _buildInfoRow(label: 'Arabic Name', value: user.arabicName, translateValue: false),
                         if (user?.email != null && user!.email!.isNotEmpty)
-                          _buildInfoRow(label: 'Email', value: user!.email, translateValue: false),
+                          _buildInfoRow(label: 'Email', value: user.email, translateValue: false),
                         if (user?.phone != null && user!.phone!.isNotEmpty)
-                          _buildInfoRow(label: 'Phone no', value: user!.phone, translateValue: false),
+                          _buildInfoRow(label: 'Phone no', value: user.phone, translateValue: true),
                         if (user?.gender != null && user!.gender!.isNotEmpty)
-                          _buildInfoRow(label: 'Gender', value: user!.gender, translateValue: true),
+                          _buildInfoRow(label: 'Gender', value: user.gender, translateValue: true),
                         if (user?.employmentStatus != null &&
                             user!.employmentStatus!.isNotEmpty)
                           _buildInfoRow(
