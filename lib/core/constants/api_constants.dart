@@ -1,5 +1,5 @@
 class ApiConstants {
-  static const String baseUrl = 'http://200.234.44.120';
+  static const String baseUrl = 'https://api.masicgeneration.com';
 
   /// ─── Auth Marker ───────────────────────────
   static const String requiresAuthHeader = 'X-Requires-Auth';
