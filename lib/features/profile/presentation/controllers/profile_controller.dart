@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/core/helpers/toast_message_helper.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
@@ -483,7 +484,7 @@ class ProfileController extends GetxController {
   Future<List<UserModel>> _fetchSearch(String query) async {
     final fromCache = _service
         .getCachedUsers(roleFilter)
-        .where((a) => a.name?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .where((a) => a.matchesLocalizedNameSearch(query))
         .toList();
     if (fromCache.isNotEmpty) return fromCache;
 
@@ -500,7 +501,7 @@ class ProfileController extends GetxController {
     );
     return _service
         .getCachedUsers(roleFilter)
-        .where((a) => a.name?.toLowerCase().contains(query.toLowerCase()) ?? false)
+        .where((a) => a.matchesLocalizedNameSearch(query))
         .toList();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/helpers/time_format.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
@@ -33,6 +34,7 @@ class RequestDetailsScreen extends StatelessWidget {
         ],
       ),
       body: Obx(() {
+        TranslationController.to.currentLanguage.value;
         final request = controller.requests.firstWhereOrNull(
           (e) => e.sId == requestId,
         );
@@ -101,9 +103,11 @@ class RequestDetailsScreen extends StatelessWidget {
               SizedBox(height: 24.h),
               _buildCard(
                 children: [
-                  InfoRow(label: 'Name', value: request.user?.name ?? 'N/A'),
-                  if (request.user?.arabicName != null && request.user!.arabicName!.isNotEmpty)
-                    InfoRow(label: 'Arabic Name', value: request.user!.arabicName),
+                  InfoRow.personName(
+                    label: 'Name',
+                    name: request.user?.name,
+                    arabicName: request.user?.arabicName,
+                  ),
                   InfoRow(
                     label: 'Email',
                     value: request.contact?.email ?? 'N/A',

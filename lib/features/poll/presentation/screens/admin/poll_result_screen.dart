@@ -5,7 +5,9 @@ import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/features/poll/presentation/controllers/poll_controller.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/features/poll/presentation/widgets/option_tile.dart';
 import 'package:masic_generation/features/poll/presentation/widgets/poll_simmer.dart';
 import 'package:get/get.dart';
@@ -21,6 +23,7 @@ class PollResultScreen extends StatelessWidget {
     return CustomScaffold(
       appBar: CustomAppBar(title: 'Polls Answers'),
       body: Obx(() {
+        TranslationController.to.currentLanguage.value;
         final pollData = controller.pollResult;
 
         switch (controller.resultLoadingState) {
@@ -99,7 +102,11 @@ class PollResultScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  CustomText(text: e.user?.name ?? ''),
+                                  LocalizedNameText(
+                                    name: e.user?.name,
+                                    arabicName: e.user?.arabicName,
+                                    textAlign: TextAlign.start,
+                                  ),
                                   CustomText(
                                     text: e.answer ?? '',
                                     fontSize: 10.sp,

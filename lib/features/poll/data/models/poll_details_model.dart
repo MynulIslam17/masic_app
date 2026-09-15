@@ -105,11 +105,13 @@ class PollResponse {
 class PollUser {
   final String? id;
   final String? name;
+  final String? arabicName;
   final String? profileImage;
 
   PollUser({
     this.id,
     this.name,
+    this.arabicName,
     this.profileImage,
   });
 
@@ -117,6 +119,7 @@ class PollUser {
     return PollUser(
       id: json['_id'],
       name: json['name'],
+      arabicName: json['arabicName'],
       profileImage: json['profileImage'],
     );
   }
@@ -125,6 +128,7 @@ class PollUser {
     return {
       '_id': id,
       'name': name,
+      'arabicName': arabicName,
       'profileImage': profileImage,
     };
   }

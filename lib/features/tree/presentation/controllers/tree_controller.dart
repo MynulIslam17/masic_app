@@ -4,6 +4,7 @@ import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/features/search/model/search_model.dart';
 import 'package:masic_generation/features/tree/data/models/tree_model.dart';
 import 'package:masic_generation/features/tree/domain/services/tree_service.dart';
@@ -146,18 +147,31 @@ class TreeController extends GetxController {
       final memberId = id ?? linkedUser?.sId;
       if (memberId == null || memberId.isEmpty || !seen.add(memberId)) return;
 
-      final name = linkedUser?.name?.trim().isNotEmpty == true
-          ? linkedUser!.name!
-          : (label ?? '');
-      final arabicName = linkedUser?.arabicName ?? '';
+      final name = linkedUser?.name;
+      final arabicName = linkedUser?.arabicName;
       final email = linkedUser?.email ?? '';
-      final haystack = '$name $arabicName $email ${relationType ?? ''}'.toLowerCase();
-      if (!haystack.contains(q)) return;
+      if (!LocalizedNameHelper.matchesMemberSearch(
+        query: q,
+        name: name,
+        arabicName: arabicName,
+        email: email,
+        relationType: relationType,
+      )) {
+        return;
+      }
+
+      final title = LocalizedNameHelper.display(
+        name: name,
+        arabicName: arabicName,
+        fallback: label,
+      );
 
       results.add(
         SearchModel(
           model: memberId,
-          title: name.isNotEmpty ? name : 'Unknown',
+          title: title.isNotEmpty ? title : 'Unknown',
+          personName: name,
+          personArabicName: arabicName,
           subtitle: email.isNotEmpty ? email : null,
           image: linkedUser?.profileImage ?? 're',
         ),

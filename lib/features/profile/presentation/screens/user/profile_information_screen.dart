@@ -6,6 +6,7 @@ import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/info_row.dart';
 import 'package:get/get.dart';
 
@@ -31,7 +32,10 @@ class ProfileInformationScreen extends StatelessWidget {
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Obx(() {
+          TranslationController.to.currentLanguage.value;
           final user = controller.userData;
+          final hasName = (user?.name?.isNotEmpty ?? false) ||
+              (user?.arabicName?.isNotEmpty ?? false);
           return Column(
             children: [
               SizedBox(height: 8.h),
@@ -51,10 +55,12 @@ class ProfileInformationScreen extends StatelessWidget {
                 child: Column(
                  // spacing: 16.h,
                   children: [
-                    if (user?.name != null && user!.name!.isNotEmpty)
-                      InfoRow(label: 'Name', value: user!.name),
-                    if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
-                      InfoRow(label: 'Arabic Name', value: user!.arabicName),
+                    if (hasName)
+                      InfoRow.personName(
+                        label: 'Name',
+                        name: user?.name,
+                        arabicName: user?.arabicName,
+                      ),
                     if (user?.email != null && user!.email!.isNotEmpty)
                       InfoRow(label: 'Email', value: user!.email),
                     if (user?.phone != null && user!.phone!.isNotEmpty)

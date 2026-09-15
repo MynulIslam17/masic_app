@@ -60,12 +60,14 @@ class NotificationData {
   String? referenceType;
   String? status;
   String? name;
+  String? arabicName;
   String? profileImage;
 
   NotificationData({
     this.referenceType,
     this.status,
     this.name,
+    this.arabicName,
     this.profileImage,
   });
 
@@ -73,6 +75,7 @@ class NotificationData {
     referenceType = json['referenceType'];
     status = json['status'];
     name = json['name'];
+    arabicName = json['arabicName'];
     profileImage = json['profileImage'];
   }
 
@@ -81,6 +84,7 @@ class NotificationData {
     data['referenceType'] = referenceType;
     data['status'] = status;
     data['name'] = name;
+    data['arabicName'] = arabicName;
     data['profileImage'] = profileImage;
     return data;
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/search/model/search_model.dart';
 
@@ -52,11 +53,22 @@ class SearchItem extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomText(
-                        text: data.title ?? '',
-                        fontSize: 14.sp,
-                        color: AppColors.appBarTitleColor,
-                      ),
+                      if (data.personName != null || data.personArabicName != null)
+                        LocalizedNameText(
+                          name: data.personName,
+                          arabicName: data.personArabicName,
+                          fallback: data.title,
+                          fontSize: 14.sp,
+                          color: AppColors.appBarTitleColor,
+                          textAlign: TextAlign.start,
+                        )
+                      else
+                        CustomText(
+                          text: data.title ?? '',
+                          fontSize: 14.sp,
+                          color: AppColors.appBarTitleColor,
+                          enableAutoTranslate: false,
+                        ),
                       if (data.subtitle != null &&
                           data.subtitle!.isNotEmpty) ...[
                         SizedBox(height: 4.h),
@@ -67,6 +79,7 @@ class SearchItem extends StatelessWidget {
                           text: data.subtitle!,
                           fontSize: 12.sp,
                           color: Colors.grey.shade400,
+                          enableAutoTranslate: false,
                         ),
                       ],
                     ],

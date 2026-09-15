@@ -9,7 +9,9 @@ import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/home/presentation/controllers/home_controller.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_content.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_simmer.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -47,6 +49,7 @@ class HomeScreen extends StatelessWidget {
                       >();
                   final isCollapsed = settings?.isScrolledUnder ?? false;
                   return Obx(() {
+                    TranslationController.to.currentLanguage.value;
                     final userData = ProfileController.to.userData;
                     return Row(
                       children: [
@@ -63,14 +66,14 @@ class HomeScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              CustomText(
-                                enableAutoTranslate: false,
+                              LocalizedNameText(
+                                name: userData?.name,
+                                arabicName: userData?.arabicName,
                                 fontSize: 14.sp,
                                 color: isCollapsed
                                     ? AppColors.primaryColor
                                     : Colors.white,
                                 textAlign: TextAlign.start,
-                                text: userData?.name ?? '',
                               ),
                               CustomText(
                                 color: isCollapsed

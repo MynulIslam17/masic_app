@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/core/helpers/pdf_helper.dart';
 import 'package:masic_generation/core/helpers/toast_message_helper.dart';
 import 'package:masic_generation/features/request/presentation/controllers/request_controller.dart';
@@ -40,7 +41,10 @@ class RequestPdfPreviewController extends GetxController {
     try {
       pdfBytes.value = await PdfHelper.buildRequestPdfBytes(request);
       fileName.value = PdfHelper.fileNameFor(request);
-      applicantName.value = request.user?.name;
+      applicantName.value = await LocalizedNameHelper.resolveForExport(
+        name: request.user?.name,
+        arabicName: request.user?.arabicName,
+      );
     } catch (_) {
       error.value = 'Failed to generate PDF';
     } finally {

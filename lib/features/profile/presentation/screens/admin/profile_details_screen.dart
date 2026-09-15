@@ -6,6 +6,7 @@ import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/info_row.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
 
 class ProfileDetailsScreen extends StatelessWidget {
@@ -18,7 +19,9 @@ class ProfileDetailsScreen extends StatelessWidget {
       appBar: CustomAppBar(title: 'Profile Details'),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        child: Column(
+        child: Obx(() {
+          TranslationController.to.currentLanguage.value;
+          return Column(
           children: [
             SizedBox(height: 8.h),
             CustomNetworkImage(
@@ -37,9 +40,11 @@ class ProfileDetailsScreen extends StatelessWidget {
               child: Column(
                 // spacing: 16.h,
                 children: [
-                  InfoRow(label: 'Name', value: user?.name ?? 'N/A'),
-                  if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
-                    InfoRow(label: 'Arabic Name', value: user!.arabicName),
+                  InfoRow.personName(
+                    label: 'Name',
+                    name: user?.name,
+                    arabicName: user?.arabicName,
+                  ),
                   InfoRow(label: 'Email', value: user?.email ?? 'N/A'),
                   InfoRow(label: 'Phone no', value: user?.phone ?? 'N/A'),
                   InfoRow(
@@ -85,7 +90,8 @@ class ProfileDetailsScreen extends StatelessWidget {
             ),
             SizedBox(height: 32.h),
           ],
-        ),
+        );
+        }),
       ),
     );
   }

@@ -6,7 +6,9 @@ import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/core/widgets/profile_list_tile.dart';
 import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -29,8 +31,10 @@ class ProfileScreen extends StatelessWidget {
               }
             ),
             Obx(() {
-                return CustomText(
-                  text: controller.userData?.name ?? '',
+                TranslationController.to.currentLanguage.value;
+                return LocalizedNameText(
+                  name: controller.userData?.name,
+                  arabicName: controller.userData?.arabicName,
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w600,
                   top: 6.h,

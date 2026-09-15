@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/features/tree/data/models/tree_model.dart';
 import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
 import 'package:masic_generation/features/tree/presentation/widgets/family_tree/constants.dart';
@@ -28,7 +29,7 @@ class FamilyTreeLayoutBuilder {
     meta[rootId] = Meta(
       id: rootId,
       memberId: root.sId ?? '',
-      label: _label(root.label, root.linkedUser?.name),
+      label: _memberLabel(root.label, root.linkedUser),
       isRoot: true,
       hasChildren: rootChildren.isNotEmpty,
       onDelete: onToggleEdit
@@ -99,8 +100,12 @@ class FamilyTreeLayoutBuilder {
     );
   }
 
-  static String _label(String? a, String? b) =>
-      a?.isNotEmpty == true ? a! : (b ?? '');
+  static String _memberLabel(String? label, LinkedUser? linkedUser) =>
+      LocalizedNameHelper.display(
+        name: linkedUser?.name,
+        arabicName: linkedUser?.arabicName,
+        fallback: label,
+      );
 
   double _estimateRenderedWidth(Meta meta) {
     var width = FamilyTreeMetrics.nodeWidthBase;
@@ -170,7 +175,7 @@ class FamilyTreeLayoutBuilder {
       meta[id] = Meta(
         id: id,
         memberId: child.sId ?? '',
-        label: _label(child.label, child.linkedUser?.name),
+        label: _memberLabel(child.label, child.linkedUser),
         hasChildren: hasKids,
         onDelete: onToggleEdit
             ? () => TreeController.to.deleteUser(id)

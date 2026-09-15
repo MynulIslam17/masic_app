@@ -4,7 +4,9 @@ import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
@@ -23,6 +25,7 @@ class MemberCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      TranslationController.to.currentLanguage.value;
       final isBlock = user.isDeleted ?? false;
       final controller = ProfileController.to;
       final isSelected = isMotherTree
@@ -39,9 +42,10 @@ class MemberCard extends StatelessWidget {
           boxShape: BoxShape.circle,
           imageUrl: user.profileImage,
         ),
-        title: CustomText(
+        title: LocalizedNameText(
+          name: user.name,
+          arabicName: user.arabicName,
           textAlign: TextAlign.start,
-          text: user.name ?? '',
           fontSize: 16.sp,
         ),
         subtitle: CustomText(

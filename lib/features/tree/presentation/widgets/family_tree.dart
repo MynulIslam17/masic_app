@@ -7,6 +7,7 @@ import 'package:masic_generation/features/tree/presentation/widgets/family_tree/
 import 'package:masic_generation/features/tree/presentation/widgets/family_tree/layout_builder.dart';
 import 'package:masic_generation/features/tree/presentation/widgets/family_tree/layout_engine.dart';
 import 'package:masic_generation/features/tree/presentation/widgets/family_tree/layout_node.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
 
 class FamilyTreeGraph extends StatefulWidget {
@@ -88,6 +89,9 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
       maxScale: 5,
       constrained: false,
       child: Obx(() {
+        TranslationController.to.currentLanguage.value;
+        _layoutBuilder.rebuildMeta();
+
         final expandedNodes = TreeController.to.expandedNodes;
         final expandedKey = (expandedNodes.toList()..sort()).join(',');
 

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/features/request/data/models/request_model.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,7 +17,7 @@ class PdfHelper {
   static const _mediaStoreChannel = MethodChannel('masic_generation/media_store');
 
   static String fileNameFor(RequestModel request) {
-    final safeName = (request.user?.name ?? 'request')
+    final safeName = (request.user?.localizedDisplayName ?? 'request')
         .replaceAll(RegExp(r'[^\w\s-]'), '')
         .trim()
         .replaceAll(RegExp(r'\s+'), '_');
@@ -99,6 +100,10 @@ class PdfHelper {
   }
 
   static Future<List<int>> _buildRequestPdf(RequestModel request) async {
+    final applicantName = await LocalizedNameHelper.resolveForExport(
+      name: request.user?.name,
+      arabicName: request.user?.arabicName,
+    );
     final pdf = pw.Document();
 
     pdf.addPage(
@@ -128,7 +133,7 @@ class PdfHelper {
                   ),
                   pw.SizedBox(height: 4),
                   pw.Text(
-                    request.user?.name ?? 'N/A',
+                    applicantName.isNotEmpty ? applicantName : 'N/A',
                     style: const pw.TextStyle(
                       color: PdfColors.white,
                       fontSize: 14,
@@ -142,7 +147,7 @@ class PdfHelper {
         ),
         build: (context) => [
           _section('Personal Info', [
-            _row('Name', request.user?.name),
+            _row('Name', applicantName.isNotEmpty ? applicantName : null),
             _row('Email', request.contact?.email ?? request.user?.email),
             _row('Phone', request.contact?.phone),
             _row('Address', request.contact?.address),

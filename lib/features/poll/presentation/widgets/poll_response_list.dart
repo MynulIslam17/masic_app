@@ -4,7 +4,10 @@ import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/features/poll/data/models/poll_details_model.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
+import 'package:get/get.dart';
 
 class PollResponseList extends StatelessWidget {
   final PollDetailsModel pollData;
@@ -13,6 +16,13 @@ class PollResponseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Obx(() {
+      TranslationController.to.currentLanguage.value;
+      return _buildList(context);
+    });
+  }
+
+  Widget _buildList(BuildContext context) {
     if (pollData.responses == null || pollData.responses!.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -72,12 +82,22 @@ class PollResponseList extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Expanded(
-                              child: CustomText(
-                                textAlign: TextAlign.start,
-                                text: user?.name ?? 'Anonymous User',
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              child: user != null
+                                  ? LocalizedNameText(
+                                      name: user.name,
+                                      arabicName: user.arabicName,
+                                      fallback: 'Anonymous User',
+                                      textAlign: TextAlign.start,
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    )
+                                  : CustomText(
+                                      textAlign: TextAlign.start,
+                                      text: 'Anonymous User',
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                      enableAutoTranslate: false,
+                                    ),
                             ),
                             if (response.answeredAt != null)
                               CustomText(

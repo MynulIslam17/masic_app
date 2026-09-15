@@ -89,6 +89,8 @@ class AllUserScreen extends StatelessWidget {
                                       (a) => SearchModel(
                                         model: a,
                                         title: a.name,
+                                        personName: a.name,
+                                        personArabicName: a.arabicName,
                                         subtitle: a.email,
                                         image: a.profileImage ?? '',
                                       ),

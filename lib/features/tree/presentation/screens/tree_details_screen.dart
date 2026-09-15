@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
@@ -34,6 +36,7 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Obx(() {
+          TranslationController.to.currentLanguage.value;
           final user = controller.userDetails;
           switch (controller.detailsLoadingState) {
             case LoadingState.initial:
@@ -68,10 +71,18 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                     child: Column(
                       spacing: 16.h,
                       children: [
-                        if (user?.name != null && user!.name!.isNotEmpty)
-                          _buildInfoRow(label: 'Name', value: user.name, translateValue: false),
-                        // if (user?.arabicName != null && user!.arabicName!.isNotEmpty)
-                        //   _buildInfoRow(label: 'Arabic Name', value: user.arabicName, translateValue: false),
+                        if (user != null &&
+                            ((user.name?.isNotEmpty ?? false) ||
+                                (user.arabicName?.isNotEmpty ?? false)))
+                          _buildInfoRow(
+                            label: 'Name',
+                            valueWidget: LocalizedNameText(
+                              name: user.name,
+                              arabicName: user.arabicName,
+                              fontSize: 12.sp,
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
                         if (user?.email != null && user!.email!.isNotEmpty)
                           _buildInfoRow(label: 'Email', value: user.email, translateValue: false),
                         if (user?.phone != null && user!.phone!.isNotEmpty)

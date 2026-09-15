@@ -6,7 +6,9 @@ import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
+import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
@@ -35,11 +37,12 @@ class UserCard extends StatelessWidget {
                 imageUrl: user.profileImage,
               ),
               Expanded(
-                child: CustomText(
+                child: LocalizedNameText(
+                  name: user.name,
+                  arabicName: user.arabicName,
                   textAlign: TextAlign.start,
                   left: 10.w,
                   fontSize: 16.sp,
-                  text: user.name ?? '',
                 ),
               ),
               GestureDetector(
