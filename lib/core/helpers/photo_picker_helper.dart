@@ -5,6 +5,9 @@ import 'package:masic_generation/core/utils/assets_path/fonts.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/helpers/document_upload_helper.dart';
+import 'package:masic_generation/core/helpers/toast_message_helper.dart';
 
 class PhotoPickerHelper {
   static final ImagePicker _picker = ImagePicker();
@@ -167,7 +170,13 @@ class PhotoPickerHelper {
           allowedExtensions: allowedExtensions,
         );
         if (result != null && result.files.isNotEmpty) {
-          onFilePicked(result.files.first);
+          final picked = result.files.first;
+          try {
+            DocumentUploadHelper.ensurePickSize(picked.size);
+            onFilePicked(picked);
+          } on AppException catch (e) {
+            ToastMessageHelper.show(e.message);
+          }
         }
       },
       borderRadius: BorderRadius.circular(12.r),

@@ -82,6 +82,9 @@ PODS:
     - libwebp/sharpyuv
   - package_info_plus (0.4.5):
     - Flutter
+  - pdfx (1.0.0):
+    - Flutter
+    - FlutterMacOS
   - permission_handler_apple (9.4.8):
     - Flutter
   - printing (1.0.0):
@@ -123,6 +126,7 @@ DEPENDENCIES:
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/darwin`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
+  - pdfx (from `.symlinks/plugins/pdfx/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - printing (from `.symlinks/plugins/printing/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
@@ -167,6 +171,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/just_audio/darwin"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
+  pdfx:
+    :path: ".symlinks/plugins/pdfx/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   printing:
@@ -204,6 +210,7 @@ SPEC CHECKSUMS:
   just_audio: 4e391f57b79cad2b0674030a00453ca5ce817eed
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
+  pdfx: 824a9108791a81e400da7d1a903ab73668365072
   permission_handler_apple: 92d754bbaa7361d436db2d6c3c1c2a0fdcec462e
   printing: 54ff03f28fe9ba3aa93358afb80a8595a071dd07
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf

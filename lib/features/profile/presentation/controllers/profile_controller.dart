@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/document_upload_helper.dart';
 import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/core/helpers/toast_message_helper.dart';
@@ -213,8 +214,12 @@ class ProfileController extends GetxController {
 
   // ─── File & Image ──────────────────────────────────────────────────────────
   void onFilePicked(PlatformFile value) {
-    if (value.path != null) {
+    try {
+      DocumentUploadHelper.ensurePickSize(value.size);
+      if (value.path == null) return;
       _selectedCV.value = File(value.path!);
+    } on AppException catch (e) {
+      ToastMessageHelper.show(e.message);
     }
   }
 

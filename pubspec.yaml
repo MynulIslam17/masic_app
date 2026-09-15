@@ -48,6 +48,7 @@ dependencies:
   printing: ^5.14.3
   permission_handler: ^11.3.1
   flutter_image_compress: ^2.5.1
+  simple_pdf_compression: ^0.0.2
 
 
 dev_dependencies:

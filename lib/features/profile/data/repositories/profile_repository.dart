@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/helpers/document_upload_helper.dart';
 import 'package:masic_generation/core/helpers/image_upload_helper.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
@@ -198,10 +199,30 @@ class ProfileRepository {
     try {
       final uploadImage =
           image != null ? await ImageUploadHelper.prepareProfileImage(image) : null;
-      final uploadCv =
-          cv != null ? await ImageUploadHelper.prepareIfImageFile(cv) : null;
+
+      var documentBudget = ImageUploadHelper.defaultMaxUploadBytes - 64 * 1024;
+      if (uploadImage != null) {
+        documentBudget -= await uploadImage.length();
+      }
+      if (documentBudget < 128 * 1024) {
+        documentBudget = 128 * 1024;
+      }
+
+      final uploadCv = cv != null
+          ? await DocumentUploadHelper.prepareForUpload(
+              cv,
+              maxBytes: documentBudget,
+            )
+          : null;
+      if (uploadCv != null) {
+        documentBudget -= await uploadCv.length();
+        if (documentBudget < 64 * 1024) documentBudget = 64 * 1024;
+      }
       final uploadCertificate = certificate != null
-          ? await ImageUploadHelper.prepareIfImageFile(certificate)
+          ? await DocumentUploadHelper.prepareForUpload(
+              certificate,
+              maxBytes: documentBudget,
+            )
           : null;
 
       final formData = FormData.fromMap({
