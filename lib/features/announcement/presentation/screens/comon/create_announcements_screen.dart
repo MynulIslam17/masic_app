@@ -46,6 +46,9 @@ class CreateAnnouncementsScreen extends StatelessWidget {
                       PhotoPickerHelper.showPhotoPicker(
                         context: context,
                         onImagePicked: (file) => controller.selectImage(file),
+                        maxWidth: 1920,
+                        maxHeight: 1080,
+                        imageQuality: 85,
                       );
                     },
                     label: controller.selectedImage == null ? 'Upload banner' : 'Change banner',

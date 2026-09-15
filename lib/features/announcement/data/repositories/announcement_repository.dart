@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/helpers/image_upload_helper.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
 import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
@@ -89,14 +90,18 @@ class AnnouncementRepository {
 
   Future<void> createAnnouncement(File? image, CreateRequestModel model) async {
     try {
+      final uploadImage =
+          image != null ? await ImageUploadHelper.prepareBannerImage(image) : null;
       await _apiService.uploadFile(
         ApiConstants.announcementCreate,
         data: {'data' : jsonEncode(model.toJson())},
-        fieldName: image == null ? null : 'image',
-        file: image == null ? null : MultipartFile.fromFileSync(
-          image.path,
-          filename: image.path.split('/').last,
-        ),
+        fieldName: uploadImage == null ? null : 'image',
+        file: uploadImage == null
+            ? null
+            : MultipartFile.fromFileSync(
+                uploadImage.path,
+                filename: 'banner.jpg',
+              ),
       );
     } on AppException {
       rethrow;

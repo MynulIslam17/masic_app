@@ -13,6 +13,9 @@ class PhotoPickerHelper {
   static void showPhotoPicker({
     required BuildContext context,
     required Function(XFile file) onImagePicked,
+    double maxWidth = 1920,
+    double maxHeight = 1080,
+    int imageQuality = 85,
   }) {
     showModalBottomSheet(
       context: context,
@@ -43,6 +46,9 @@ class PhotoPickerHelper {
                     label: 'Camera',
                     source: ImageSource.camera,
                     onImagePicked: onImagePicked,
+                    maxWidth: maxWidth,
+                    maxHeight: maxHeight,
+                    imageQuality: imageQuality,
                   ),
                   _buildOption(
                     context,
@@ -50,6 +56,9 @@ class PhotoPickerHelper {
                     label: 'Gallery',
                     source: ImageSource.gallery,
                     onImagePicked: onImagePicked,
+                    maxWidth: maxWidth,
+                    maxHeight: maxHeight,
+                    imageQuality: imageQuality,
                   ),
                 ],
               ),
@@ -121,10 +130,18 @@ class PhotoPickerHelper {
         required String label,
         required ImageSource source,
         required Function(XFile file) onImagePicked,
+        double maxWidth = 1920,
+        double maxHeight = 1080,
+        int imageQuality = 85,
       }) {
     return InkWell(
       onTap: () async {
-        final XFile? file = await _picker.pickImage(source: source);
+        final XFile? file = await _picker.pickImage(
+          source: source,
+          maxWidth: maxWidth,
+          maxHeight: maxHeight,
+          imageQuality: imageQuality,
+        );
         Navigator.pop(context);
         if (file != null) onImagePicked(file);
       },

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/helpers/image_upload_helper.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
 import 'package:masic_generation/features/banner/data/models/banner_model.dart';
@@ -66,10 +67,11 @@ class BannerRepository {
 
   Future<void> createBanner(File image) async {
     try {
+      final uploadImage = await ImageUploadHelper.prepareBannerImage(image);
       final formData = FormData.fromMap({
         'image': await MultipartFile.fromFile(
-          image.path,
-          filename: image.path.split('/').last,
+          uploadImage.path,
+          filename: 'banner.jpg',
         ),
       });
 

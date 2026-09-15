@@ -533,6 +533,10 @@ class ApiService {
           408 => RequestTimeoutException(error.message),
           409 => ConflictException(message, error.message),
           410 => GoneException(error.message),
+          413 => PayloadTooLargeException(
+            'Upload is too large. Try a smaller banner image.',
+            error.message,
+          ),
           415 => UnprocessableException(
             'Unsupported media type',
             error.message,

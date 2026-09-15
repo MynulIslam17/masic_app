@@ -95,6 +95,15 @@ class TooManyRequestsException extends AppException {
       : super('Too many requests. Please slow down', details: details, errorCode: 'RATE_LIMIT');
 }
 
+class PayloadTooLargeException extends AppException {
+  PayloadTooLargeException([String? message, String? details])
+      : super(
+          message ?? 'Upload is too large. Try a smaller file.',
+          details: details,
+          errorCode: 'PAYLOAD_TOO_LARGE',
+        );
+}
+
 // ═══════════════════════════════════════════════
 // 5xx SERVER ERRORS
 // ═══════════════════════════════════════════════

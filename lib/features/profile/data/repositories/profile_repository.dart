@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
+import 'package:masic_generation/core/helpers/image_upload_helper.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
@@ -195,22 +196,30 @@ class ProfileRepository {
         File? certificate,
       }) async {
     try {
+      final uploadImage =
+          image != null ? await ImageUploadHelper.prepareProfileImage(image) : null;
+      final uploadCv =
+          cv != null ? await ImageUploadHelper.prepareIfImageFile(cv) : null;
+      final uploadCertificate = certificate != null
+          ? await ImageUploadHelper.prepareIfImageFile(certificate)
+          : null;
+
       final formData = FormData.fromMap({
         'data': jsonEncode(user.toMap()),
-        if (image != null)
+        if (uploadImage != null)
           'image': await MultipartFile.fromFile(
-            image.path,
-            filename: image.path.split('/').last,
+            uploadImage.path,
+            filename: 'profile.jpg',
           ),
-        if (cv != null)
+        if (uploadCv != null)
           'cv': await MultipartFile.fromFile(
-            cv.path,
-            filename: cv.path.split('/').last,
+            uploadCv.path,
+            filename: uploadCv.path.split('/').last,
           ),
-        if (certificate != null)
+        if (uploadCertificate != null)
           'certificates': await MultipartFile.fromFile(
-            certificate.path,
-            filename: certificate.path.split('/').last,
+            uploadCertificate.path,
+            filename: uploadCertificate.path.split('/').last,
           ),
       });
 

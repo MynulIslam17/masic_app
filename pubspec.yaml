@@ -47,6 +47,7 @@ dependencies:
   share_plus:
   printing: ^5.14.3
   permission_handler: ^11.3.1
+  flutter_image_compress: ^2.5.1
 
 
 dev_dependencies:

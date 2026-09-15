@@ -80,6 +80,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   PhotoPickerHelper.showPhotoPicker(
                     context: context,
                     onImagePicked: (image) => controller.selectImage(image),
+                    maxWidth: 1024,
+                    maxHeight: 1024,
+                    imageQuality: 85,
                   );
                 },
                 child: Stack(

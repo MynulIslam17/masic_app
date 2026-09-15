@@ -54,6 +54,9 @@ class BannerScreen extends StatelessWidget {
                         context: context,
                         onImagePicked: (image) async =>
                             await controller.selectImage(image),
+                        maxWidth: 1920,
+                        maxHeight: 1080,
+                        imageQuality: 85,
                       );
                     },
                     label: 'Upload',
