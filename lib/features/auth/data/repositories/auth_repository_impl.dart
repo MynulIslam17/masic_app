@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
 import 'package:masic_generation/core/constants/app_constants.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
@@ -24,6 +27,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String email,
     required String phone,
     required String password,
+    String? fcmToken,
   }) async {
     try {
       final response = await _apiService.post(
@@ -34,6 +38,7 @@ class AuthRepositoryImpl implements AuthRepository {
           "email": email,
           "password": password,
           "phone": phone,
+          if (fcmToken != null && fcmToken.isNotEmpty) 'fcmToken': fcmToken,
         },
       );
 
@@ -44,11 +49,46 @@ class AuthRepositoryImpl implements AuthRepository {
 
       await _cacheService.put(AppConstants.cacheUser, model.toJson());
 
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        await _markFcmSynced(fcmToken);
+      }
+
       return model;
     } on AppException {
       rethrow;
     } catch (e) {
       throw UnknownException(e.toString());
+    }
+  }
+
+  Future<void> _markFcmSynced(String fcmToken) {
+    return _cacheService.put(AppConstants.lastSyncedFcmToken, fcmToken);
+  }
+
+  @override
+  Future<void> syncFcmToken(String fcmToken) async {
+    if (!isLoggedIn() || fcmToken.isEmpty) return;
+
+    final lastSynced = _cacheService.get<String>(AppConstants.lastSyncedFcmToken);
+    if (lastSynced == fcmToken) return;
+
+    final cachedUser = getCachedUser();
+    final existing = cachedUser?.fcmToken ?? const <String>[];
+    if (existing.contains(fcmToken)) {
+      await _markFcmSynced(fcmToken);
+      return;
+    }
+
+    try {
+      await _apiService.dio.patch(
+        ApiConstants.userProfileUpdate,
+        data: FormData.fromMap({
+          'data': jsonEncode({'fcmToken': fcmToken}),
+        }),
+      );
+      await _markFcmSynced(fcmToken);
+    } catch (_) {
+      // Login/OTP with fcmToken remains the reliable registration path.
     }
   }
 
@@ -83,6 +123,10 @@ class AuthRepositoryImpl implements AuthRepository {
         );
       }
       await _cacheService.put(AppConstants.cacheUser, model.toJson());
+
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        await _markFcmSynced(fcmToken);
+      }
 
       return model;
     } on AppException {
@@ -129,6 +173,9 @@ class AuthRepositoryImpl implements AuthRepository {
           AppConstants.accessToken,
           accessToken.toString(),
         );
+      }
+      if (fcmToken != null && fcmToken.isNotEmpty) {
+        await _markFcmSynced(fcmToken);
       }
       return true;
     } on AppException {

@@ -22,6 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     if (AuthController.to.isLoggedIn()) {
+      await AuthController.to.syncPushTokenWithServer();
       await AuthController.to.navigateAuthenticatedUser();
     } else {
       Get.offAllNamed(AppRoutes.loginScreen);

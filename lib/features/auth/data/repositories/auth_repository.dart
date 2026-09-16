@@ -13,7 +13,11 @@ abstract class AuthRepository {
     required String email,
     required String phone,
     required String password,
+    String? fcmToken,
   });
+
+  /// Best-effort sync when session exists (login/OTP remain primary).
+  Future<void> syncFcmToken(String fcmToken);
 
   Future<void> forgotPassword({required String email});
 

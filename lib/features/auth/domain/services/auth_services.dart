@@ -26,15 +26,20 @@ class AuthService {
     required String email,
     required String phone,
     required String confirmPassword,
+    String? fcmToken,
   }) async {
-    return await _repository.register(
+    return _repository.register(
       name: name,
       arabicName: arabicName,
       email: email,
       phone: phone,
       password: confirmPassword,
+      fcmToken: fcmToken,
     );
   }
+
+  Future<void> syncFcmToken(String fcmToken) =>
+      _repository.syncFcmToken(fcmToken);
 
   /// ─── FORGOT PASSWORD ───────────────────
   Future<void> forgotPassword(String email) async {

@@ -92,6 +92,7 @@ class AuthController extends GetxController {
       _loginState = LoadingState.loaded;
       update();
       if (userModel.isVerified == true) {
+        await syncPushTokenWithServer();
         await navigateAuthenticatedUser(user: userModel);
       } else {
         Get.toNamed(AppRoutes.otpScreen, arguments: 'signup');
@@ -111,12 +112,14 @@ class AuthController extends GetxController {
     _registerState = LoadingState.loading;
     update();
     try {
+      final fcmToken = await _pushNotificationService.getToken();
       await _authService.register(
         name: '${fastNameController.text.trim()} ${lastNameController.text.trim()}',
         arabicName: arabicNameController.text.trim(),
         email: emailController.text.trim(),
         phone: phoneController.text.trim(),
         confirmPassword: confirmPasswordController.text,
+        fcmToken: fcmToken,
       );
       _registerState = LoadingState.loaded;
       update();
@@ -142,6 +145,7 @@ class AuthController extends GetxController {
         otp: otpController.text.trim(),
         fcmToken: fcmToken,
       );
+      await syncPushTokenWithServer();
       _otpState = LoadingState.loaded;
       update();
       return true;
@@ -216,8 +220,17 @@ class AuthController extends GetxController {
     }
   }
 
+  /// Registers this device's FCM token with the backend when a session exists.
+  Future<void> syncPushTokenWithServer() async {
+    if (!isLoggedIn()) return;
+    final token = await _pushNotificationService.getToken();
+    if (token == null || token.isEmpty) return;
+    await _authService.syncFcmToken(token);
+  }
+
   /// ─── LOGOUT ────────────────────────────
   Future<void> logout() async {
+    await _pushNotificationService.deleteToken();
     await _authService.logout();
     Get.offAllNamed(AppRoutes.loginScreen);
   }

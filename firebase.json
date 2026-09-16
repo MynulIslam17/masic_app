@@ -1,1 +1,30 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"masic-generation","appId":"1:16805625051:android:f67512e922e09c550260fe","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"masic-generation","configurations":{"android":"1:16805625051:android:f67512e922e09c550260fe","ios":"1:16805625051:ios:a9b53a2021645c260260fe"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "masic-generation",
+          "appId": "1:16805625051:android:f67512e922e09c550260fe",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "masic-generation",
+          "appId": "1:16805625051:ios:a9b53a2021645c260260fe",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "masic-generation",
+          "configurations": {
+            "android": "1:16805625051:android:f67512e922e09c550260fe",
+            "ios": "1:16805625051:ios:a9b53a2021645c260260fe"
+          }
+        }
+      }
+    }
+  }
+}
