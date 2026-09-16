@@ -5,18 +5,22 @@ import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/helpers/toast_message_helper.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/features/auth/data/models/user_response_model.dart';
+import 'package:masic_generation/core/services/push_notification_service.dart';
 import 'package:masic_generation/features/auth/domain/services/auth_services.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService;
+  final PushNotificationService _pushNotificationService;
 
   static AuthController get to => Get.find();
 
-
-  AuthController({required AuthService authService})
-    : _authService = authService;
+  AuthController({
+    required AuthService authService,
+    required PushNotificationService pushNotificationService,
+  })  : _authService = authService,
+        _pushNotificationService = pushNotificationService;
 
   /// ─── STATE ─────────────────────────────
   LoadingState _loginState = LoadingState.initial;
@@ -79,9 +83,11 @@ class AuthController extends GetxController {
     update();
 
     try {
+      final fcmToken = await _pushNotificationService.getToken();
       final userModel = await _authService.login(
         email: emailController.text.trim(),
         password: passwordController.text,
+        fcmToken: fcmToken,
       );
       _loginState = LoadingState.loaded;
       update();
@@ -130,9 +136,11 @@ class AuthController extends GetxController {
     _otpState = LoadingState.loading;
     update();
     try {
+      final fcmToken = await _pushNotificationService.getToken();
       await _authService.otpVerify(
         email: emailController.text.trim(),
         otp: otpController.text.trim(),
+        fcmToken: fcmToken,
       );
       _otpState = LoadingState.loaded;
       update();

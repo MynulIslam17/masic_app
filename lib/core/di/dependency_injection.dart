@@ -1,6 +1,7 @@
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
+import 'package:masic_generation/core/services/push_notification_service.dart';
 import 'package:masic_generation/core/services/storage_service.dart';
 import 'package:masic_generation/core/services/translation_service.dart';
 import 'package:masic_generation/features/admin/dashboard/data/repositories/dashboard_repository.dart';
@@ -80,6 +81,11 @@ class DependencyInjection {
     );
 
 
+    Get.put<PushNotificationService>(
+      PushNotificationService(),
+      permanent: true,
+    );
+
     /// Auth
     Get.put<AuthRepository>(
       AuthRepositoryImpl(
@@ -93,7 +99,10 @@ class DependencyInjection {
       permanent: true,
     );
     Get.put<AuthController>(
-      AuthController(authService: Get.find<AuthService>()),
+      AuthController(
+        authService: Get.find<AuthService>(),
+        pushNotificationService: Get.find<PushNotificationService>(),
+      ),
       permanent: true,
     );
 

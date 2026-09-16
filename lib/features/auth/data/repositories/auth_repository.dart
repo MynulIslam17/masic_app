@@ -4,6 +4,7 @@ abstract class AuthRepository {
   Future<UserResponseModel> login({
     required String email,
     required String password,
+    String? fcmToken,
   });
 
   Future<UserResponseModel> register({
@@ -16,7 +17,11 @@ abstract class AuthRepository {
 
   Future<void> forgotPassword({required String email});
 
-  Future<bool> otpVerify({required String otp, required String email});
+  Future<bool> otpVerify({
+    required String otp,
+    required String email,
+    String? fcmToken,
+  });
 
   Future<void> resetPassword({
     required String newPassword,

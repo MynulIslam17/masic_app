@@ -56,11 +56,16 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<UserResponseModel> login({
     required String email,
     required String password,
+    String? fcmToken,
   }) async {
     try {
       final response = await _apiService.post(
         ApiConstants.login,
-        data: {'email': email, 'password': password},
+        data: {
+          'email': email,
+          'password': password,
+          if (fcmToken != null && fcmToken.isNotEmpty) 'fcmToken': fcmToken,
+        },
       );
 
       final responseData = response.data?['data'];
@@ -102,11 +107,19 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<bool> otpVerify({required String otp, required String email}) async {
+  Future<bool> otpVerify({
+    required String otp,
+    required String email,
+    String? fcmToken,
+  }) async {
     try {
       final response = await _apiService.post(
         ApiConstants.otpVerify,
-        data: {'email': email, 'otp': otp},
+        data: {
+          'email': email,
+          'otp': otp,
+          if (fcmToken != null && fcmToken.isNotEmpty) 'fcmToken': fcmToken,
+        },
       );
       final responseData = response.data?['data'];
       final accessToken = responseData?['accessToken'];

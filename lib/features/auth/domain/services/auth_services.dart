@@ -10,10 +10,13 @@ class AuthService {
   Future<UserResponseModel> login({
     required String email,
     required String password,
+    String? fcmToken,
   }) async {
-    final response = await _repository.login(email: email, password: password);
-
-    return response;
+    return _repository.login(
+      email: email,
+      password: password,
+      fcmToken: fcmToken,
+    );
   }
 
   /// ─── REGISTER ──────────────────────────
@@ -39,8 +42,16 @@ class AuthService {
   }
 
   /// ─── OTP VERIFY ───────────────────
-  Future<bool> otpVerify({required String email, required String otp}) async {
-    return await _repository.otpVerify(email: email, otp: otp);
+  Future<bool> otpVerify({
+    required String email,
+    required String otp,
+    String? fcmToken,
+  }) async {
+    return _repository.otpVerify(
+      email: email,
+      otp: otp,
+      fcmToken: fcmToken,
+    );
   }
 
   /// ─── OTP VERIFY ───────────────────
