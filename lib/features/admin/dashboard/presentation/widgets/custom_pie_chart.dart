@@ -101,127 +101,147 @@ class _CustomPieChartState extends State<CustomPieChart> {
           fontSize: 16.sp,
           bottom: 16.h,
         ),
-        Row(
-          children: [
-            SizedBox(
-              height: 173.r,
-              width: 173.r,
-              child: PieChart(
-                PieChartData(
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 0,
-                  startDegreeOffset: -90,
-                  pieTouchData: PieTouchData(
-                    enabled: widget.onSectionTap != null,
-                    touchCallback: (event, response) {
-                      final index =
-                          response?.touchedSection?.touchedSectionIndex;
+        _buildChartBody(context, pieChartData, total),
+        SizedBox(height: 18.h),
+      ],
+    );
+  }
 
-                      if (event is FlTapDownEvent ||
-                          event is FlLongPressStart ||
-                          event is FlPanDownEvent) {
-                        if (index != null &&
-                            index >= 0 &&
-                            index < pieChartData.length) {
-                          _pressedIndex = index;
-                          setState(() => touchedIndex = index);
-                        }
-                      }
+  Widget _buildChartBody(
+    BuildContext context,
+    List<BarChartModel> pieChartData,
+    num total,
+  ) {
+    final screenW = MediaQuery.sizeOf(context).width;
+    final stackLegend = screenW < 380;
+    final pieSize = (stackLegend ? 148.0 : 173.0).r;
+    final sliceRadius = stackLegend ? 74.0 : 88.0;
 
-                      if (event is FlTapUpEvent) {
-                        final tapIndex =
-                            (index != null &&
-                                index >= 0 &&
-                                index < pieChartData.length)
-                            ? index
-                            : _pressedIndex;
-                        if (tapIndex != null &&
-                            tapIndex >= 0 &&
-                            tapIndex < pieChartData.length) {
-                          _handleTap(pieChartData[tapIndex].label);
-                        }
-                        _pressedIndex = null;
-                        setState(() => touchedIndex = -1);
-                        return;
-                      }
+    final pie = SizedBox(
+      height: pieSize,
+      width: pieSize,
+      child: PieChart(
+        PieChartData(
+          sectionsSpace: 0,
+          centerSpaceRadius: 0,
+          startDegreeOffset: -90,
+          pieTouchData: PieTouchData(
+            enabled: widget.onSectionTap != null,
+            touchCallback: (event, response) {
+              final index = response?.touchedSection?.touchedSectionIndex;
 
-                      if (!event.isInterestedForInteractions ||
-                          response?.touchedSection == null) {
-                        setState(() => touchedIndex = -1);
-                        return;
-                      }
+              if (event is FlTapDownEvent ||
+                  event is FlLongPressStart ||
+                  event is FlPanDownEvent) {
+                if (index != null &&
+                    index >= 0 &&
+                    index < pieChartData.length) {
+                  _pressedIndex = index;
+                  setState(() => touchedIndex = index);
+                }
+              }
 
-                      if (index != null && index >= 0) {
-                        setState(() => touchedIndex = index);
-                      }
-                    },
-                  ),
-                  sections: List.generate(pieChartData.length, (index) {
-                    final item = pieChartData[index];
-                    final translatedLabel = index < _translatedLabels.length
-                        ? _translatedLabels[index]
-                        : item.label;
-                    final pct = total == 0
-                        ? 0
-                        : (item.value / total * 100).round();
-                    final color = _defaultColors[index % _defaultColors.length];
-                    final isTouched = index == touchedIndex;
+              if (event is FlTapUpEvent) {
+                final tapIndex =
+                    (index != null &&
+                        index >= 0 &&
+                        index < pieChartData.length)
+                    ? index
+                    : _pressedIndex;
+                if (tapIndex != null &&
+                    tapIndex >= 0 &&
+                    tapIndex < pieChartData.length) {
+                  _handleTap(pieChartData[tapIndex].label);
+                }
+                _pressedIndex = null;
+                setState(() => touchedIndex = -1);
+                return;
+              }
 
-                    return PieChartSectionData(
-                      value: item.value.toDouble(),
-                      color: color,
-                      radius: isTouched ? 95 : 88,
-                      title: '$translatedLabel\n$pct%',
-                      titleStyle: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    );
-                  }),
+              if (!event.isInterestedForInteractions ||
+                  response?.touchedSection == null) {
+                setState(() => touchedIndex = -1);
+                return;
+              }
+
+              if (index != null && index >= 0) {
+                setState(() => touchedIndex = index);
+              }
+            },
+          ),
+          sections: List.generate(pieChartData.length, (index) {
+            final item = pieChartData[index];
+            final pct = total == 0 ? 0 : (item.value / total * 100).round();
+            final color = _defaultColors[index % _defaultColors.length];
+            final isTouched = index == touchedIndex;
+
+            return PieChartSectionData(
+              value: item.value.toDouble(),
+              color: color,
+              radius: isTouched ? sliceRadius + 6 : sliceRadius,
+              title: '$pct%',
+              titleStyle: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            );
+          }),
+        ),
+      ),
+    );
+
+    final legend = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(pieChartData.length, (index) {
+        final item = pieChartData[index];
+        final translatedLabel = index < _translatedLabels.length
+            ? _translatedLabels[index]
+            : item.label;
+        final color = _defaultColors[index % _defaultColors.length];
+
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: index < pieChartData.length - 1 ? 12 : 0,
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.onSectionTap == null
+                  ? null
+                  : () => _handleTap(item.label),
+              borderRadius: BorderRadius.circular(8.r),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.h),
+                child: _buildLegendItem(
+                  color: color,
+                  label: translatedLabel,
+                  count: item.value.toInt(),
                 ),
               ),
             ),
-            SizedBox(width: 44.w),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(pieChartData.length, (index) {
-                  final item = pieChartData[index];
-                  final translatedLabel = index < _translatedLabels.length
-                      ? _translatedLabels[index]
-                      : item.label;
-                  final color = _defaultColors[index % _defaultColors.length];
+          ),
+        );
+      }),
+    );
 
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: index < pieChartData.length - 1 ? 12 : 0,
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: widget.onSectionTap == null
-                            ? null
-                            : () => _handleTap(item.label),
-                        borderRadius: BorderRadius.circular(8.r),
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 4.h),
-                          child: _buildLegendItem(
-                            color: color,
-                            label: translatedLabel,
-                            count: item.value.toInt(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 18.h),
+    if (stackLegend) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: pie),
+          SizedBox(height: 16.h),
+          legend,
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        pie,
+        SizedBox(width: 20.w),
+        Flexible(child: legend),
       ],
     );
   }

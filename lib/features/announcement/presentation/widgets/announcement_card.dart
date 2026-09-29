@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/image_preview_viewer.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
@@ -41,11 +42,17 @@ class AnnouncementCard extends StatelessWidget {
           if (announcement.bannerUrl != null &&
               announcement.bannerUrl!.isNotEmpty) ...[
             SizedBox(height: 12.h),
-            CustomNetworkImage(
-              borderRadius: 12.r,
-              height: 152.h,
-              width: double.infinity,
-              imageUrl: announcement.bannerUrl,
+            GestureDetector(
+              onTap: () => ImagePreviewViewer.open(
+                context,
+                imageUrl: announcement.bannerUrl,
+              ),
+              child: CustomNetworkImage(
+                borderRadius: 12.r,
+                height: 152.h,
+                width: double.infinity,
+                imageUrl: announcement.bannerUrl,
+              ),
             ),
           ],
 

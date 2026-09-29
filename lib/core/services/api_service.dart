@@ -1,381 +1,239 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:masic_generation/core/constants/app_constants.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
+
 import '../constants/api_constants.dart';
 import '../exceptions/app_exceptions.dart';
+import 'http/http_client_adapter_stub.dart'
+    if (dart.library.io) 'http/http_client_adapter_io.dart';
+import 'interceptors/auth_interceptor.dart';
+import 'interceptors/connectivity_interceptor.dart';
+import 'interceptors/logging_interceptor.dart';
+import 'interceptors/retry_interceptor.dart';
+import 'interceptors/upload_timeout_interceptor.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
-  late Dio _dio;
-  late CacheService _cacheService;
 
   factory ApiService() => _instance;
 
   ApiService._internal();
 
+  /// Short enough that a dead route fails fast and the retry interceptor can
+  /// pick a fresh connection instead of hanging on the old one.
+  static const Duration _connectTimeout = Duration(seconds: 15);
+  static const Duration _receiveTimeout = Duration(seconds: 30);
+  static const Duration _uploadTimeout = Duration(minutes: 2);
+
+  Dio? _dioInstance;
+
+  Dio get dio {
+    final dio = _dioInstance;
+    if (dio == null) {
+      throw StateError('ApiService not initialized. Call init() first.');
+    }
+    return dio;
+  }
+
+  /// Sends the request without an `Authorization` header.
   static Options get withoutAuth =>
-      Options(headers: {ApiConstants.requiresAuthHeader: false});
+      Options(extra: {AuthInterceptor.requiresAuthKey: false});
 
-  void init(
-    ConnectivityService connectivityService,
-    CacheService cacheService,
-  ) {
-    _cacheService = cacheService;
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: ApiConstants.baseUrl,
-        headers: ApiConstants.headers,
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
-      ),
-    );
-
-    //  _dio.interceptors.add(ConnectivityInterceptor(connectivityService));
-
-    // ✅ Token Interceptor
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          final requiresAuth =
-              options.headers[ApiConstants.requiresAuthHeader] != false;
-          options.headers.remove(ApiConstants.requiresAuthHeader);
-
-          if (requiresAuth) {
-            final token = _cacheService.get<String>(AppConstants.accessToken);
-            if (token != null && token.isNotEmpty) {
-              options.headers['Authorization'] = 'Bearer $token';
-            }
-          }
-
-          return handler.next(options);
-        },
-
-        onError: (error, handler) async {
-          if (error.response?.statusCode == 401) {
-            await _cacheService.clear();
-          }
-          return handler.next(error);
-        },
-      ),
-    );
-
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          if (kDebugMode) {
-            final sep = '─' * 50;
-            debugPrint(
-              '\n🔵 ──── REQUEST ────────────────────────────────────',
-            );
-            debugPrint('   METHOD : ${options.method}');
-            debugPrint('   PATH   : ${options.path}');
-            if (options.headers.isNotEmpty) {
-              debugPrint('   HEADERS: ${options.headers}');
-            }
-            if (options.queryParameters.isNotEmpty) {
-              debugPrint('   PARAMS : ${options.queryParameters}');
-            }
-            if (options.data != null) {
-              debugPrint('   BODY   : ${options.data}');
-            }
-            debugPrint('$sep\n');
-          }
-          return handler.next(options);
-        },
-        onResponse: (response, handler) {
-          if (kDebugMode) {
-            final sep = '─' * 50;
-            debugPrint(
-              '\n🟢 ──── RESPONSE ───────────────────────────────────',
-            );
-            debugPrint('   STATUS : ${response.statusCode}');
-            debugPrint('   PATH   : ${response.requestOptions.path}');
-            debugPrint('   BODY   : ${response.data}');
-            debugPrint('$sep\n');
-          }
-          return handler.next(response);
-        },
-        onError: (error, handler) {
-          if (kDebugMode) {
-            final sep = '─' * 50;
-            debugPrint(
-              '\n🔴 ──── ERROR ──────────────────────────────────────',
-            );
-            debugPrint('   STATUS    : ${error.response?.statusCode}');
-            debugPrint('   PATH      : ${error.requestOptions.path}');
-            debugPrint('   ERROR BODY: ${error.response?.data}');
-            debugPrint('   SENT DATA : ${error.requestOptions.data}');
-            debugPrint('$sep\n');
-          }
-          return handler.next(error);
-        },
-      ),
+  /// Forces retry behaviour for a single request, overriding the per-method
+  /// default (non-idempotent calls are not replayed unless asked).
+  static Options retry({bool enabled = true, Options? from}) {
+    final options = from ?? Options();
+    return options.copyWith(
+      extra: {...?options.extra, RetryInterceptor.retryKey: enabled},
     );
   }
 
-  Dio get dio => _dio;
+  /// [onSessionExpired] runs once when the server rejects the stored token, so
+  /// the app can send the user back to login instead of silently looping on
+  /// 401s.
+  void init(
+    ConnectivityService connectivityService,
+    CacheService cacheService, {
+    Future<void> Function()? onSessionExpired,
+  }) {
+    // Re-running init() would otherwise stack duplicate interceptors.
+    _dioInstance?.close(force: true);
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: ApiConstants.baseUrl,
+        headers: Map<String, dynamic>.from(ApiConstants.headers),
+        connectTimeout: _connectTimeout,
+        receiveTimeout: _receiveTimeout,
+        sendTimeout: _receiveTimeout,
+      ),
+    );
+
+    final adapter = createTunedHttpClientAdapter(
+      connectTimeout: _connectTimeout,
+      idleTimeout: const Duration(seconds: 30),
+    );
+    if (adapter != null) dio.httpClientAdapter = adapter;
+
+    dio.interceptors.addAll([
+      ConnectivityInterceptor(connectivityService),
+      AuthInterceptor(cacheService, onSessionExpired: onSessionExpired),
+      const UploadTimeoutInterceptor(_uploadTimeout),
+      if (kDebugMode) const LoggingInterceptor(),
+      RetryInterceptor(dio: dio),
+    ]);
+
+    _dioInstance = dio;
+  }
 
   Future<Response> get(
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    try {
-      return await _dio.get(
+  }) {
+    return _send(
+      () => dio.get(
         path,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+      ),
+    );
   }
 
   /// Sends a POST request to the specified [path].
   ///
-  /// Used for creating new resources on the server.
-  ///
-  /// **Parameters:**
-  /// - [path]: API endpoint path
-  /// - [data]: Request body data (can be Map, FormData, etc.)
-  /// - [queryParameters]: Optional URL query parameters
-  /// - [options]: Optional request configuration
-  /// - [cancelToken]: Optional token to cancel the request
-  ///
-  /// **Example:**
-  /// ```dart
-  /// final response = await apiService.post(
-  ///   '/users',
-  ///   data: {'name': 'John', 'email': 'john@example.com'},
-  /// );
-  /// ```
+  /// Not replayed automatically unless the connection was never established;
+  /// pass [ApiService.retry] for endpoints that are safe to repeat.
   Future<Response> post(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    try {
-      return await _dio.post(
+  }) {
+    return _send(
+      () => dio.post(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+      ),
+    );
   }
 
-  /// Sends a PUT request to the specified [path].
-  ///
-  /// Used for completely replacing an existing resource on the server.
-  ///
-  /// **Parameters:**
-  /// - [path]: API endpoint path
-  /// - [data]: Complete resource data to replace existing resource
-  /// - [queryParameters]: Optional URL query parameters
-  /// - [options]: Optional request configuration
-  /// - [cancelToken]: Optional token to cancel the request
-  ///
-  /// **Example:**
-  /// ```dart
-  /// final response = await apiService.put(
-  ///   '/users/123',
-  ///   data: {'name': 'John Doe', 'email': 'john@example.com', 'age': 30},
-  /// );
-  /// ```
+  /// Sends a PUT request to the specified [path], replacing the resource.
   Future<Response> put(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    try {
-      return await _dio.put(
+  }) {
+    return _send(
+      () => dio.put(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+      ),
+    );
   }
 
-  /// Sends a PATCH request to the specified [path].
-  ///
-  /// Used for partially updating an existing resource on the server.
-  ///
-  /// **Parameters:**
-  /// - [path]: API endpoint path
-  /// - [data]: Partial resource data containing only fields to update
-  /// - [queryParameters]: Optional URL query parameters
-  /// - [options]: Optional request configuration
-  /// - [cancelToken]: Optional token to cancel the request
-  ///
-  /// **Example:**
-  /// ```dart
-  /// final response = await apiService.patch(
-  ///   '/users/123',
-  ///   data: {'email': 'newemail@example.com'}, // Only updating email
-  /// );
-  /// ```
+  /// Sends a PATCH request to the specified [path], updating part of the
+  /// resource.
   Future<Response> patch(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    try {
-      return await _dio.patch(
+  }) {
+    return _send(
+      () => dio.patch(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+      ),
+    );
   }
 
   /// Sends a DELETE request to the specified [path].
-  ///
-  /// Used for deleting an existing resource from the server.
-  ///
-  /// **Parameters:**
-  /// - [path]: API endpoint path
-  /// - [data]: Optional request body data
-  /// - [queryParameters]: Optional URL query parameters
-  /// - [options]: Optional request configuration
-  /// - [cancelToken]: Optional token to cancel the request
-  ///
-  /// **Example:**
-  /// ```dart
-  /// final response = await apiService.delete('/users/123');
-  /// ```
   Future<Response> delete(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    try {
-      return await _dio.delete(
+  }) {
+    return _send(
+      () => dio.delete(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+      ),
+    );
   }
 
-  /// Uploads a single file to the specified path
+  /// Uploads a single file to [path].
   ///
-  /// Example usage:
   /// ```dart
   /// final file = await MultipartFile.fromFile('/path/to/file.jpg');
   /// final response = await _apiService.uploadFile(
   ///   '/api/upload',
   ///   file: file,
-  ///   fileName: 'avatar.jpg',
+  ///   fieldName: 'avatar',
   /// );
   /// ```
   Future<Response> uploadFile(
-      String path, {
-        MultipartFile? file,
-        String? fieldName,
-        Map<String, dynamic>? data,
-        Options? options,
-        CancelToken? cancelToken,
-      }) async {
-    try {
-      final formData = FormData.fromMap({
-        if (file != null) ?fieldName: file,
-        ...?data,
-      });
-
-      return await _dio.post(
+    String path, {
+    MultipartFile? file,
+    String? fieldName,
+    Map<String, dynamic>? data,
+    Options? options,
+    CancelToken? cancelToken,
+    void Function(int, int)? onSendProgress,
+  }) {
+    return _send(
+      () => dio.post(
         path,
-        data: formData,
+        data: _formData(data, single: (fieldName, file)),
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+        onSendProgress: onSendProgress,
+      ),
+    );
   }
-
 
   Future<Response> uploadFilePatch(
-      String path, {
-        MultipartFile? file,
-        String fieldName = 'file',
-        Map<String, dynamic>? data,
-        Options? options,
-        CancelToken? cancelToken,
-      }) async {
-    try {
-      final map = <String, dynamic>{...?data};
-      if (file != null) {
-        map[fieldName] = file;
-      }
-
-      final formData = FormData.fromMap(map);
-
-      return await _dio.patch(
+    String path, {
+    MultipartFile? file,
+    String fieldName = 'file',
+    Map<String, dynamic>? data,
+    Options? options,
+    CancelToken? cancelToken,
+    void Function(int, int)? onSendProgress,
+  }) {
+    return _send(
+      () => dio.patch(
         path,
-        data: formData,
+        data: _formData(data, single: (fieldName, file)),
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+        onSendProgress: onSendProgress,
+      ),
+    );
   }
 
-  /// Uploads multiple files to the specified path
-  ///
-  /// Example usage:
-  /// ```dart
-  /// final files = [
-  ///   await MultipartFile.fromFile('/path/to/file1.jpg', filename: 'file1.jpg'),
-  ///   await MultipartFile.fromFile('/path/to/file2.jpg', filename: 'file2.jpg'),
-  /// ];
-  /// final response = await _apiService.uploadMultipleFiles(
-  ///   '/api/upload',
-  ///   files: files,
-  ///   fieldName: 'images',
-  /// );
-  /// ```
+  /// Uploads several files under the same [fieldName].
   Future<Response> uploadMultipleFiles(
     String path, {
     required List<MultipartFile> files,
@@ -383,23 +241,18 @@ class ApiService {
     Map<String, dynamic>? data,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    try {
-      final formData = FormData.fromMap({fieldName: files, ...?data});
-
-      return await _dio.post(
+    void Function(int, int)? onSendProgress,
+  }) {
+    return _send(
+      () => dio.post(
         path,
-        data: formData,
+        data: _formData(data, multiple: (fieldName, files)),
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+        onSendProgress: onSendProgress,
+      ),
+    );
   }
-
 
   Future<Response> uploadMultipleFilesPatch(
     String path, {
@@ -408,37 +261,20 @@ class ApiService {
     Map<String, dynamic>? data,
     Options? options,
     CancelToken? cancelToken,
-  }) async {
-    try {
-      final formData = FormData.fromMap({fieldName: files, ...?data});
-
-      return await _dio.patch(
+    void Function(int, int)? onSendProgress,
+  }) {
+    return _send(
+      () => dio.patch(
         path,
-        data: formData,
+        data: _formData(data, multiple: (fieldName, files)),
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      throw _handleDioError(e);
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+        onSendProgress: onSendProgress,
+      ),
+    );
   }
 
-  /// Uploads a file with progress tracking
-  ///
-  /// Example usage:
-  /// ```dart
-  /// final file = await MultipartFile.fromFile('/path/to/file.jpg');
-  /// final response = await _apiService.uploadFileWithProgress(
-  ///   '/api/upload',
-  ///   file: file,
-  ///   onSendProgress: (int sent, int total) {
-  ///     double progress = (sent / total) * 100;
-  ///     print('Upload progress: $progress%');
-  ///   },
-  /// );
-  /// ```
+  /// Uploads a file while reporting progress through [onSendProgress].
   Future<Response> uploadFileWithProgress(
     String path, {
     required MultipartFile file,
@@ -447,46 +283,51 @@ class ApiService {
     Options? options,
     CancelToken? cancelToken,
     void Function(int, int)? onSendProgress,
-  }) async {
-    try {
-      final formData = FormData.fromMap({fieldName: file, ...?data});
+  }) {
+    return uploadFile(
+      path,
+      file: file,
+      fieldName: fieldName,
+      data: data,
+      options: options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+    );
+  }
 
-      return await _dio.post(
-        path,
-        data: formData,
-        onSendProgress: onSendProgress,
-        options: options,
-        cancelToken: cancelToken,
-      );
+  Future<Response> _send(Future<Response> Function() request) async {
+    try {
+      return await request();
     } on DioException catch (e) {
       throw _handleDioError(e);
+    } on AppException {
+      rethrow;
     } catch (e) {
       throw UnknownException(e.toString());
     }
   }
 
-  /// Converts DioException to typed AppException for better error handling.
-  ///
-  /// This method maps Dio's generic exceptions to our custom exception types,
-  /// allowing for more specific error handling in the UI layer.
-  ///
-  /// **Mapping:**
-  /// - Connection/Send/Receive Timeout → [TimeoutException]
-  /// - Connection Error → [NoInternetException]
-  /// - Bad Response (4xx, 5xx) → [ServerException]
-  /// - Request Cancelled → [UnknownException]
-  /// - Bad Certificate → [ServerException]
-  /// - Socket Exception → [NoInternetException]
-  /// - Other Unknown Errors → [UnknownException]
-  ///
-  /// **Example:**
-  /// ```dart
-  /// try {
-  ///   await dio.get('/api/data');
-  /// } on DioException catch (e) {
-  ///   throw _handleDioError(e); // Converts to typed exception
-  /// }
-  /// ```
+  FormData _formData(
+    Map<String, dynamic>? data, {
+    (String?, MultipartFile?)? single,
+    (String, List<MultipartFile>)? multiple,
+  }) {
+    final map = <String, dynamic>{...?data};
+
+    if (single != null) {
+      final (field, file) = single;
+      if (field != null && file != null) map[field] = file;
+    }
+    if (multiple != null) {
+      final (field, files) = multiple;
+      if (files.isNotEmpty) map[field] = files;
+    }
+
+    return FormData.fromMap(map);
+  }
+
+  /// Converts a [DioException] into a typed [AppException] so the UI layer can
+  /// react to the cause instead of parsing strings.
   AppException _handleDioError(DioException error) {
     switch (error.type) {
       // ─── Network ────────────────────────────────
@@ -503,6 +344,7 @@ class ApiService {
         );
 
       case DioExceptionType.receiveTimeout:
+      case DioExceptionType.transformTimeout:
         return TimeoutException(
           'Server took too long to respond. Try again',
           error.message,
@@ -515,7 +357,7 @@ class ApiService {
         return SSLException(error.message);
 
       case DioExceptionType.cancel:
-        return UnknownException('Request was cancelled');
+        return RequestCancelledException(error.message);
 
       // ─── HTTP Response ───────────────────────────
       case DioExceptionType.badResponse:
@@ -558,32 +400,50 @@ class ApiService {
 
       // ─── Unknown ─────────────────────────────────
       case DioExceptionType.unknown:
-        if (error.message?.contains('SocketException') ?? false) {
+        final description = '${error.error ?? ''} ${error.message ?? ''}';
+        if (description.contains('SocketException') ||
+            description.contains('Connection closed') ||
+            description.contains('Connection reset')) {
           return NoInternetException(error.message);
         }
-        if (error.message?.contains('HandshakeException') ?? false) {
+        if (description.contains('HandshakeException') ||
+            description.contains('CertificateException')) {
           return SSLException(error.message);
         }
-        if (error.message?.contains('HttpException') ?? false) {
+        if (description.contains('HttpException')) {
           return ServerException('HTTP error occurred', null, error.message);
         }
         return UnknownException(error.message);
-      case DioExceptionType.transformTimeout:
-        // TODO: Handle this case.
-        throw UnimplementedError();
     }
   }
 
+  /// Pulls a human-readable message out of whatever the server returned.
+  ///
+  /// A proxy answering for a dead backend replies with HTML rather than JSON,
+  /// so anything non-map falls back to the generic message.
   String _parseErrorMessage(dynamic data) {
-    if (data is! Map<String, dynamic>) return 'Server error';
-    return data['message'] ??
-        data['error'] ??
-        data['msg'] ??
-        data['errors']?[0]?['message'] ??
-        'Server error';
+    if (data is! Map) return 'Server error';
+
+    for (final key in const ['message', 'error', 'msg', 'detail']) {
+      final value = data[key];
+      if (value is String && value.trim().isNotEmpty) return value;
+    }
+
+    final errors = data['errors'];
+    if (errors is List && errors.isNotEmpty) {
+      final first = errors.first;
+      if (first is String && first.trim().isNotEmpty) return first;
+      if (first is Map) {
+        final message = first['message'] ?? first['msg'];
+        if (message is String && message.trim().isNotEmpty) return message;
+      }
+    }
+
+    return 'Server error';
   }
 
   void dispose() {
-    _dio.close();
+    _dioInstance?.close(force: true);
+    _dioInstance = null;
   }
 }

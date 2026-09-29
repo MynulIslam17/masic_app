@@ -49,30 +49,68 @@ class MenuShowHelper {
 
     final Offset tapPosition = details.globalPosition;
 
-    return showMenu<String>(
+    return _show(
       context: context,
-      color: Colors.white,
-      constraints: BoxConstraints(
-        maxHeight: 200.h,
-        minWidth: 120.w,
-        maxWidth: 180.w,
-      ),
+      overlay: overlay,
       position: RelativeRect.fromRect(
         Rect.fromPoints(tapPosition, tapPosition),
         Offset.zero & overlay.size,
       ),
+      options: options,
+    );
+  }
+
+  /// Opens the menu under [context]'s widget (the whole dropdown field).
+  static Future<String?> showBelow({
+    required BuildContext context,
+    required List<String> options,
+  }) {
+    final box = context.findRenderObject() as RenderBox?;
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (box == null || overlay == null || !box.hasSize) {
+      return Future.value(null);
+    }
+
+    final topLeft = box.localToGlobal(Offset.zero, ancestor: overlay);
+    final size = box.size;
+
+    return _show(
+      context: context,
+      overlay: overlay,
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(topLeft.dx, topLeft.dy, size.width, size.height),
+        Offset.zero & overlay.size,
+      ),
+      options: options,
+    );
+  }
+
+  static Future<String?> _show({
+    required BuildContext context,
+    required RenderBox overlay,
+    required RelativeRect position,
+    required List<String> options,
+  }) {
+    return showMenu<String>(
+      context: context,
+      color: Colors.white,
+      constraints: BoxConstraints(
+        maxHeight: 320.h,
+        minWidth: 180.w,
+        maxWidth: overlay.size.width,
+      ),
+      position: position,
       items: options.map((String option) {
         return PopupMenuItem<String>(
           value: option,
-          padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.w),
-          child: SizedBox(
-            height: 28.h,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                option,
-                style: TextStyle(fontSize: 12.sp, color: Colors.black),
-              ),
+          height: 48.h,
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              option,
+              style: TextStyle(fontSize: 14.sp, color: Colors.black),
             ),
           ),
         );

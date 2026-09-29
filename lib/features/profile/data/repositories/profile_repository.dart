@@ -21,7 +21,9 @@ class ProfileRepository {
   }) : _apiService = apiService,
        _cacheService = cacheService;
 
-  String _cacheKey(String role) {
+  String _cacheKey(String role, {String? treeJoinStatus}) {
+    final status = treeJoinStatus?.trim().toLowerCase() ?? '';
+    if (status == 'placed') return ApiConstants.cachePlacedUsers;
     switch (role) {
       case 'admin':
         return ApiConstants.cacheAdminProfile;
@@ -101,8 +103,9 @@ class ProfileRepository {
     String? search,
     String? fieldOfWork,
     String? name,
+    String? treeJoinStatus,
   }) async {
-    final cacheKey = _cacheKey(role ?? '');
+    final cacheKey = _cacheKey(role ?? '', treeJoinStatus: treeJoinStatus);
 
     try {
       final queryParameters = <String, dynamic>{
@@ -121,21 +124,50 @@ class ProfileRepository {
         if (fieldOfWork != null && fieldOfWork.isNotEmpty)
           'fieldOfWork': fieldOfWork,
         if (name != null && name.isNotEmpty) 'name': name,
+        if (treeJoinStatus != null && treeJoinStatus.isNotEmpty)
+          'treeJoinStatus': treeJoinStatus,
       };
       final response = await _apiService.get(
         ApiConstants.usersProfile,
         queryParameters: queryParameters,
       );
 
-      final users = (response.data['data'] as List)
-          .map((e) => UserModel.fromJson(e))
+      final rawData = response.data['data'];
+      final usersJson = rawData is List
+          ? rawData
+          : rawData is Map
+              ? (rawData['users'] ??
+                    rawData['items'] ??
+                    rawData['results'] ??
+                    rawData['data'] ??
+                    const [])
+              : const [];
+      final users = (usersJson as List)
+          .whereType<Map>()
+          .map(
+            (e) => UserModel.fromJson(
+              Map<String, dynamic>.from(
+                e.map((key, value) => MapEntry(key.toString(), value)),
+              ),
+            ),
+          )
           .toList();
 
-      await _cacheService.put(cacheKey, users.map((e) => e.toJson()).toList());
+      if (page == 1) {
+        await _cacheService.put(
+          cacheKey,
+          users.map((e) => e.toJson()).toList(),
+        );
+      }
+
+      final total = _readTotalCount(response.data);
+      if (total != null) {
+        await _cacheService.put(_totalCacheKey(cacheKey), total);
+      }
 
       return users;
     } on AppException {
-      final cached = getCachedUsers(cacheKey);
+      final cached = getCachedUsers(role ?? '', treeJoinStatus: treeJoinStatus);
       if (cached.isNotEmpty) return cached;
       rethrow;
     } catch (e) {
@@ -143,8 +175,8 @@ class ProfileRepository {
     }
   }
 
-  List<UserModel> getCachedUsers(String role) {
-    final cacheKey = _cacheKey(role);
+  List<UserModel> getCachedUsers(String role, {String? treeJoinStatus}) {
+    final cacheKey = _cacheKey(role, treeJoinStatus: treeJoinStatus);
     try {
       final jsonList =
           _cacheService.get<List>(cacheKey, defaultValue: []) ?? [];
@@ -152,6 +184,48 @@ class ProfileRepository {
     } catch (e) {
       return [];
     }
+  }
+
+  int? getCachedUsersTotal(String role, {String? treeJoinStatus}) {
+    final cacheKey = _cacheKey(role, treeJoinStatus: treeJoinStatus);
+    final value = _cacheService.get(_totalCacheKey(cacheKey));
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  String _totalCacheKey(String cacheKey) => '$cacheKey/total';
+
+  int? _readTotalCount(dynamic body) {
+    if (body is! Map) return null;
+    final root = Map<String, dynamic>.from(
+      body.map((key, value) => MapEntry(key.toString(), value)),
+    );
+
+    int? read(dynamic value) {
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      if (value is String) return int.tryParse(value);
+      return null;
+    }
+
+    int? fromMeta(dynamic meta) {
+      if (meta is! Map) return null;
+      final map = Map<String, dynamic>.from(
+        meta.map((key, value) => MapEntry(key.toString(), value)),
+      );
+      return read(map['total']) ??
+          read(map['totalUsers']) ??
+          read(map['totalCount']);
+    }
+
+    final data = root['data'];
+    return fromMeta(root['meta']) ??
+        fromMeta(root['pagination']) ??
+        (data is Map ? fromMeta(data['meta']) : null) ??
+        (data is Map ? fromMeta(data['pagination']) : null) ??
+        read(root['total']);
   }
 
   Future<List<UserModel>> fetchUsersMore({
@@ -165,8 +239,9 @@ class ProfileRepository {
     String? role,
     String? fieldOfWork,
     String? name,
+    String? treeJoinStatus,
   }) async {
-    final cacheKey = _cacheKey(role ?? '');
+    final cacheKey = _cacheKey(role ?? '', treeJoinStatus: treeJoinStatus);
     final response = await fetchUsers(
       page: page,
       limit: limit,
@@ -178,12 +253,16 @@ class ProfileRepository {
       role: role,
       fieldOfWork: fieldOfWork,
       name: name,
+      treeJoinStatus: treeJoinStatus,
     );
     if (response.isNotEmpty) {
-      final currentCached = getCachedUsers(cacheKey);
+      final currentCached = getCachedUsers(
+        role ?? '',
+        treeJoinStatus: treeJoinStatus,
+      );
       final newList = [...currentCached, ...response];
       await _cacheService.put(
-        _cacheKey(role ?? ''),
+        cacheKey,
         newList.map((e) => e.toJson()).toList(),
       );
     }
@@ -244,7 +323,7 @@ class ProfileRepository {
           ),
       });
 
-      final response = await _apiService.dio.patch(
+      final response = await _apiService.patch(
         ApiConstants.userProfileUpdate,
         data: formData,
       );

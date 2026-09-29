@@ -26,6 +26,7 @@ class ProfileService {
     String? search,
     String? fieldOfWork,
     String? name,
+    String? treeJoinStatus,
   }) async {
     try {
       await Future.wait([
@@ -42,6 +43,7 @@ class ProfileService {
           role: role,
           fieldOfWork: fieldOfWork,
           name: name,
+          treeJoinStatus: treeJoinStatus,
         ),
       ]);
     } on AppException {
@@ -64,6 +66,7 @@ class ProfileService {
     String? role,
     String? fieldOfWork,
     String? name,
+    String? treeJoinStatus,
   }) async {
     return await _repository.fetchUsersMore(
       page: page,
@@ -76,6 +79,7 @@ class ProfileService {
       role: role,
       fieldOfWork: fieldOfWork,
       name: name,
+      treeJoinStatus: treeJoinStatus,
     );
   }
 
@@ -120,7 +124,14 @@ class ProfileService {
     return _repository.getCachedUserData();
   }
 
-  List<UserModel> getCachedUsers(String role) {
-    return _repository.getCachedUsers(role);
+  List<UserModel> getCachedUsers(String role, {String? treeJoinStatus}) {
+    return _repository.getCachedUsers(role, treeJoinStatus: treeJoinStatus);
+  }
+
+  int? getCachedUsersTotal(String role, {String? treeJoinStatus}) {
+    return _repository.getCachedUsersTotal(
+      role,
+      treeJoinStatus: treeJoinStatus,
+    );
   }
 }

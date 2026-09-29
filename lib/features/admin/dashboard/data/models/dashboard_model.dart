@@ -99,14 +99,32 @@ class DashboardModel {
   )
       .toList();
 
-  List<BarChartModel> get genderChartData => (gender ?? [])
-      .map(
-        (e) => BarChartModel(
-          label: e.gender ?? '',
-          value: (e.count ?? e.percentage ?? 0).toDouble(),
-        ),
-      )
-      .toList();
+  List<BarChartModel> get genderChartData {
+    final merged = <String, double>{};
+    for (final e in gender ?? []) {
+      final raw = (e.gender ?? '').trim();
+      if (raw.isEmpty) continue;
+      final key = _genderKey(raw);
+      merged[key] =
+          (merged[key] ?? 0) + (e.count ?? e.percentage ?? 0).toDouble();
+    }
+
+    return merged.entries
+        .map(
+          (e) => BarChartModel(
+            label: e.key.toUpperCase(),
+            value: e.value,
+          ),
+        )
+        .toList();
+  }
+
+  static String _genderKey(String raw) {
+    final lower = raw.toLowerCase();
+    if (lower.startsWith('f')) return 'female';
+    if (lower.startsWith('m')) return 'male';
+    return lower;
+  }
 
   List<BarChartModel> get commonNamesChartData => (commonNames ?? [])
       .map(
@@ -117,14 +135,53 @@ class DashboardModel {
   )
       .toList();
 
-  List<BarChartModel> get employmentStatusChartData => (employmentStatus ?? [])
-      .map(
-        (e) => BarChartModel(
-          label: e.status ?? '',
-          value: (e.count ?? e.percentage ?? 0).toDouble(),
-        ),
-      )
-      .toList();
+  List<BarChartModel> get employmentStatusChartData {
+    final merged = <String, double>{};
+    for (final e in employmentStatus ?? []) {
+      final key = _employmentKey(e.status);
+      if (key.isEmpty) continue;
+      final count = e.count ?? 0;
+      if (count <= 0) continue;
+      merged[key] = (merged[key] ?? 0) + count.toDouble();
+    }
+
+    return merged.entries
+        .map(
+          (e) => BarChartModel(
+            label: _employmentLabel(e.key),
+            value: e.value,
+          ),
+        )
+        .toList();
+  }
+
+  static String _employmentKey(String? raw) {
+    final lower = (raw ?? '').trim().toLowerCase();
+    if (lower.isEmpty) return '';
+    if (lower == 'self-employed' || lower == 'self employed') {
+      return 'self-employed';
+    }
+    if (lower == 'unemployed') return 'unemployed';
+    if (lower == 'student') return 'student';
+    if (lower == 'employed') return 'employed';
+    return '';
+  }
+
+  static String _employmentLabel(String key) {
+    switch (key) {
+      case 'self-employed':
+        return 'Self-employed';
+      case 'unemployed':
+        return 'Unemployed';
+      case 'student':
+        return 'Student';
+      case 'employed':
+        return 'Employed';
+      default:
+        if (key.isEmpty) return key;
+        return key[0].toUpperCase() + key.substring(1);
+    }
+  }
 
   List<BarChartModel> get fieldOfWorkChartData => (fieldOfWork ?? [])
       .map(
@@ -136,12 +193,13 @@ class DashboardModel {
       .toList();
 
   List<BarChartModel> get educationLevelChartData => (educationLevel ?? [])
+      .where((e) => (e.count ?? 0) > 0 && (e.level ?? '').trim().isNotEmpty)
       .map(
         (e) => BarChartModel(
-      label: e.level ?? '',
-      value: (e.percentage ?? 0).toDouble(),
-    ),
-  )
+          label: e.level ?? '',
+          value: (e.count ?? 0).toDouble(),
+        ),
+      )
       .toList();
 
   List<BarChartModel> get locationChartData => (location ?? [])
@@ -228,9 +286,9 @@ class EmploymentStatus {
   EmploymentStatus({this.count, this.status, this.percentage});
 
   EmploymentStatus.fromJson(Map<String, dynamic> json) {
-    count = json['count'];
-    status = json['status'];
-    percentage = (json['percentage'] as num?)?.toDouble();
+    count = _parseCount(json['count'] ?? json['value']);
+    status = json['status'] ?? json['employmentStatus'];
+    percentage = _parsePercentage(json['percentage']);
   }
 
   Map<String, dynamic> toJson() {
@@ -272,9 +330,9 @@ class EducationLevel {
   EducationLevel({this.count, this.level, this.percentage});
 
   EducationLevel.fromJson(Map<String, dynamic> json) {
-    count = json['count'];
+    count = _parseCount(json['count'] ?? json['value']);
     level = json['level'];
-    percentage = (json['percentage'] as num?)?.toDouble();
+    percentage = _parsePercentage(json['percentage']);
   }
 
   Map<String, dynamic> toJson() {
@@ -313,4 +371,17 @@ class BarChartModel {
   final double value;
 
   BarChartModel({required this.label, required this.value});
+}
+
+int? _parseCount(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is num) return value.round();
+  return int.tryParse(value.toString());
+}
+
+double? _parsePercentage(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toDouble();
+  return double.tryParse(value.toString());
 }

@@ -32,12 +32,9 @@ class ConnectivityService {
   }
 
   bool _isConnectedFromResults(List<ConnectivityResult> results) {
-    return results.any(
-          (result) =>
-      result == ConnectivityResult.mobile ||
-          result == ConnectivityResult.wifi ||
-          result == ConnectivityResult.ethernet,
-    );
+    // Anything other than `none` can carry traffic; whitelisting transports
+    // wrongly reported VPN and tethered connections as offline.
+    return results.any((result) => result != ConnectivityResult.none);
   }
 
   Future<bool> checkConnectivity() async {

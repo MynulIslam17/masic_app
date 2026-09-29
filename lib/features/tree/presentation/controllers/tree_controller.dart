@@ -45,8 +45,8 @@ class TreeController extends GetxController {
     final root = _treeData.value?.root;
     if (root == null) return;
 
-    final rootId = root.sId ?? root.linkedUser?.sId;
-    if (rootId == null || rootId.isEmpty) return;
+    final rootId = root.nodeId;
+    if (rootId.isEmpty) return;
 
     _expandedNodes.add(rootId);
     _didExpandRoot = true;
@@ -185,7 +185,7 @@ class TreeController extends GetxController {
         label: child.label,
         relationType: child.relationType,
       );
-      for (final c in child.children ?? const <Children>[]) {
+      for (final c in child.layoutChildren) {
         walk(c);
       }
     }
@@ -196,7 +196,7 @@ class TreeController extends GetxController {
       label: root.label,
       relationType: root.relationType,
     );
-    for (final child in root.children ?? const <Children>[]) {
+    for (final child in root.layoutChildren) {
       walk(child);
     }
 

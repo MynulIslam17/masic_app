@@ -35,17 +35,12 @@ class AdminProfileScreen extends StatelessWidget {
             ProfileListTile(
               icon: Assets.icons.allAdmin.path,
               title: "All admins",
-              onTap: () {
-                ProfileController.to.setRoleFilter('admin');
-                  Get.toNamed(AppRoutes.allAdminScreen);
-              },
+              onTap: ProfileController.to.openAllAdmins,
             ),
             ProfileListTile(
               icon: Assets.icons.allUser.path,
               title: "All users",
-              onTap: () {
-                 Get.toNamed(AppRoutes.allUserScreen);
-              },
+              onTap: ProfileController.to.openAllUsers,
             ),
 
             ProfileListTile(
@@ -107,10 +102,7 @@ class AdminProfileScreen extends StatelessWidget {
                     onTapLeftButton: () {
                       Get.back();
                     },
-                    onTapRightButton: () async {
-                      await AuthController.to.logout();
-                      Get.offAllNamed(AppRoutes.loginScreen);
-                    },
+                    onTapRightButton: AuthController.to.logout,
                   ),
                 );
               },

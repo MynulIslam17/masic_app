@@ -5,13 +5,21 @@ import 'package:masic_generation/core/widgets/app_simmer.dart';
 class AnnouncementShimmer extends StatelessWidget {
   const AnnouncementShimmer({super.key});
 
+  static const int _placeholderCount = 2;
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: 2,
-        itemBuilder: (context, index) => AppShimmer.wrap(
+    // A Column rather than a shrink-wrapped ListView: the list never scrolls,
+    // and a viewport cannot report the intrinsic height that
+    // SliverFillRemaining asks for.
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(_placeholderCount, (_) => _item()),
+    );
+  }
+
+  Widget _item() {
+    return AppShimmer.wrap(
       child: Container(
         margin: EdgeInsets.only(bottom: 10.h),
         padding: EdgeInsets.all(16.r),
@@ -27,19 +35,13 @@ class AnnouncementShimmer extends StatelessWidget {
             // Status badge (top right)
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                AppShimmer.line(width: 60.w, height: 14),
-              ],
+              children: [AppShimmer.line(width: 60.w, height: 14)],
             ),
 
             SizedBox(height: 12.h),
 
             // Banner image placeholder
-            AppShimmer.image(
-              width: double.infinity,
-              height: 152.h,
-              radius: 12,
-            ),
+            AppShimmer.image(width: double.infinity, height: 152.h, radius: 12),
 
             SizedBox(height: 10.h),
 
@@ -58,6 +60,6 @@ class AnnouncementShimmer extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    );
   }
 }

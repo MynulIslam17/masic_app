@@ -19,7 +19,12 @@ class TreeRepository {
   Future<TreeModel> fetchTree() async {
     try {
       final response = await _apiService.get(ApiConstants.tree);
-      final data = response.data['data'];
+      final raw = response.data['data'] ?? response.data;
+      final data = raw is Map
+          ? Map<String, dynamic>.from(
+              raw.map((key, value) => MapEntry(key.toString(), value)),
+            )
+          : <String, dynamic>{};
       final tree = TreeModel.fromJson(data);
 
       await _cacheService.put(ApiConstants.cacheTree, tree.toJson());
@@ -54,7 +59,20 @@ class TreeRepository {
       final response = await _apiService.get(
         ApiConstants.treeUserDetails(userID),
       );
-      return UserModel.fromJson(response.data['data']?['viewRoot']?['linkedUser'] ?? {});
+      final data = response.data['data'];
+      Map<String, dynamic> json = {};
+      if (data is Map) {
+        final root = data['viewRoot'] ?? data['root'] ?? data;
+        if (root is Map) {
+          final linked = root['linkedUser'] ?? root['user'] ?? root;
+          if (linked is Map) {
+            json = Map<String, dynamic>.from(
+              linked.map((key, value) => MapEntry(key.toString(), value)),
+            );
+          }
+        }
+      }
+      return UserModel.fromJson(json);
     } on AppException {
       rethrow;
     } catch (e) {

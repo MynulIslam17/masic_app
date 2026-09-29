@@ -9,7 +9,6 @@ import 'package:masic_generation/features/profile/presentation/widgets/info_row.
 import 'package:masic_generation/features/request/presentation/controllers/request_controller.dart';
 import 'package:masic_generation/features/request/presentation/widgets/details_bottom_nav.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class RequestDetailsScreen extends StatelessWidget {
   const RequestDetailsScreen({super.key});
@@ -111,10 +110,12 @@ class RequestDetailsScreen extends StatelessWidget {
                   InfoRow(
                     label: 'Email',
                     value: request.contact?.email ?? 'N/A',
+                    copyable: true,
                   ),
                   InfoRow(
                     label: 'Phone no',
                     value: request.contact?.phone ?? 'N/A',
+                    copyable: true,
                   ),
                   InfoRow(
                     label: 'Address',
@@ -154,33 +155,16 @@ class RequestDetailsScreen extends StatelessWidget {
                     InfoRow(
                       label: 'Phone no',
                       value: request.contact?.phone ?? 'N/A',
+                      copyable: true,
                     ),
                     InfoRow(
                       label: 'Email',
                       value: request.contact?.email ?? 'N/A',
+                      copyable: true,
                     ),
-                    if (request.contact?.linkedin != null)
-                      InfoRow(
-                        label: 'Linkedin',
-                        valueWidget: CustomButton(
-                          height: 24.h,
-                          onPressed: () async {
-                            final Uri url = Uri.parse(
-                              request.contact?.linkedin ?? '',
-                            );
-
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(
-                                url,
-                                mode: LaunchMode.externalApplication,
-                              );
-                            }
-                          },
-                          fontSize: 12.sp,
-                          label:
-                              request.contact?.linkedin?.split('/').last ?? '',
-                        ),
-                      ),
+                    if (request.contact?.linkedin != null &&
+                        request.contact!.linkedin!.trim().isNotEmpty)
+                      InfoRow.linkedIn(url: request.contact!.linkedin!),
                   ],
                 ),
 

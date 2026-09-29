@@ -61,10 +61,12 @@ class ProfileInformationScreen extends StatelessWidget {
                         name: user?.name,
                         arabicName: user?.arabicName,
                       ),
-                    if (user?.email != null && user!.email!.isNotEmpty)
-                      InfoRow(label: 'Email', value: user!.email),
+                    if (user?.email != null &&
+                        user!.email!.isNotEmpty &&
+                        !user.hideEmailOnProfile)
+                      InfoRow(label: 'Email', value: user.email, copyable: true),
                     if (user?.phone != null && user!.phone!.isNotEmpty)
-                      InfoRow(label: 'Phone no', value: user!.phone),
+                      InfoRow(label: 'Phone no', value: user!.phone, copyable: true),
                     if (user?.dateOfBirth != null &&
                         user!.dateOfBirth!.isNotEmpty)
                       InfoRow(
@@ -113,13 +115,10 @@ class ProfileInformationScreen extends StatelessWidget {
                       InfoRow(
                         label: 'Spouse number',
                         value: user!.spousePhone,
+                        copyable: true,
                       ),
-                    if (user?.contact?.linkedin != null &&
-                        user!.contact!.linkedin!.isNotEmpty)
-                      InfoRow(
-                        label: 'Linkedin link',
-                        value: user!.contact!.linkedin,
-                      ),
+                    if (user?.resolvedLinkedIn != null)
+                      InfoRow.linkedIn(url: user!.resolvedLinkedIn!),
                   ],
                 ),
               ),

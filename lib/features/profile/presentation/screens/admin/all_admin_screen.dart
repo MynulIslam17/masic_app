@@ -24,8 +24,8 @@ class AllAdminScreen extends StatelessWidget {
 
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (_, didPop) {
-        controller.setRoleFilter('');
+      onPopInvokedWithResult: (_, __) {
+        controller.setRoleFilter('', reloadIfSame: false);
       },
       child: CustomScaffold(
         paddingSide: 0,
@@ -51,10 +51,7 @@ class AllAdminScreen extends StatelessWidget {
                             .svg(height: 24.h, width: 24.w)
                             .flipped
                       : Assets.icons.backButton.svg(height: 24.h, width: 24.w),
-                  onPressed: () {
-                    controller.setRoleFilter('');
-                    Get.back(canPop: true);
-                  },
+                  onPressed: () => Get.back(),
                 ),
                 title: CustomText(
                   text: 'Admin',

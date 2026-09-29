@@ -47,14 +47,16 @@ class MemberSelectScreen extends StatelessWidget {
               hintText: 'Search here . . .',
             ),
             SizedBox(height: 10.h),
-            Row(
-              children: [
-                CustomText(
-                  textAlign: TextAlign.start,
-                  fontSize: 12.sp,
-                  text: 'Total user : ${controller.usersData.length}',
-                ),
-              ],
+            Obx(
+              () => Row(
+                children: [
+                  CustomText(
+                    textAlign: TextAlign.start,
+                    fontSize: 12.sp,
+                    text: 'Total user : ${controller.usersData.length}',
+                  ),
+                ],
+              ),
             ),
 
             /// ============ > Events List < ============

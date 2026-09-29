@@ -120,7 +120,7 @@ class FilterDialog extends StatelessWidget {
                   color: isSelected
                       ? AppColors.primaryColor.withOpacity(0.1)
                       : Colors.transparent,
-                  paddingVertical: 8.h,
+                  paddingVertical: 12.h,
                   paddingHorizontal: 20.w,
                   child: CustomText(
                     text: item,

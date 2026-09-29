@@ -117,10 +117,12 @@ class NotImplementedException extends AppException {
       : super('Feature not implemented', details: details, errorCode: 'NOT_IMPLEMENTED');
 }
 
+/// Raised on 502, which the proxy returns when it could not reach the backend
+/// at all — the request never ran, so it is safe to retry.
 class ServerDownException extends AppException {
   final int? statusCode;
   ServerDownException([this.statusCode, String? details])
-      : super('Server is down. Please try again later', details: details, errorCode: 'SERVER_DOWN');
+      : super('Server is not responding. Please try again', details: details, errorCode: 'SERVER_DOWN');
 }
 
 class ServiceUnavailableException extends AppException {
@@ -169,6 +171,11 @@ class NotFoundException extends AppException {
 class UnknownException extends AppException {
   UnknownException([String? details])
       : super('An unexpected error occurred', details: details, errorCode: 'UNKNOWN');
+}
+
+class RequestCancelledException extends AppException {
+  RequestCancelledException([String? details])
+      : super('Request was cancelled', details: details, errorCode: 'CANCELLED');
 }
 
 // ═══════════════════════════════════════════════

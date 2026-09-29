@@ -80,7 +80,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      await _apiService.dio.patch(
+      await _apiService.patch(
         ApiConstants.userProfileUpdate,
         data: FormData.fromMap({
           'data': jsonEncode({'fcmToken': fcmToken}),

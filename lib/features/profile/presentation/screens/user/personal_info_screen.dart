@@ -6,6 +6,7 @@ import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/Item_card.dart';
+import 'package:masic_generation/features/profile/presentation/widgets/linkedin_open_button.dart';
 import 'package:masic_generation/features/request/presentation/controllers/request_controller.dart';
 import 'package:get/get.dart';
 
@@ -77,11 +78,30 @@ class PersonalInfoScreen extends StatelessWidget {
 
               // ── LinkedIn ───────────────────────────────────────────────────
               CustomText(text: 'LinkedIn', bottom: 10.h, top: 10.h),
-              if (user?.contact?.linkedin != null &&
-                  user!.contact!.linkedin!.isNotEmpty)
-                ItemCard(
-                  subtitle: user.contact!.linkedin!,
-                  onUpdate: () => Get.toNamed(AppRoutes.addContactScreen),
+              if (user?.resolvedLinkedIn != null)
+                CustomContainer(
+                  paddingHorizontal: 16.r,
+                  paddingVertical: 10.r,
+                  color: AppColors.bgColor,
+                  bordersColor: AppColors.borderColor,
+                  radiusAll: 12.r,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: LinkedInOpenButton(url: user!.resolvedLinkedIn!),
+                      ),
+                      IconButton(
+                        onPressed: () =>
+                            Get.toNamed(AppRoutes.addContactScreen),
+                        icon: CustomText(
+                          text: 'Update',
+                          fontSize: 10.sp,
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 )
               else
                 _addOutlineButton(

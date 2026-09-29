@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/widgets/image_preview_viewer.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/announcement/presentation/controllers/announcement_controller.dart';
 import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
@@ -29,11 +30,17 @@ class AnnouncementsDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomNetworkImage(
-                borderRadius: 12.r,
-                height: 225.h,
-                width: double.infinity,
-                imageUrl: announcement.bannerUrl,
+              GestureDetector(
+                onTap: () => ImagePreviewViewer.open(
+                  context,
+                  imageUrl: announcement.bannerUrl,
+                ),
+                child: CustomNetworkImage(
+                  borderRadius: 12.r,
+                  height: 225.h,
+                  width: double.infinity,
+                  imageUrl: announcement.bannerUrl,
+                ),
               ),
               CustomText(
                 top: 10.h,

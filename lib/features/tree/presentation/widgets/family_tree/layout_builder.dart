@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/features/tree/data/models/tree_model.dart';
@@ -24,12 +26,14 @@ class FamilyTreeLayoutBuilder {
   void rebuildMeta() {
     meta.clear();
 
-    final rootChildren = root.children ?? [];
-    final rootId = root.sId ?? root.linkedUser?.sId ?? 'root';
+    final rootChildren = root.layoutChildren;
+    final rootId = root.nodeId;
     meta[rootId] = Meta(
       id: rootId,
-      memberId: root.sId ?? '',
+      memberId: root.sId ?? root.linkedUser?.sId ?? '',
       label: _memberLabel(root.label, root.linkedUser),
+      name: root.linkedUser?.name,
+      arabicName: root.linkedUser?.arabicName,
       isRoot: true,
       hasChildren: rootChildren.isNotEmpty,
       onDelete: onToggleEdit
@@ -81,7 +85,7 @@ class FamilyTreeLayoutBuilder {
   }
 
   TreeLayoutNode buildLayoutTree(Set<String> expandedNodes) {
-    final rootId = root.sId ?? root.linkedUser?.sId ?? 'root';
+    final rootId = root.nodeId;
     final rootMeta = meta[rootId];
 
     if (rootMeta == null) {
@@ -95,7 +99,7 @@ class FamilyTreeLayoutBuilder {
     return _buildLayoutNode(
       id: rootId,
       meta: rootMeta,
-      childrenData: root.children,
+      childrenData: root.layoutChildren,
       expandedNodes: expandedNodes,
     );
   }
@@ -108,13 +112,23 @@ class FamilyTreeLayoutBuilder {
       );
 
   double _estimateRenderedWidth(Meta meta) {
-    var width = FamilyTreeMetrics.nodeWidthBase;
+    final rawText = 28.0 + (meta.label.length * 7.4);
+    final textWidth = math.min(FamilyTreeMetrics.maxNameWidth, rawText);
+    var width = math.max(FamilyTreeMetrics.nodeWidthBase, textWidth);
     if (meta.hasChildren && meta.onDelete != null) {
       width += FamilyTreeMetrics.twoButtonsExtraWidth;
     } else if (meta.hasChildren || meta.onDelete != null) {
       width += FamilyTreeMetrics.buttonExtraWidth;
     }
     return width;
+  }
+
+  double _estimateRenderedHeight(Meta meta) {
+    final rawText = 28.0 + (meta.label.length * 7.4);
+    if (rawText > FamilyTreeMetrics.maxNameWidth) {
+      return FamilyTreeMetrics.nodeHeight + FamilyTreeMetrics.extraLineHeight;
+    }
+    return FamilyTreeMetrics.nodeHeight;
   }
 
   GlobalKey _keyFor(String id) => nodeKeys.putIfAbsent(id, GlobalKey.new);
@@ -125,29 +139,30 @@ class FamilyTreeLayoutBuilder {
     required List<TreeLayoutNode> children,
   }) {
     final estimated = _estimateRenderedWidth(meta);
+    final estimatedH = _estimateRenderedHeight(meta);
     return TreeLayoutNode(
       id: id,
       meta: meta,
       children: children,
       width: estimated,
-      height: FamilyTreeMetrics.nodeHeight,
+      height: estimatedH,
       nodeKey: _keyFor(id),
       renderedWidth: renderedWidths[id] ?? estimated,
-      renderedHeight: renderedHeights[id] ?? FamilyTreeMetrics.nodeHeight,
+      renderedHeight: renderedHeights[id] ?? estimatedH,
     );
   }
 
   TreeLayoutNode _buildLayoutNode({
     required String id,
     required Meta meta,
-    required List<Children>? childrenData,
+    required List<Children> childrenData,
     required Set<String> expandedNodes,
   }) {
     final childLayouts = <TreeLayoutNode>[];
 
-    if (expandedNodes.contains(id) && childrenData != null) {
+    if (expandedNodes.contains(id)) {
       for (final child in childrenData) {
-        final childId = child.sId ?? child.linkedUser?.sId ?? '';
+        final childId = child.nodeId;
         if (childId.isEmpty) continue;
 
         final childMeta = this.meta[childId];
@@ -157,7 +172,7 @@ class FamilyTreeLayoutBuilder {
           _buildLayoutNode(
             id: childId,
             meta: childMeta,
-            childrenData: child.children,
+            childrenData: child.layoutChildren,
             expandedNodes: expandedNodes,
           ),
         );
@@ -169,20 +184,24 @@ class FamilyTreeLayoutBuilder {
 
   void _walkChildrenMeta(List<Children> list) {
     for (final child in list) {
-      final id = child.sId ?? child.linkedUser?.sId ?? UniqueKey().toString();
-      final hasKids = child.children?.isNotEmpty == true;
+      final id = child.nodeId;
+      if (id.isEmpty) continue;
+
+      final kids = child.layoutChildren;
 
       meta[id] = Meta(
         id: id,
-        memberId: child.sId ?? '',
+        memberId: child.sId ?? child.linkedUser?.sId ?? '',
         label: _memberLabel(child.label, child.linkedUser),
-        hasChildren: hasKids,
+        name: child.linkedUser?.name,
+        arabicName: child.linkedUser?.arabicName,
+        hasChildren: kids.isNotEmpty,
         onDelete: onToggleEdit
             ? () => TreeController.to.deleteUser(id)
             : null,
       );
 
-      if (hasKids) _walkChildrenMeta(child.children!);
+      if (kids.isNotEmpty) _walkChildrenMeta(kids);
     }
   }
 }

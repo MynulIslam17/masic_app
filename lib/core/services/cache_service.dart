@@ -62,6 +62,11 @@ class CacheService {
     debugPrint('Deleted from cache: ----------------------->>>  $key');
   }
 
+  Future<void> deleteAll(Iterable<String> keys) async {
+    await box.deleteAll(keys);
+    debugPrint('Deleted from cache: ----------------------->>>  $keys');
+  }
+
   Future<void> clear() async {
     await box.clear();
   }

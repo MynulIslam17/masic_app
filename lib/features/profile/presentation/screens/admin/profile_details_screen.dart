@@ -45,8 +45,17 @@ class ProfileDetailsScreen extends StatelessWidget {
                     name: user?.name,
                     arabicName: user?.arabicName,
                   ),
-                  InfoRow(label: 'Email', value: user?.email ?? 'N/A'),
-                  InfoRow(label: 'Phone no', value: user?.phone ?? 'N/A'),
+                  if (user?.hideEmailOnProfile != true)
+                    InfoRow(
+                      label: 'Email',
+                      value: user?.email ?? 'N/A',
+                      copyable: true,
+                    ),
+                  InfoRow(
+                    label: 'Phone no',
+                    value: user?.phone ?? 'N/A',
+                    copyable: true,
+                  ),
                   InfoRow(
                     label: 'Date of birth',
                     value: TimeFormatHelper.formatDateTime(
@@ -80,11 +89,10 @@ class ProfileDetailsScreen extends StatelessWidget {
                   InfoRow(
                     label: 'Spouse number',
                     value: user?.spousePhone ?? 'N/A',
+                    copyable: true,
                   ),
-                  InfoRow(
-                    label: 'Linkedin link',
-                    value: user?.linkedinLink ?? 'N/A',
-                  ),
+                  if (user?.resolvedLinkedIn != null)
+                    InfoRow.linkedIn(url: user!.resolvedLinkedIn!),
                 ],
               ),
             ),

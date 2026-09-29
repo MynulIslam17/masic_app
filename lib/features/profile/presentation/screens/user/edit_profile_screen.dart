@@ -32,276 +32,241 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = ProfileController.to;
-    return PopScope(
-      canPop: !_isOnboarding,
-      child: CustomScaffold(
-      appBar: CustomAppBar(
-        title: _isOnboarding ? 'Complete Your Profile' : 'Edit Profile',
-        showLeading: !_isOnboarding,
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(16.r),
-          child: Obx(
-                () {
-              return CustomButton(
-                label: _isOnboarding ? 'Continue' : 'Update Profile',
-                isLoading: controller.updateLoadingState.isLoading,
-                onPressed: controller.updateUserProfile,
-              );
-            },
-          ),
+    return CustomScaffold(
+    appBar: CustomAppBar(
+      title: _isOnboarding ? 'Complete Your Profile' : 'Edit Profile',
+    ),
+    bottomNavigationBar: SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(16.r),
+        child: Obx(
+              () {
+            return CustomButton(
+              label: _isOnboarding ? 'Continue' : 'Update Profile',
+              isLoading: controller.updateLoadingState.isLoading,
+              onPressed: controller.updateUserProfile,
+            );
+          },
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          children: [
-            if (_isOnboarding) ...[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                child: CustomText(
-                  text:
-                      'Please complete your profile before selecting your mother tree.',
-                  fontSize: 14.sp,
-                  textAlign: TextAlign.center,
-                  color: AppColors.colorB0B0B0,
-                ),
+    ),
+    body: SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          if (_isOnboarding) ...[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: CustomText(
+                text:
+                    'Please complete your profile before selecting your mother tree.',
+                fontSize: 14.sp,
+                textAlign: TextAlign.center,
+                color: AppColors.colorB0B0B0,
               ),
-              SizedBox(height: 16.h),
-            ],
-            SizedBox(height: _isOnboarding ? 8.h : 24.h),
+            ),
+            SizedBox(height: 16.h),
+          ],
+          SizedBox(height: _isOnboarding ? 8.h : 24.h),
 
-            // ── Avatar Picker ──────────────────────────────────────────────
-            Obx(() {
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  PhotoPickerHelper.showPhotoPicker(
-                    context: context,
-                    onImagePicked: (image) => controller.selectImage(image),
-                    maxWidth: 1024,
-                    maxHeight: 1024,
-                    imageQuality: 85,
-                  );
-                },
-                child: Stack(
-                  children: [
-                    CustomNetworkImage(
-                      boxShape: BoxShape.circle,
-                      height: 80.r,
-                      width: 80.r,
+          // ── Avatar Picker ──────────────────────────────────────────────
+          Obx(() {
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                PhotoPickerHelper.showPhotoPicker(
+                  context: context,
+                  onImagePicked: (image) => controller.selectImage(image),
+                  maxWidth: 1024,
+                  maxHeight: 1024,
+                  imageQuality: 85,
+                );
+              },
+              child: Stack(
+                children: [
+                  CustomNetworkImage(
+                    boxShape: BoxShape.circle,
+                    height: 80.r,
+                    width: 80.r,
 
-                      fallbackAsset: Assets.images.profile.image(),
-                      imageFile: controller.selectedImage,
-                      imageUrl: controller.userData?.profileImage,
+                    fallbackAsset: Assets.images.profile.image(),
+                    imageFile: controller.selectedImage,
+                    imageUrl: controller.userData?.profileImage,
+                  ),
+                  Positioned(
+                    bottom: 7.h,
+                    left: 0,
+                    right: 0,
+                    child: const Icon(
+                      Icons.camera_alt_outlined,
+                      color: Colors.white,
                     ),
-                    Positioned(
-                      bottom: 7.h,
-                      left: 0,
-                      right: 0,
-                      child: const Icon(
-                        Icons.camera_alt_outlined,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+            );
+          }),
+
+          SizedBox(height: 24.h),
+
+          // ── Fields ─────────────────────────────────────────────────────
+          CustomTextField(
+            prefixIcon: Assets.icons.person.svg(),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.nameController,
+            hintText: "Full name",
+          ),
+
+          CustomTextField(
+            prefixIcon: Assets.icons.email.svg(),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.emailController,
+            hintText: "Email address",
+            keyboardType: TextInputType.emailAddress,
+            readOnly: _isOnboarding,
+          ),
+
+          CustomTextField(
+            prefixIcon: Assets.icons.number.svg(),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.phoneController,
+            hintText: "Phone number",
+            keyboardType: TextInputType.phone,
+          ),
+
+          CustomTextField(
+            prefixIcon: Assets.icons.date.svg(),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.dateOfBirthController,
+            hintText: "Date of birth",
+            readOnly: true,
+            suffixIcon: Icon(
+              Icons.arrow_drop_down_outlined,
+              color: AppColors.colorB0B0B0,
+            ),
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: DateTime(2000),
+                firstDate: DateTime(1950),
+                lastDate: DateTime.now(),
               );
-            }),
+              if (picked != null) {
+                controller.setSelectedDate(picked);
+              }
+            },
+          ),
 
-            SizedBox(height: 24.h),
+          _dropdownField(
+            options: const ['Male', 'Female'],
+            controller: controller.genderController,
+            hintText: 'Gender',
+            prefixIcon: Assets.icons.gender.svg(),
+          ),
+          _dropdownField(
+            options: const ['Employed', 'Unemployed', 'Student'],
+            controller: controller.employmentController,
+            hintText: 'Employment status',
+            prefixIcon: Assets.icons.employment.svg(),
+          ),
+          _dropdownField(
+            options: const [
+              'High School',
+              "Bachelor's Degree",
+              "Master's Degree",
+              'PhD',
+            ],
+            controller: controller.educationController,
+            hintText: 'Education',
+            prefixIcon: Assets.icons.education.svg(),
+          ),
 
-            // ── Fields ─────────────────────────────────────────────────────
-            CustomTextField(
-              prefixIcon: Assets.icons.person.svg(),
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.nameController,
-              hintText: "Full name",
-            ),
+          CustomTextField(
+            prefixIcon: Assets.icons.university.svg(),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.universityController,
+            hintText: "University name",
+          ),
 
-            CustomTextField(
-              prefixIcon: Assets.icons.email.svg(),
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.emailController,
-              hintText: "Email address",
-              keyboardType: TextInputType.emailAddress,
-              readOnly: _isOnboarding,
-            ),
+          CustomTextField(
+            prefixIcon: Assets.icons.work.svg(color: AppColors.colorB0B0B0),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.fieldOfWorkController,
+            hintText: "Field of work",
+          ),
 
-            CustomTextField(
-              prefixIcon: Assets.icons.number.svg(),
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.phoneController,
-              hintText: "Phone number",
-              keyboardType: TextInputType.phone,
-            ),
+          CustomTextField(
+            prefixIcon: Assets.icons.person.svg(),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.spouseNameController,
+            hintText: "Spouse name",
+          ),
 
-            CustomTextField(
-              prefixIcon: Assets.icons.date.svg(),
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.dateOfBirthController,
-              hintText: "Date of birth",
+          CustomTextField(
+            prefixIcon: Assets.icons.number.svg(),
+            showShadow: false,
+            borderColor: AppColors.colorE6E6E6,
+            filColor: AppColors.bgColor,
+            controller: controller.spousePhoneController,
+            hintText: "Spouse phone number",
+            keyboardType: TextInputType.phone,
+          ),
+
+          SizedBox(height: 32.h),
+        ],
+      ),
+    ),
+        );
+  }
+
+  Widget _dropdownField({
+    required List<String> options,
+    required TextEditingController controller,
+    required String hintText,
+    required Widget prefixIcon,
+  }) {
+    return Builder(
+      builder: (fieldContext) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () async {
+            final value = await MenuShowHelper.showBelow(
+              context: fieldContext,
+              options: options,
+            );
+            if (value != null) controller.text = value;
+          },
+          child: AbsorbPointer(
+            child: CustomTextField(
               readOnly: true,
               suffixIcon: Icon(
                 Icons.arrow_drop_down_outlined,
                 color: AppColors.colorB0B0B0,
               ),
-              onTap: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime(2000),
-                  firstDate: DateTime(1950),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) {
-                  controller.setSelectedDate(picked);
-                }
-              },
-            ),
-
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: (details) {
-                final value = MenuShowHelper.showCustomMenu(
-                  context: context,
-                  details: details,
-                  options: ["Male", "Female"],
-                );
-                value.then((value) {
-                  if (value != null) controller.genderController.text = value;
-                });
-              },
-              child: CustomTextField(
-                readOnly: true,
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down_outlined,
-                  color: AppColors.colorB0B0B0,
-                ),
-                prefixIcon: Assets.icons.gender.svg(),
-                showShadow: false,
-                borderColor: AppColors.colorE6E6E6,
-                filColor: AppColors.bgColor,
-                controller: controller.genderController,
-                hintText: "Gender",
-              ),
-            ),
-
-            // FIX #4 (employment): null-safe menu result
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: (details) {
-                final value = MenuShowHelper.showCustomMenu(
-                  context: context,
-                  details: details,
-                  options: ["employed", "unemployed","student"],
-                );
-                value.then((value) {
-                  if (value != null) {
-                    controller.employmentController.text = value;
-                  }
-                });
-              },
-              child: CustomTextField(
-                readOnly: true,
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down_outlined,
-                  color: AppColors.colorB0B0B0,
-                ),
-                prefixIcon: Assets.icons.employment.svg(),
-                showShadow: false,
-                borderColor: AppColors.colorE6E6E6,
-                filColor: AppColors.bgColor,
-                controller: controller.employmentController,
-                hintText: "Employment status",
-              ),
-            ),
-
-            // FIX #4 (education): null-safe menu result
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: (details) {
-                final value = MenuShowHelper.showCustomMenu(
-                  context: context,
-                  details: details,
-                  options: [
-                    "High School",
-                    "Bachelor's Degree",
-                    "Master's Degree",
-                    "PhD",
-                  ],
-                );
-                value.then((value) {
-                  if (value != null) {
-                    controller.educationController.text = value;
-                  }
-                });
-              },
-              child: CustomTextField(
-                readOnly: true,
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down_outlined,
-                  color: AppColors.colorB0B0B0,
-                ),
-                prefixIcon: Assets.icons.education.svg(),
-                showShadow: false,
-                borderColor: AppColors.colorE6E6E6,
-                filColor: AppColors.bgColor,
-                controller: controller.educationController,
-                hintText: "Education",
-              ),
-            ),
-
-            CustomTextField(
-              prefixIcon: Assets.icons.university.svg(),
+              prefixIcon: prefixIcon,
               showShadow: false,
               borderColor: AppColors.colorE6E6E6,
               filColor: AppColors.bgColor,
-              controller: controller.universityController,
-              hintText: "University name",
+              controller: controller,
+              hintText: hintText,
             ),
-
-            CustomTextField(
-              prefixIcon: Assets.icons.work.svg(color: AppColors.colorB0B0B0),
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.fieldOfWorkController,
-              hintText: "Field of work",
-            ),
-
-            CustomTextField(
-              prefixIcon: Assets.icons.person.svg(),
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.spouseNameController,
-              hintText: "Spouse name",
-            ),
-
-            CustomTextField(
-              prefixIcon: Assets.icons.number.svg(),
-              showShadow: false,
-              borderColor: AppColors.colorE6E6E6,
-              filColor: AppColors.bgColor,
-              controller: controller.spousePhoneController,
-              hintText: "Spouse phone number",
-              keyboardType: TextInputType.phone,
-            ),
-
-            SizedBox(height: 32.h),
-          ],
-        ),
-      ),
-    ),
+          ),
+        );
+      },
     );
   }
 }

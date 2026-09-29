@@ -1,6 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/localized_name_helper.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/custom_button.dart';
@@ -8,6 +11,8 @@ import 'package:masic_generation/core/widgets/custom_container.dart';
 import 'package:masic_generation/core/widgets/custom_text.dart';
 import 'package:masic_generation/features/tree/data/models/tree_model.dart';
 import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
+import 'package:masic_generation/features/tree/presentation/widgets/family_tree/constants.dart';
+import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
 
 class NodeCard extends StatelessWidget {
@@ -58,11 +63,14 @@ class NodeCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 100.w),
-                      child: CustomText(
-                        maxline: 1,
-                        textOverflow: TextOverflow.ellipsis,
-                        text: meta.label,
+                      constraints: BoxConstraints(
+                        maxWidth: math.min(
+                          FamilyTreeMetrics.maxNameWidth,
+                          MediaQuery.sizeOf(context).width * 0.42,
+                        ),
+                      ),
+                      child: _TreeMemberName(
+                        meta: meta,
                         fontSize: 13.sp,
                         fontWeight: meta.isRoot
                             ? FontWeight.w600
@@ -169,5 +177,55 @@ class NodeCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Tree-only name: Arabic locale uses [Meta.arabicName] as-is.
+/// If that field is empty, the English name is translated.
+class _TreeMemberName extends StatelessWidget {
+  const _TreeMemberName({
+    required this.meta,
+    required this.fontSize,
+    required this.fontWeight,
+    required this.color,
+  });
+
+  final Meta meta;
+  final double fontSize;
+  final FontWeight fontWeight;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      TranslationController.to.currentLanguage.value;
+      final isArabic = LocalizedNameHelper.isArabicLocale;
+      final arabic = meta.arabicName?.trim();
+      final english = (meta.name?.trim().isNotEmpty == true)
+          ? meta.name!.trim()
+          : meta.label.trim();
+
+      if (isArabic && arabic != null && arabic.isNotEmpty) {
+        return CustomText(
+          text: arabic,
+          enableAutoTranslate: false,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+          color: color,
+          maxline: 2,
+          textOverflow: TextOverflow.ellipsis,
+        );
+      }
+
+      return CustomText(
+        text: english,
+        enableAutoTranslate: isArabic && english.isNotEmpty,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
+        color: color,
+        maxline: 2,
+        textOverflow: TextOverflow.ellipsis,
+      );
+    });
   }
 }

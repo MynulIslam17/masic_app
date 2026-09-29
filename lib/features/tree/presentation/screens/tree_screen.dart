@@ -4,14 +4,12 @@ import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
-import 'package:masic_generation/core/widgets/custom_button.dart';
 import 'package:masic_generation/core/widgets/custom_container.dart';
-import 'package:masic_generation/core/widgets/custom_dialog.dart';
 import 'package:masic_generation/core/widgets/custom_loader.dart';
-import 'package:masic_generation/core/widgets/custom_text.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/features/search/search_screen.dart';
 import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
+import 'package:masic_generation/features/tree/presentation/widgets/family_origin_dialog.dart';
 import 'package:masic_generation/features/tree/presentation/widgets/family_tree.dart';
 import 'package:get/get.dart';
 
@@ -97,55 +95,7 @@ class TreeScreen extends StatelessWidget {
                     SizedBox(width: 6.w),
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        showDialog(
-                          barrierDismissible: false,
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              insetPadding: EdgeInsets.all(20.r),
-                              backgroundColor: AppColors.background,
-                              title: CustomText(
-                                text: 'Family origin',
-                                color: AppColors.primaryColor,
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CustomText(
-                                    textAlign: TextAlign.start,
-                                    text:
-                                        """The Subai' tribe is an ancient and distinguished Adnanite Arab tribe of Amiri lineage, historically centered in the town of Al-Khurmah. Its tribal presence extends to Ranyah, the lower regions of Wadi Turabah, and the surrounding valleys located east of Taif.
-It is traditionally recognized that the Al-Subeaei family in Unaizah descends from Banu Thawr, one of the principal branches of the tribe, whose traditional sheikhs are the Al Shari’ family of Al-Hulaymah, the historic leaders of Banu Thawr.
-The Subai' tribe comprises numerous branches and sub-clans, among the most notable are:
-• Banu Amir
-• Banu Umar
-• Al Umair
-• Al Qurayshat
-• Banu Thawr
-• Al Zukur
-• Al Rubah
-• Al Suwadah""",
-                                    fontSize: 12.sp,
-                                  ),
-                                ],
-                              ),
-                              
-                              actions: [
-                                CustomButton(
-                                  backgroundColor: AppColors.transparent,
-                                  foregroundColor: AppColors.primaryColor,
-                                  bordersColor: AppColors.primaryColor,
-                                  onPressed: (){
-                                    Get.back(canPop: true);
-                                  },label: 'Close',)
-                              ],
-                            );
-                          },
-                        );
-                      },
+                      onTap: () => FamilyOriginDialog.show(context),
                       child: CustomContainer(
                         paddingAll: 10.r,
                         shape: BoxShape.circle,

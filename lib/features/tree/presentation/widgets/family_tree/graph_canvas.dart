@@ -10,6 +10,7 @@ class FamilyTreeGraphCanvas extends StatelessWidget {
   final Paint linePaint;
   final Set<String> expandedNodes;
   final ValueChanged<String> onToggleNode;
+  final VoidCallback? onNodeSizeChanged;
 
   const FamilyTreeGraphCanvas({
     super.key,
@@ -19,6 +20,7 @@ class FamilyTreeGraphCanvas extends StatelessWidget {
     required this.linePaint,
     required this.expandedNodes,
     required this.onToggleNode,
+    this.onNodeSizeChanged,
   });
 
   @override
@@ -50,13 +52,21 @@ class FamilyTreeGraphCanvas extends StatelessWidget {
       left: node.x,
       top: node.y,
       child: RepaintBoundary(
-        child: NodeCard(
-          key: node.nodeKey,
-          meta: node.meta,
-          isExpanded: expandedNodes.contains(node.id),
-          onToggle: node.meta.hasChildren
-              ? () => onToggleNode(node.id)
-              : null,
+        child: NotificationListener<SizeChangedLayoutNotification>(
+          onNotification: (_) {
+            onNodeSizeChanged?.call();
+            return true;
+          },
+          child: SizeChangedLayoutNotifier(
+            child: NodeCard(
+              key: node.nodeKey,
+              meta: node.meta,
+              isExpanded: expandedNodes.contains(node.id),
+              onToggle: node.meta.hasChildren
+                  ? () => onToggleNode(node.id)
+                  : null,
+            ),
+          ),
         ),
       ),
     );

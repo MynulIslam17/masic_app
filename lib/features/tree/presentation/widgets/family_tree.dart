@@ -28,6 +28,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
   late FamilyTreeLayoutBuilder _layoutBuilder;
   List<TreeLayoutNode> _allNodes = [];
   String? _lastExpandedKey;
+  String? _lastLanguage;
   bool _pendingMeasure = true;
 
   @override
@@ -52,9 +53,19 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
     }
   }
 
-  void _scheduleMeasureIfNeeded(String expandedKey) {
-    if (!_pendingMeasure && _lastExpandedKey == expandedKey) return;
+  void _scheduleMeasureIfNeeded(String expandedKey, String language) {
+    final languageChanged = _lastLanguage != language;
+    if (!_pendingMeasure &&
+        !languageChanged &&
+        _lastExpandedKey == expandedKey) {
+      return;
+    }
 
+    if (languageChanged) {
+      _layoutBuilder.resetMeasurement();
+    }
+
+    _lastLanguage = language;
     _lastExpandedKey = expandedKey;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -62,6 +73,16 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
       final changed = _layoutBuilder.measureNodes(_allNodes);
       _pendingMeasure = false;
       if (changed) setState(() {});
+    });
+  }
+
+  void _onNodeSizeChanged() {
+    _pendingMeasure = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_layoutBuilder.measureNodes(_allNodes)) {
+        setState(() {});
+      }
     });
   }
 
@@ -89,7 +110,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
       maxScale: 5,
       constrained: false,
       child: Obx(() {
-        TranslationController.to.currentLanguage.value;
+        final language = TranslationController.to.currentLanguage.value.code;
         _layoutBuilder.rebuildMeta();
 
         final expandedNodes = TreeController.to.expandedNodes;
@@ -103,7 +124,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
         _layoutBuilder.pruneMeasurementCache(allNodes.map((n) => n.id).toSet());
 
         final graphSize = computeTreeGraphSize(allNodes);
-        _scheduleMeasureIfNeeded(expandedKey);
+        _scheduleMeasureIfNeeded(expandedKey, language);
 
         final totalW = (graphLeftOffset + graphSize.width + 48).clamp(
           screenW * 2,
@@ -137,6 +158,7 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
                   linePaint: linePaint,
                   expandedNodes: expandedNodes,
                   onToggleNode: _onToggleNode,
+                  onNodeSizeChanged: _onNodeSizeChanged,
                 ),
               ),
             ],

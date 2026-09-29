@@ -229,22 +229,43 @@ class AuthController extends GetxController {
   }
 
   /// ─── LOGOUT ────────────────────────────
+  ///
+  /// Re-entrant safe: a 401 from a request that was still in flight can call
+  /// this again, and a second [Get.offAllNamed] would leave two login screens
+  /// in the tree fighting over the same form [GlobalKey].
+  bool _loggingOut = false;
+
   Future<void> logout() async {
-    await _pushNotificationService.deleteToken();
-    await _authService.logout();
-    Get.offAllNamed(AppRoutes.loginScreen);
+    if (_loggingOut) return;
+    _loggingOut = true;
+    try {
+      await _pushNotificationService.deleteToken();
+      await _authService.logout();
+      clearControllers();
+      Get.offAllNamed(AppRoutes.loginScreen);
+    } finally {
+      _loggingOut = false;
+    }
   }
 
   /// ─── IS LOGGED IN ──────────────────────
   bool isLoggedIn() => _authService.isLoggedIn();
 
-  bool isAdmin() {
-    final user = _authService.getCachedUser();
-    if (user != null) {
-      return user.role == 'superAdmin';
-    }
-    return false;
+  UserResponseModel? get cachedUser => _authService.getCachedUser();
+
+  static bool isAdminRole(String? role) {
+    final key = (role ?? '').trim().toLowerCase();
+    return key == 'admin' || key == 'superadmin' || key == 'super_admin';
   }
+
+  static bool isSuperAdminRole(String? role) {
+    final key = (role ?? '').trim().toLowerCase();
+    return key == 'superadmin' || key == 'super_admin';
+  }
+
+  bool isAdmin() => isAdminRole(cachedUser?.role);
+
+  bool isSuperAdmin() => isSuperAdminRole(cachedUser?.role);
 
   Future<void> navigateAuthenticatedUser({UserResponseModel? user}) async {
     final currentUser = user ?? _authService.getCachedUser();
@@ -253,7 +274,7 @@ class AuthController extends GetxController {
       return;
     }
 
-    if (currentUser.role == 'superAdmin') {
+    if (isAdminRole(currentUser.role)) {
       Get.offAllNamed(AppRoutes.adminBottomNavBar);
       ProfileController.to.loadData();
       return;

@@ -36,22 +36,26 @@ class MemberCard extends StatelessWidget {
       return ListTile(
         selected: isSelected,
         selectedTileColor: AppColors.primaryColor.withValues(alpha: 0.05),
-        leading: CustomNetworkImage(
-          height: 48.r,
-          width: 48.r,
-          boxShape: BoxShape.circle,
-          imageUrl: user.profileImage,
+        minLeadingWidth: 40.w,
+        horizontalTitleGap: 10.w,
+        leading: SizedBox(
+          width: 40.w,
+          height: 40.w,
+          child: ClipOval(
+            child: CustomNetworkImage(
+              height: 40.w,
+              width: 40.w,
+              boxShape: BoxShape.circle,
+              imageUrl: user.profileImage,
+              fit: BoxFit.cover,
+            ),
+          ),
         ),
         title: LocalizedNameText(
           name: user.name,
           arabicName: user.arabicName,
           textAlign: TextAlign.start,
           fontSize: 16.sp,
-        ),
-        subtitle: CustomText(
-          textAlign: TextAlign.start,
-          text: 'Mother tree: ${user.motherTree ?? ''}',
-          fontSize: 10.sp,
         ),
         trailing: (user.treeJoinStatus == 'placed' && isTree)
             ? CustomButton(

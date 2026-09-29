@@ -126,7 +126,7 @@ class AllUserScreen extends StatelessWidget {
                       () => CustomText(
                         textAlign: TextAlign.start,
                         fontSize: 12.sp,
-                        text: 'Total user : ${controller.usersData.length}',
+                        text: 'Total user : ${controller.usersTotal}',
                       ),
                     ),
                     SizedBox(height: 16.h),

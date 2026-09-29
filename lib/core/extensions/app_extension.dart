@@ -26,4 +26,29 @@ extension AppExceptionX on Object {
   }
 }
 
+extension StringDisplayX on String {
+  /// Capitalizes the first letter of each word: "female" → "Female".
+  String get toTitleCase {
+    final trimmed = trim();
+    if (trimmed.isEmpty) return this;
+    if (trimmed.toUpperCase() == 'N/A') return trimmed;
+
+    return trimmed.split(RegExp(r'(\s+)')).map((part) {
+      if (part.trim().isEmpty) return part;
+      return part.split('-').map((word) {
+        if (word.isEmpty) return word;
+        return '${word[0].toUpperCase()}${word.substring(1)}';
+      }).join('-');
+    }).join();
+  }
+}
+
+extension NullableStringDisplayX on String? {
+  String? get toTitleCaseOrNull {
+    final value = this;
+    if (value == null || value.trim().isEmpty) return value;
+    return value.toTitleCase;
+  }
+}
+
 

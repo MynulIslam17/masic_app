@@ -7,9 +7,11 @@ import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/home/presentation/controllers/home_controller.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_content.dart';
 import 'package:masic_generation/features/home/presentation/widgets/home_simmer.dart';
 import 'package:masic_generation/core/widgets/localized_name_text.dart';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
@@ -51,6 +53,18 @@ class HomeScreen extends StatelessWidget {
                   return Obx(() {
                     TranslationController.to.currentLanguage.value;
                     final userData = ProfileController.to.userData;
+                    final authUser = AuthController.to.cachedUser;
+                    final name = userData?.name ?? authUser?.name;
+                    final arabicName =
+                        userData?.arabicName ?? authUser?.arabicName;
+                    final hasName = (name?.trim().isNotEmpty ?? false) ||
+                        (arabicName?.trim().isNotEmpty ?? false);
+                    final roleLabel = UserModel.roleLabelOf(
+                      userData?.role ?? authUser?.role,
+                    );
+                    final titleColor = isCollapsed
+                        ? AppColors.primaryColor
+                        : Colors.white;
                     return Row(
                       children: [
                         CustomNetworkImage(
@@ -66,21 +80,28 @@ class HomeScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              LocalizedNameText(
-                                name: userData?.name,
-                                arabicName: userData?.arabicName,
-                                fontSize: 14.sp,
-                                color: isCollapsed
-                                    ? AppColors.primaryColor
-                                    : Colors.white,
-                                textAlign: TextAlign.start,
-                              ),
+                              if (hasName)
+                                LocalizedNameText(
+                                  name: name,
+                                  arabicName: arabicName,
+                                  fontSize: 14.sp,
+                                  color: titleColor,
+                                  textAlign: TextAlign.start,
+                                )
+                              else if (roleLabel != null)
+                                CustomText(
+                                  text: roleLabel,
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: titleColor,
+                                  textAlign: TextAlign.start,
+                                ),
                               CustomText(
-                                color: isCollapsed
-                                    ? AppColors.primaryColor
-                                    : Colors.white,
+                                color: titleColor,
                                 textAlign: TextAlign.start,
-                                text: 'Welcome to MASIC Generation',
+                                text: hasName && roleLabel != null
+                                    ? roleLabel
+                                    : 'Welcome to MASIC Generation',
                                 fontSize: 10.sp,
                               ),
                             ],

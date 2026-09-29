@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
-import 'package:masic_generation/core/widgets/localized_name_text.dart';
+import 'package:masic_generation/features/profile/presentation/widgets/info_row.dart';
 import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
@@ -69,67 +69,67 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                     bordersColor: AppColors.borderColor,
                     radiusAll: 12.r,
                     child: Column(
-                      spacing: 16.h,
                       children: [
                         if (user != null &&
                             ((user.name?.isNotEmpty ?? false) ||
                                 (user.arabicName?.isNotEmpty ?? false)))
-                          _buildInfoRow(
+                          InfoRow.personName(
                             label: 'Name',
-                            valueWidget: LocalizedNameText(
-                              name: user.name,
-                              arabicName: user.arabicName,
-                              fontSize: 12.sp,
-                              textAlign: TextAlign.start,
-                            ),
+                            name: user.name,
+                            arabicName: user.arabicName,
                           ),
-                        if (user?.email != null && user!.email!.isNotEmpty)
-                          _buildInfoRow(label: 'Email', value: user.email, translateValue: false),
+                        if (user?.email != null &&
+                            user!.email!.isNotEmpty &&
+                            !user.hideEmailOnProfile)
+                          InfoRow(
+                            label: 'Email',
+                            value: user.email,
+                            copyable: true,
+                          ),
                         if (user?.phone != null && user!.phone!.isNotEmpty)
-                          _buildInfoRow(label: 'Phone no', value: user.phone, translateValue: true),
+                          InfoRow(
+                            label: 'Phone no',
+                            value: user.phone,
+                            copyable: true,
+                          ),
                         if (user?.gender != null && user!.gender!.isNotEmpty)
-                          _buildInfoRow(label: 'Gender', value: user.gender, translateValue: true),
+                          InfoRow(
+                            label: 'Gender',
+                            value: user.gender,
+                            translateValue: true,
+                          ),
                         if (user?.employmentStatus != null &&
                             user!.employmentStatus!.isNotEmpty)
-                          _buildInfoRow(
+                          InfoRow(
                             label: 'Employment status',
                             value: user!.employmentStatus,
                             translateValue: true,
                           ),
                         if (user?.education != null &&
                             user!.education!.isNotEmpty)
-                          _buildInfoRow(
+                          InfoRow(
                             label: 'Education',
                             value: user!.education,
                             translateValue: true,
                           ),
                         if (user?.universityName != null &&
                             user!.universityName!.isNotEmpty)
-                          _buildInfoRow(
+                          InfoRow(
                             label: 'University name',
                             value: user!.universityName,
-                            translateValue: false,
                           ),
                         if (user?.fieldOfWork != null &&
                             user!.fieldOfWork!.isNotEmpty)
-                          _buildInfoRow(
+                          InfoRow(
                             label: 'Field of work',
                             value: user!.fieldOfWork,
                             translateValue: true,
                           ),
                         if (user?.spouseName != null &&
                             user!.spouseName!.isNotEmpty)
-                          _buildInfoRow(
+                          InfoRow(
                             label: 'Spouse name',
                             value: user!.spouseName,
-                            translateValue: false,
-                          ),
-                        if (user?.contact?.linkedin != null &&
-                            user!.contact!.linkedin!.isNotEmpty)
-                          _buildInfoRow(
-                            label: 'Linkedin link',
-                            value: user!.contact!.linkedin,
-                            translateValue: false,
                           ),
                       ],
                     ),
@@ -140,40 +140,6 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
           }
         }),
       ),
-    );
-  }
-
-  // ── Row Helpers ────────────────────────────────────────────────────────────
-  Widget _buildInfoRow({
-    required String label,
-    String? value,
-    Widget? valueWidget,
-    bool translateValue = false,
-  }) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 100.w,
-          child: CustomText(
-            text: label,
-            fontSize: 12.sp,
-            textAlign: TextAlign.start,
-          ),
-        ),
-        SizedBox(width: 24.w),
-        CustomText(text: ':', fontSize: 12.sp),
-        SizedBox(width: 32.w),
-        Expanded(
-          child:
-              valueWidget ??
-              CustomText(
-                enableAutoTranslate: translateValue,
-                text: value ?? '',
-                fontSize: 12.sp,
-                textAlign: TextAlign.start,
-              ),
-        ),
-      ],
     );
   }
 }

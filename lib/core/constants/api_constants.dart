@@ -1,8 +1,6 @@
 class ApiConstants {
   static const String baseUrl = 'https://api.masicgeneration.com';
 
-  /// ─── Auth Marker ───────────────────────────
-  static const String requiresAuthHeader = 'X-Requires-Auth';
   static const Map<String, dynamic> headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
@@ -63,7 +61,7 @@ class ApiConstants {
       '/api/v1/notification?page=$page&limit=$limit';
 
   /// banner ──────────────────────────────────────────────
-  static const String banner = '/api/v1/banner';
+  static const String banner = '/api/v1/banner/';
   static const String bannerAll = '/api/v1/banner/all';
   static const String bannerCreate = '/api/v1/banner/upload';
   static  String bannerDelete(String bannerId) => '/api/v1/banner/$bannerId/delete';
@@ -101,6 +99,7 @@ class ApiConstants {
   static const String cacheUserProfile = 'user/me';
   static const String cacheUsersProfile = 'users/me';
   static const String cacheAdminProfile = 'users/admin';
+  static const String cachePlacedUsers = 'users/placed';
   static const String cacheAnnouncements = 'announcements';
   static const String cacheMyAnnouncements = 'announcements_my';
   static const String cachePolls = 'poll';

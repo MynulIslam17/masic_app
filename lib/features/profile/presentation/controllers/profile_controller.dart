@@ -78,6 +78,11 @@ class ProfileController extends GetxController {
 
   List<UserModel> get usersData => _usersData;
 
+  final RxInt _usersTotal = 0.obs;
+
+  /// Full count from the users API `meta.total`, not the loaded page size.
+  int get usersTotal => _usersTotal.value;
+
   // ─── Filters ───────────────────────────────────────────────────────────────
   final RxString _genderFilter = ''.obs;
   final RxString _employmentFilter = ''.obs;
@@ -109,7 +114,45 @@ class ProfileController extends GetxController {
 
   bool get isEducationOngoings => _isEducationOngoings.value;
 
-  void setRoleFilter(String value) => _roleFilter.value = value;
+  void setRoleFilter(String value, {bool reloadIfSame = true}) {
+    if (_roleFilter.value == value) {
+      if (reloadIfSame) refresh();
+      return;
+    }
+    _roleFilter.value = value;
+  }
+
+  void _clearListFilters() {
+    _genderFilter.value = '';
+    _employmentFilter.value = '';
+    _educationFilter.value = '';
+    _ageFilter.value = '';
+    _fieldOfWorkFilter.value = '';
+    _nameFilter.value = '';
+    searchController.clear();
+  }
+
+  Future<void> openAllUsers() async {
+    _clearListFilters();
+    _loadingState.value = LoadingState.loading;
+    Get.toNamed(AppRoutes.allUserScreen);
+    if (_roleFilter.value.isEmpty) {
+      await refresh(showLoader: true);
+    } else {
+      _roleFilter.value = '';
+    }
+  }
+
+  Future<void> openAllAdmins() async {
+    _clearListFilters();
+    _loadingState.value = LoadingState.loading;
+    Get.toNamed(AppRoutes.allAdminScreen);
+    if (_roleFilter.value == 'admin') {
+      await refresh(showLoader: true);
+    } else {
+      _roleFilter.value = 'admin';
+    }
+  }
 
 
 
@@ -134,6 +177,9 @@ class ProfileController extends GetxController {
   // ─── Pagination ────────────────────────────────────────────────────────────
   int _currentPage = 1;
   final int _limit = 10;
+  static const int _motherTreeLimit = 1000;
+  bool _motherTreePickerMode = false;
+  bool _motherTreePlacedOnly = false;
   final RxBool _isLoadingMore = false.obs;
   bool _isRefreshing = false;
 
@@ -183,7 +229,7 @@ class ProfileController extends GetxController {
     ever(_connectivityService.isConnected, (isConnected) {
       if (isConnected) loadData();
     });
-    ever(_roleFilter, (_) => refresh());
+    ever(_roleFilter, (_) => refresh(showLoader: true));
     loadData();
   }
 
@@ -204,12 +250,43 @@ class ProfileController extends GetxController {
 
   void _resetPagination() {
     _currentPage = 1;
-    _hasMore.value = true;
+    _hasMore.value = !_motherTreePickerMode;
     _isLoadingMore.value = false;
   }
 
   void _syncHasMoreAfterFirstPage() {
+    if (_motherTreePickerMode) {
+      _hasMore.value = false;
+      return;
+    }
+    final total = _usersTotal.value;
+    if (total > 0) {
+      _hasMore.value = _usersData.length < total;
+      return;
+    }
     _hasMore.value = _usersData.length >= _limit;
+  }
+
+  String? get _activeTreeJoinStatus =>
+      _motherTreePickerMode && _motherTreePlacedOnly ? 'placed' : null;
+
+  int get _activeUserLimit =>
+      _motherTreePickerMode ? _motherTreeLimit : _limit;
+
+  void enterMotherTreePicker({required bool placedOnly}) {
+    _motherTreePickerMode = true;
+    _motherTreePlacedOnly = placedOnly;
+    _hasMore.value = false;
+  }
+
+  Future<void> startMotherTreePicker({required bool placedOnly}) async {
+    enterMotherTreePicker(placedOnly: placedOnly);
+    await refresh(showLoader: true);
+  }
+
+  void stopMotherTreePicker() {
+    _motherTreePickerMode = false;
+    _motherTreePlacedOnly = false;
   }
 
   // ─── File & Image ──────────────────────────────────────────────────────────
@@ -290,15 +367,13 @@ class ProfileController extends GetxController {
     _fieldOfWorkFilter.value = fieldOfWork;
     _nameFilter.value = name;
 
-    final needsManualRefresh = _roleFilter.value.isEmpty;
-    if (!needsManualRefresh) {
-      _roleFilter.value = '';
-    }
-
+    _loadingState.value = LoadingState.loading;
     Get.toNamed(AppRoutes.allUserScreen);
 
-    if (needsManualRefresh) {
-      await refresh();
+    if (_roleFilter.value.isEmpty) {
+      await refresh(showLoader: true);
+    } else {
+      _roleFilter.value = '';
     }
   }
 
@@ -340,25 +415,35 @@ class ProfileController extends GetxController {
   void onChangedEducation(value) => _isEducationOngoings.value = value!;
 
   // ─── Load Data ─────────────────────────────────────────────────────────────
-  Future<void> loadData() async {
+  Future<void> loadData({bool showLoader = false}) async {
     try {
       final role = _roleFilter.value;
       final hasCache = _service.hasCache();
       final isOnline = _connectivityService.isConnected.value;
 
-      if (hasCache) {
+      if (showLoader) {
+        _loadingState.value = LoadingState.loading;
+      } else if (hasCache) {
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.loading;
       }
 
-      if (!isOnline) return;
+      if (!isOnline) {
+        if (hasCache) {
+          _loadFromCache();
+          _loadingState.value = LoadingState.loaded;
+        } else {
+          _loadingState.value = LoadingState.offline;
+        }
+        return;
+      }
 
       try {
         await _service.fetchUserProfile(
           page: 1,
-          limit: _limit,
+          limit: _activeUserLimit,
           gender: genderFilter,
           employmentStatus: employmentFilter,
           educationLevel: educationFilter,
@@ -367,13 +452,19 @@ class ProfileController extends GetxController {
           role: role,
           fieldOfWork: fieldOfWorkFilter,
           name: nameFilter,
+          treeJoinStatus: _activeTreeJoinStatus,
         );
         _loadFromCache();
         _currentPage = 1;
         _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
-        if (!hasCache) _loadingState.value = LoadingState.error;
+        if (hasCache) {
+          _loadFromCache();
+          _loadingState.value = LoadingState.loaded;
+        } else {
+          _loadingState.value = LoadingState.error;
+        }
         if (kDebugMode) debugPrint('Fetch error: $e');
       }
     } catch (e) {
@@ -399,7 +490,7 @@ class ProfileController extends GetxController {
 
       final newUsers = await _service.fetchUsersMore(
         page: _currentPage,
-        limit: _limit,
+        limit: _activeUserLimit,
         gender: genderFilter,
         employmentStatus: employmentFilter,
         educationLevel: educationFilter,
@@ -407,11 +498,16 @@ class ProfileController extends GetxController {
         role: roleFilter,
         fieldOfWork: fieldOfWorkFilter,
         name: nameFilter,
+        treeJoinStatus: _activeTreeJoinStatus,
       );
 
+      _syncUsersTotalFromCache();
       if (newUsers.isNotEmpty) {
         _usersData.addAll(newUsers);
-        if (newUsers.length < _limit) _hasMore.value = false;
+        final total = _usersTotal.value;
+        _hasMore.value = total > 0
+            ? _usersData.length < total
+            : newUsers.length >= _activeUserLimit;
       } else {
         _hasMore.value = false;
       }
@@ -475,7 +571,11 @@ class ProfileController extends GetxController {
   void _loadFromCache() {
     _populateControllers(_service.getCachedUserData());
     _userData.value = _service.getCachedUserData();
-    _usersData.value = _service.getCachedUsers(roleFilter);
+    _usersData.value = _service.getCachedUsers(
+      roleFilter,
+      treeJoinStatus: _activeTreeJoinStatus,
+    );
+    _syncUsersTotalFromCache();
 
     assert(() {
       if (kDebugMode) {
@@ -484,6 +584,14 @@ class ProfileController extends GetxController {
       }
       return true;
     }());
+  }
+
+  void _syncUsersTotalFromCache() {
+    final total = _service.getCachedUsersTotal(
+      roleFilter,
+      treeJoinStatus: _activeTreeJoinStatus,
+    );
+    _usersTotal.value = total ?? _usersData.length;
   }
 
   Future<List<UserModel>> _fetchSearch(String query) async {
@@ -695,7 +803,7 @@ class ProfileController extends GetxController {
 
       if (isOnboarding) {
         finishOnboarding();
-        Get.offAllNamed(AppRoutes.motherSelectScreen);
+        Get.toNamed(AppRoutes.motherSelectScreen);
         loadData();
       } else {
         Get.back(canPop: true);
@@ -716,9 +824,9 @@ class ProfileController extends GetxController {
     dateOfBirthController.text = TimeFormatHelper.formatDateTime(
       data.dateOfBirth ?? '',
     );
-    genderController.text = data.gender ?? '';
-    employmentController.text = data.employmentStatus ?? '';
-    educationController.text = data.education ?? '';
+    genderController.text = data.gender?.toTitleCase ?? '';
+    employmentController.text = data.employmentStatus?.toTitleCase ?? '';
+    educationController.text = data.education?.toTitleCase ?? '';
     universityController.text = data.universityName ?? '';
     fieldOfWorkController.text = data.fieldOfWork ?? '';
     spouseNameController.text = data.spouseName ?? '';
@@ -731,14 +839,17 @@ class ProfileController extends GetxController {
   Future<void> retry() => refresh();
 
   @override
-  Future<void> refresh() async {
+  Future<void> refresh({bool showLoader = false}) async {
     _resetPagination();
     _isRefreshing = true;
+    if (showLoader) {
+      _loadingState.value = LoadingState.loading;
+    }
     if (_scrollController?.hasClients ?? false) {
       _scrollController!.jumpTo(0);
     }
     try {
-      await loadData();
+      await loadData(showLoader: showLoader);
     } finally {
       _isRefreshing = false;
     }
@@ -755,13 +866,31 @@ class ProfileController extends GetxController {
   }
 
 
-  Future<void> updateRole(String userId,String role) async {
+  Future<void> updateRole(String userId, String role) async {
+    if (userId.isEmpty) {
+      ToastMessageHelper.show('Invalid user');
+      return;
+    }
+
     try {
       _updateRoleState.value = LoadingState.loading;
-      await _service.updateRole(userId,role);
+      await _service.updateRole(userId, role);
+
+      final index = _usersData.indexWhere((u) => u.sId == userId);
+      if (index != -1) {
+        _usersData[index].role = role;
+        if (roleFilter == 'admin' && role != 'admin') {
+          _usersData.removeAt(index);
+        }
+        _usersData.refresh();
+      }
+
       _updateRoleState.value = LoadingState.loaded;
+      if (Get.isDialogOpen == true) Get.back();
+      ToastMessageHelper.show(
+        role == 'admin' ? 'Admin access granted' : 'Admin access removed',
+      );
       await retry();
-      Get.back(canPop: true);
     } catch (e) {
       _updateRoleState.value = LoadingState.error;
       debugPrint('❌ Update error: $e');

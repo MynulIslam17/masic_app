@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
+import 'package:masic_generation/core/helpers/clipboard_helper.dart';
 import 'package:masic_generation/core/helpers/menu_show_helper.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
@@ -8,10 +9,8 @@ import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/core/widgets/localized_name_text.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
-import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 class UserCard extends StatelessWidget {
   const UserCard({super.key, required this.user});
@@ -54,15 +53,21 @@ class UserCard extends StatelessWidget {
                     options: [
                       'View Details',
                       if (user.isDeleted == true) 'Unblock' else 'Block',
-                      if (ProfileController.to.userData?.role ==
-                          'superAdmin') ...[
-                        if (user.role == 'admin') 'Decline admin access',
-                        if (user.role == 'user') 'Give admin access',
+                      if (ProfileController.to.userData?.normalizedRole ==
+                              'superadmin' &&
+                          user.sId != ProfileController.to.userData?.sId &&
+                          user.normalizedRole != 'superadmin') ...[
+                        if (user.normalizedRole == 'admin')
+                          'Decline admin access',
+                        if (user.normalizedRole == 'user') 'Give admin access',
                       ],
                     ],
                   );
 
                   if (selectedMenu == null) return;
+
+                  final userId = user.sId;
+                  if (userId == null || userId.isEmpty) return;
 
                   if (selectedMenu == 'View Details') {
                     Get.toNamed(
@@ -80,7 +85,7 @@ class UserCard extends StatelessWidget {
                           isLoading: controller.updateRoleState.isLoading,
                           onTapLeftButton: () => Get.back(),
                           onTapRightButton: () =>
-                              controller.updateRole(user.sId!, 'user'),
+                              controller.updateRole(userId, 'user'),
                           description:
                               'Are you sure you want to decline this admin access request?',
                         ),
@@ -97,7 +102,7 @@ class UserCard extends StatelessWidget {
                           isLoading: controller.updateRoleState.isLoading,
                           onTapLeftButton: () => Get.back(),
                           onTapRightButton: () =>
-                              controller.updateRole(user.sId!, 'admin'),
+                              controller.updateRole(userId, 'admin'),
                           description:
                               'Are you sure you want to give this admin access request?',
                         ),
@@ -126,7 +131,11 @@ class UserCard extends StatelessWidget {
                     );
                   }
                 },
-                child: Icon(Icons.more_vert, size: 20.h),
+                child: SizedBox(
+                  width: 40.r,
+                  height: 40.r,
+                  child: Icon(Icons.more_vert, size: 20.h),
+                ),
               ),
             ],
           ),
@@ -134,38 +143,65 @@ class UserCard extends StatelessWidget {
           _buildMenu(
             icon: Assets.icons.colorEmail.svg(),
             label: user.email ?? 'N/A',
+            copyable: true,
+            copyLabel: 'Email',
           ),
           _buildMenu(
             icon: Assets.icons.work.svg(),
-            label: user.employmentStatus ?? 'N/A',
+            label: user.employmentStatus?.toTitleCaseOrNull ?? 'N/A',
           ),
           _buildMenu(
             icon: Assets.icons.phone.svg(),
             label: user.phone ?? 'N/A',
+            copyable: true,
+            copyLabel: 'Phone no',
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMenu({required Widget icon, required String label}) {
+  Widget _buildMenu({
+    required Widget icon,
+    required String label,
+    bool copyable = false,
+    String copyLabel = '',
+  }) {
+    final canCopy = copyable &&
+        label.trim().isNotEmpty &&
+        label.toUpperCase() != 'N/A';
+
     return CustomContainer(
       marginBottom: 10.h,
       paddingVertical: 10.h,
       paddingHorizontal: 10.w,
       radiusAll: 24.r,
       bordersColor: AppColors.borderColor,
+      onTap: canCopy
+          ? () => ClipboardHelper.copy(label, message: '$copyLabel copied')
+          : null,
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           icon,
           Expanded(
             child: CustomText(
+              enableAutoTranslate: !copyable,
               textAlign: TextAlign.start,
               left: 10.w,
               fontSize: 10.sp,
               text: label,
             ),
           ),
+          if (canCopy)
+            Padding(
+              padding: EdgeInsets.only(left: 6.w, top: 2.h),
+              child: Icon(
+                Icons.copy_rounded,
+                size: 14.r,
+                color: AppColors.primaryColor,
+              ),
+            ),
         ],
       ),
     );

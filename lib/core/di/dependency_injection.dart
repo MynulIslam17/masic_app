@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
@@ -64,7 +65,16 @@ class DependencyInjection {
 
     /// API Service
     final apiService = ApiService();
-    apiService.init(connectivityService, Get.find<CacheService>());
+    apiService.init(
+      connectivityService,
+      Get.find<CacheService>(),
+      // Resolved lazily: AuthController is registered further down.
+      onSessionExpired: () async {
+        if (Get.currentRoute == AppRoutes.loginScreen) return;
+        if (!Get.isRegistered<AuthController>()) return;
+        await AuthController.to.logout();
+      },
+    );
     Get.put<ApiService>(apiService, permanent: true);
 
     /// Translation Service

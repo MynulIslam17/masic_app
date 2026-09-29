@@ -282,6 +282,41 @@ class UserModel {
 
     return data;
   }
+
+  String? get resolvedLinkedIn {
+    final contactLink = contact?.linkedin?.trim();
+    if (contactLink != null && contactLink.isNotEmpty) return contactLink;
+    final field = linkedinLink?.trim();
+    if (field != null && field.isNotEmpty) return field;
+    return null;
+  }
+
+  String get normalizedRole => (role ?? '').trim().toLowerCase();
+
+  bool get hideEmailOnProfile {
+    const hidden = 'mohammad@gmail.com';
+    if (email?.trim().toLowerCase() == hidden) return true;
+    if (contact?.email?.trim().toLowerCase() == hidden) return true;
+    return false;
+  }
+
+  bool get hasDisplayName =>
+      (name?.trim().isNotEmpty ?? false) ||
+      (arabicName?.trim().isNotEmpty ?? false);
+
+  String? get displayRoleLabel => roleLabelOf(role);
+
+  static String? roleLabelOf(String? role) {
+    switch ((role ?? '').trim().toLowerCase()) {
+      case 'superadmin':
+      case 'super_admin':
+        return 'Super Admin';
+      case 'admin':
+        return 'Admin';
+      default:
+        return null;
+    }
+  }
 }
 
 class UserContact {

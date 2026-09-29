@@ -24,9 +24,10 @@ class CustomPopupMenu extends StatelessWidget {
       itemBuilder: (BuildContext context) {
         return items.map((String item) {
           return PopupMenuItem<String>(
-            height: 32.h,
+            height: 48.h,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             value: item,
-            child: CustomText(text: item, fontSize: 12.sp),
+            child: CustomText(text: item, fontSize: 14.sp),
           );
         }).toList();
       },

@@ -128,16 +128,18 @@ class CustomNetworkImage extends StatelessWidget {
   }
 
   Widget _buildFallback() {
+    final dim = height ?? width ?? 24;
     return Container(
       height: height,
       width: width,
+      alignment: Alignment.center,
       decoration: _buildDecoration(imageProvider: null, shimmer: false),
       child:
           fallbackAsset ??
           Icon(
             Icons.person,
             color: Colors.grey.shade500,
-            size: height ?? width,
+            size: dim * 0.5,
           ),
     );
   }

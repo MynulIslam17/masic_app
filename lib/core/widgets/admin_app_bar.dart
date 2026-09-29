@@ -4,6 +4,8 @@ import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/core/widgets/localized_name_text.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:get/get.dart';
@@ -26,13 +28,22 @@ class AdminAppBar extends  StatelessWidget implements PreferredSizeWidget {
         padding:  EdgeInsets.symmetric(horizontal: 16.w),
         child: Obx(() {
             TranslationController.to.currentLanguage.value;
+            final userData = controller.userData;
+            final authUser = AuthController.to.cachedUser;
+            final name = userData?.name ?? authUser?.name;
+            final arabicName = userData?.arabicName ?? authUser?.arabicName;
+            final hasName = (name?.trim().isNotEmpty ?? false) ||
+                (arabicName?.trim().isNotEmpty ?? false);
+            final roleLabel = UserModel.roleLabelOf(
+              userData?.role ?? authUser?.role,
+            );
             return Row(
               children: [
                 CustomNetworkImage(
                   boxShape: BoxShape.circle,
                   height: 42.r,
                   width: 42.r,
-                  imageUrl: controller.userData?.profileImage,
+                  imageUrl: userData?.profileImage,
                   fallbackAsset: Assets.images.profile.image(),
                 ),
                 SizedBox(width: 8.w),
@@ -41,15 +52,25 @@ class AdminAppBar extends  StatelessWidget implements PreferredSizeWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      LocalizedNameText(
-                        name: controller.userData?.name,
-                        arabicName: controller.userData?.arabicName,
-                        fontSize: 14.sp,
-                        textAlign: TextAlign.start,
-                      ),
+                      if (hasName)
+                        LocalizedNameText(
+                          name: name,
+                          arabicName: arabicName,
+                          fontSize: 14.sp,
+                          textAlign: TextAlign.start,
+                        )
+                      else if (roleLabel != null)
+                        CustomText(
+                          text: roleLabel,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          textAlign: TextAlign.start,
+                        ),
                       CustomText(
                         textAlign: TextAlign.start,
-                        text: 'Welcome to MASIC Generation',
+                        text: hasName && roleLabel != null
+                            ? roleLabel
+                            : 'Welcome to MASIC Generation',
                         fontSize: 10.sp,
                       ),
                     ],
