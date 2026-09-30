@@ -49,6 +49,9 @@ class CustomNetworkImage extends StatelessWidget {
     if ((imageUrl ?? '').trim().isNotEmpty) {
       return CachedNetworkImage(
         imageUrl: imageUrl!, // ✅ non-null assert
+        width: width,
+        height: height,
+        fit: fit ?? BoxFit.cover,
         imageBuilder: (context, imageProvider) =>
             _buildContainer(imageProvider),
         placeholder: (context, url) => Shimmer.fromColors(
@@ -85,7 +88,13 @@ class CustomNetworkImage extends StatelessWidget {
                   : borderRadius != null
                   ? BorderRadius.circular(borderRadius!)
                   : BorderRadius.zero,
-              child: fileChild,
+              child: SizedBox.expand(
+                child: FittedBox(
+                  fit: fit ?? BoxFit.cover,
+                  clipBehavior: Clip.hardEdge,
+                  child: fileChild,
+                ),
+              ),
             )
           : child,
     );
@@ -132,15 +141,28 @@ class CustomNetworkImage extends StatelessWidget {
     return Container(
       height: height,
       width: width,
-      alignment: Alignment.center,
+      alignment: fallbackAsset == null ? Alignment.center : null,
       decoration: _buildDecoration(imageProvider: null, shimmer: false),
-      child:
-          fallbackAsset ??
-          Icon(
-            Icons.person,
-            color: Colors.grey.shade500,
-            size: dim * 0.5,
-          ),
+      child: fallbackAsset != null
+          ? ClipRRect(
+              borderRadius: boxShape == BoxShape.circle
+                  ? BorderRadius.circular(9999)
+                  : borderRadius != null
+                  ? BorderRadius.circular(borderRadius!)
+                  : BorderRadius.zero,
+              child: SizedBox.expand(
+                child: FittedBox(
+                  fit: fit ?? BoxFit.cover,
+                  clipBehavior: Clip.hardEdge,
+                  child: fallbackAsset!,
+                ),
+              ),
+            )
+          : Icon(
+              Icons.person,
+              color: Colors.grey.shade500,
+              size: dim * 0.5,
+            ),
     );
   }
 }

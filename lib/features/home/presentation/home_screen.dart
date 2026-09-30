@@ -143,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                     ),
 
                     Positioned(
-                      bottom: 0,
+                      bottom: -2,
                       left: 0,
                       right: 0,
                       child: CustomContainer(
