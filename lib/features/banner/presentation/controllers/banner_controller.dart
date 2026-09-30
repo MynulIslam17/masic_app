@@ -64,29 +64,31 @@ class BannerController extends GetxController {
 
       if (hasCache) {
         _loadFromCache();
-        if(_banners.isEmpty){
-          _loadingState.value = LoadingState.error;
-          return;
-        }
-        _loadingState.value = LoadingState.loaded;
+        _loadingState.value =
+            _banners.isEmpty ? LoadingState.loading : LoadingState.loaded;
       } else {
         _loadingState.value = LoadingState.loading;
       }
 
-      if (!isOnline) return;
+      if (!isOnline) {
+        if (_banners.isEmpty) {
+          _loadingState.value = LoadingState.offline;
+        }
+        return;
+      }
 
       try {
         await _service.fetchBanner(1, 10);
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
-        if (!hasCache) {
+        if (!hasCache || _banners.isEmpty) {
           _loadingState.value = LoadingState.error;
         }
         if (kDebugMode) debugPrint('Fetch error: $e');
       }
     } catch (e) {
-      if (_service.hasCache()) {
+      if (_service.hasCache() && _banners.isNotEmpty) {
         _loadFromCache();
         _loadingState.value = LoadingState.loaded;
       } else {
@@ -118,11 +120,12 @@ class BannerController extends GetxController {
     try {
       await _service.createBanner(selectedImage!);
       _selectedImage.value = null;
-      _loadData();
+      ToastMessageHelper.show('Banner uploaded successfully');
+      await _loadData();
     } on AppException catch (e) {
       ToastMessageHelper.show(e.errorMessage);
       if (kDebugMode) {
-        debugPrint('Create announcement error: $e');
+        debugPrint('Create banner error: $e');
       }
     }
   }
@@ -132,14 +135,14 @@ class BannerController extends GetxController {
     try {
       await _service.deleteBanner(bannerId);
 
-      _loadData();
+      await _loadData();
       _deleteLoadingState.value = LoadingState.loaded;
       Get.back(canPop: true);
     } on AppException catch (e) {
       _deleteLoadingState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
       if (kDebugMode) {
-        debugPrint('Create announcement error: $e');
+        debugPrint('Delete banner error: $e');
       }
     }
   }

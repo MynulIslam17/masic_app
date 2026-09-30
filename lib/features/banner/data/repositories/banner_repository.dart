@@ -47,6 +47,21 @@ class BannerRepository {
     }
 
     if (data is Map<String, dynamic>) {
+      if (data['banners'] is List) {
+        return (data['banners'] as List)
+            .map((item) => BannerModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+      if (data['data'] is List) {
+        return (data['data'] as List)
+            .map((item) => BannerModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+      if (data['result'] is List) {
+        return (data['result'] as List)
+            .map((item) => BannerModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
       return [BannerModel.fromJson(data)];
     }
 
