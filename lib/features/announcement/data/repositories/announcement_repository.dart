@@ -88,20 +88,23 @@ class AnnouncementRepository {
     return response;
   }
 
-  Future<void> createAnnouncement(File? image, CreateRequestModel model) async {
+  Future<void> createAnnouncement(List<File> images, CreateRequestModel model) async {
     try {
-      final uploadImage =
-          image != null ? await ImageUploadHelper.prepareBannerImage(image) : null;
-      await _apiService.uploadFile(
+      final List<MultipartFile> files = [];
+      for (int i = 0; i < images.length; i++) {
+        final prepared = await ImageUploadHelper.prepareBannerImage(images[i]);
+        files.add(
+          MultipartFile.fromFileSync(
+            prepared.path,
+            filename: 'banner_$i.jpg',
+          ),
+        );
+      }
+      await _apiService.uploadMultipleFiles(
         ApiConstants.announcementCreate,
-        data: {'data' : jsonEncode(model.toJson())},
-        fieldName: uploadImage == null ? null : 'image',
-        file: uploadImage == null
-            ? null
-            : MultipartFile.fromFileSync(
-                uploadImage.path,
-                filename: 'banner.jpg',
-              ),
+        data: {'data': jsonEncode(model.toJson())},
+        fieldName: 'images',
+        files: files,
       );
     } on AppException {
       rethrow;

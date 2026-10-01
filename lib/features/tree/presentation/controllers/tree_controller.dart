@@ -203,17 +203,56 @@ class TreeController extends GetxController {
     return results;
   }
 
+  LinkedUser? findLinkedUser(String id) {
+    final root = _treeData.value?.root;
+    if (root == null) return null;
+
+    if (root.sId == id || root.linkedUser?.sId == id) {
+      return root.linkedUser;
+    }
+
+    LinkedUser? checkNode(Children child) {
+      if (child.sId == id || child.linkedUser?.sId == id) {
+        return child.linkedUser;
+      }
+      if (child.spouse != null) {
+        if (child.spouse!.sId == id || child.spouse!.linkedUser?.sId == id) {
+          return child.spouse!.linkedUser;
+        }
+      }
+      for (final c in child.layoutChildren) {
+        final found = checkNode(c);
+        if (found != null) return found;
+      }
+      return null;
+    }
+
+    for (final child in root.layoutChildren) {
+      final found = checkNode(child);
+      if (found != null) return found;
+    }
+    return null;
+  }
+
   // ─── User Details ─────────────────────────────────────────────────────────────
   Future<void> fetchUserDetails(String userId) async {
-    try {
+    final cached = findLinkedUser(userId);
+    if (cached != null) {
+      _userDetails.value = cached.toUserModel();
+      _detailsLoadingState.value = LoadingState.loaded;
+    } else {
       _detailsLoadingState.value = LoadingState.loading;
+    }
 
+    try {
       final user = await _service.treeUserDetails(userId);
       _userDetails.value = user;
       _detailsLoadingState.value = LoadingState.loaded;
     } catch (e) {
-      _detailsLoadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('fetchPollDetails error: $e');
+      if (_userDetails.value == null) {
+        _detailsLoadingState.value = LoadingState.error;
+      }
+      if (kDebugMode) debugPrint('fetchUserDetails error: $e');
     }
   }
 

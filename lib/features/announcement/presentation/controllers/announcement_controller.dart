@@ -31,9 +31,12 @@ class AnnouncementController extends GetxController {
   late final SearchService<AnnouncementModel> search;
 
 
-  final _selectedImage = Rxn<File>();
+  final RxList<File> _selectedImages = <File>[].obs;
 
-  File? get selectedImage => _selectedImage.value;
+  List<File> get selectedImages => _selectedImages;
+
+  File? get selectedImage =>
+      _selectedImages.isNotEmpty ? _selectedImages.first : null;
 
   // ─── Tab ───────────────────────────────────────────────────────────────────
   final RxInt selectedTab = 0.obs;
@@ -89,7 +92,36 @@ class AnnouncementController extends GetxController {
   }
 
   void selectImage(XFile image) {
-    _selectedImage.value = File(image.path);
+    if (_selectedImages.length >= 10) {
+      ToastMessageHelper.show('Maximum 10 images allowed');
+      return;
+    }
+    _selectedImages.add(File(image.path));
+  }
+
+  void addImages(List<XFile> images) {
+    final remaining = 10 - _selectedImages.length;
+    if (remaining <= 0) {
+      ToastMessageHelper.show('Maximum 10 images allowed');
+      return;
+    }
+    final toAdd = images.take(remaining).map((x) => File(x.path)).toList();
+    _selectedImages.addAll(toAdd);
+    if (images.length > remaining) {
+      ToastMessageHelper.show(
+        'Only $remaining more image(s) could be added (max 10)',
+      );
+    }
+  }
+
+  void removeImage(int index) {
+    if (index >= 0 && index < _selectedImages.length) {
+      _selectedImages.removeAt(index);
+    }
+  }
+
+  void clearImages() {
+    _selectedImages.clear();
   }
 
   void _initScrollController() {
@@ -239,7 +271,7 @@ class AnnouncementController extends GetxController {
     try {
       final users = ProfileController.to.selectedUserIds;
       await _service.createAnnouncement(
-        selectedImage,
+        _selectedImages,
         CreateRequestModel(
           title: titleTEController.text.trim(),
           description: decTEController.text.trim(),
@@ -251,7 +283,7 @@ class AnnouncementController extends GetxController {
       Get.back(canPop: true);
       titleTEController.clear();
       decTEController.clear();
-      _selectedImage.value = null;
+      _selectedImages.clear();
       users.clear();
       ToastMessageHelper.show('Created! Pending admin approval.');
     } on AppException catch (e) {

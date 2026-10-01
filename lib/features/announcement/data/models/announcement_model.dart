@@ -2,6 +2,7 @@ class AnnouncementModel {
   String? sId;
   CreatedBy? createdBy;
   String? title;
+  List<String>? bannerUrls;
   String? bannerUrl;
   String? description;
   String? status;
@@ -16,6 +17,7 @@ class AnnouncementModel {
     this.sId,
     this.createdBy,
     this.title,
+    this.bannerUrls,
     this.bannerUrl,
     this.description,
     this.status,
@@ -33,7 +35,27 @@ class AnnouncementModel {
         ? CreatedBy.fromJson(json['createdBy'])
         : null;
     title = json['title'];
-    bannerUrl = json['bannerUrl'];
+    if (json['bannerUrls'] is List) {
+      bannerUrls = (json['bannerUrls'] as List)
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    } else if (json['bannerUrls'] is String &&
+        json['bannerUrls'].toString().trim().isNotEmpty) {
+      bannerUrls = [json['bannerUrls'].toString().trim()];
+    } else {
+      bannerUrls = null;
+    }
+    bannerUrl = json['bannerUrl']?.toString();
+    if ((bannerUrls == null || bannerUrls!.isEmpty) &&
+        bannerUrl != null &&
+        bannerUrl!.isNotEmpty) {
+      bannerUrls = [bannerUrl!];
+    } else if (bannerUrl == null &&
+        bannerUrls != null &&
+        bannerUrls!.isNotEmpty) {
+      bannerUrl = bannerUrls!.first;
+    }
     description = json['description'];
     status = json['status'];
     declineReason = json['declineReason'];
@@ -55,6 +77,9 @@ class AnnouncementModel {
       data['createdBy'] = createdBy!.toJson();
     }
     data['title'] = title;
+    if (bannerUrls != null) {
+      data['bannerUrls'] = bannerUrls;
+    }
     data['bannerUrl'] = bannerUrl;
     data['description'] = description;
     data['status'] = status;
@@ -67,6 +92,16 @@ class AnnouncementModel {
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
     return data;
+  }
+
+  List<String> get allBannerUrls {
+    if (bannerUrls != null && bannerUrls!.isNotEmpty) {
+      return bannerUrls!;
+    }
+    if (bannerUrl != null && bannerUrl!.trim().isNotEmpty) {
+      return [bannerUrl!.trim()];
+    }
+    return const [];
   }
 }
 

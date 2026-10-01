@@ -72,6 +72,76 @@ class PhotoPickerHelper {
     );
   }
 
+  // ───── Multiple Photo Picker ─────
+  static void showMultiPhotoPicker({
+    required BuildContext context,
+    required Function(List<XFile> files) onImagesPicked,
+    int maxImages = 10,
+    double maxWidth = 1920,
+    double maxHeight = 1080,
+    int imageQuality = 85,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: false,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
+      ),
+      backgroundColor: Colors.white,
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomText(
+                text: 'Select Photos (Max $maxImages)',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                fontName: FontFamily.poppins,
+              ),
+              SizedBox(height: 20.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildOption(
+                    context,
+                    icon: Icons.camera_alt,
+                    label: 'Camera',
+                    source: ImageSource.camera,
+                    onImagePicked: (file) => onImagesPicked([file]),
+                    maxWidth: maxWidth,
+                    maxHeight: maxHeight,
+                    imageQuality: imageQuality,
+                  ),
+                  InkWell(
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final List<XFile> files = await _picker.pickMultiImage(
+                        limit: maxImages,
+                        maxWidth: maxWidth,
+                        maxHeight: maxHeight,
+                        imageQuality: imageQuality,
+                      );
+                      if (files.isNotEmpty) {
+                        onImagesPicked(files);
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: _buildOptionUI(
+                      icon: Icons.photo_library,
+                      label: 'Gallery',
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // ───── File Picker ─────
   static void showFilePicker({
     required BuildContext context,

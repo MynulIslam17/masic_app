@@ -502,6 +502,12 @@ class ProfileController extends GetxController {
       );
 
       _syncUsersTotalFromCache();
+      if (_motherTreePickerMode) {
+        newUsers.removeWhere((u) {
+          final r = (u.role ?? '').trim().toLowerCase();
+          return r == 'superadmin' || r == 'super_admin';
+        });
+      }
       if (newUsers.isNotEmpty) {
         _usersData.addAll(newUsers);
         final total = _usersTotal.value;
@@ -571,10 +577,17 @@ class ProfileController extends GetxController {
   void _loadFromCache() {
     _populateControllers(_service.getCachedUserData());
     _userData.value = _service.getCachedUserData();
-    _usersData.value = _service.getCachedUsers(
+    final cachedUsers = _service.getCachedUsers(
       roleFilter,
       treeJoinStatus: _activeTreeJoinStatus,
     );
+    if (_motherTreePickerMode) {
+      cachedUsers.removeWhere((u) {
+        final r = (u.role ?? '').trim().toLowerCase();
+        return r == 'superadmin' || r == 'super_admin';
+      });
+    }
+    _usersData.value = cachedUsers;
     _syncUsersTotalFromCache();
 
     assert(() {
