@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/info_row.dart';
 import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
@@ -92,6 +93,14 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                             value: user.phone,
                             copyable: true,
                           ),
+                        if (user?.dateOfBirth != null &&
+                            user!.dateOfBirth!.isNotEmpty)
+                          InfoRow(
+                            label: 'Date of birth',
+                            value: TimeFormatHelper.formatDateTime(
+                              user.dateOfBirth ?? '',
+                            ),
+                          ),
                         if (user?.gender != null && user!.gender!.isNotEmpty)
                           InfoRow(
                             label: 'Gender',
@@ -102,34 +111,48 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                             user!.employmentStatus!.isNotEmpty)
                           InfoRow(
                             label: 'Employment status',
-                            value: user!.employmentStatus,
+                            value: user.employmentStatus,
                             translateValue: true,
                           ),
                         if (user?.education != null &&
                             user!.education!.isNotEmpty)
                           InfoRow(
                             label: 'Education',
-                            value: user!.education,
+                            value: user.education,
                             translateValue: true,
                           ),
                         if (user?.universityName != null &&
                             user!.universityName!.isNotEmpty)
                           InfoRow(
                             label: 'University name',
-                            value: user!.universityName,
+                            value: user.universityName,
                           ),
                         if (user?.fieldOfWork != null &&
                             user!.fieldOfWork!.isNotEmpty)
                           InfoRow(
                             label: 'Field of work',
-                            value: user!.fieldOfWork,
+                            value: user.fieldOfWork,
                             translateValue: true,
                           ),
                         if (user?.spouseName != null &&
                             user!.spouseName!.isNotEmpty)
                           InfoRow(
                             label: 'Spouse name',
-                            value: user!.spouseName,
+                            value: user.spouseName,
+                          ),
+                        if (user?.spousePhone != null &&
+                            user!.spousePhone!.isNotEmpty)
+                          InfoRow(
+                            label: 'Spouse number',
+                            value: user.spousePhone,
+                            copyable: true,
+                          ),
+                        if ((user?.resolvedLinkedIn?.isNotEmpty ?? false) ||
+                            (user?.linkedinLink?.isNotEmpty ?? false))
+                          InfoRow.linkedIn(
+                            url: (user?.resolvedLinkedIn?.isNotEmpty ?? false)
+                                ? user!.resolvedLinkedIn!
+                                : user!.linkedinLink!,
                           ),
                       ],
                     ),

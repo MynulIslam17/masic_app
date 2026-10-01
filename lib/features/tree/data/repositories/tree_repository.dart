@@ -62,14 +62,23 @@ class TreeRepository {
       final data = response.data['data'];
       Map<String, dynamic> json = {};
       if (data is Map) {
-        final root = data['viewRoot'] ?? data['root'] ?? data;
-        if (root is Map) {
-          final linked = root['linkedUser'] ?? root['user'] ?? root;
-          if (linked is Map) {
-            json = Map<String, dynamic>.from(
-              linked.map((key, value) => MapEntry(key.toString(), value)),
-            );
-          }
+        final linked = data['linkedUser'] ??
+            data['user'] ??
+            (data['viewRoot'] is Map
+                ? (data['viewRoot']['linkedUser'] ??
+                    data['viewRoot']['user'] ??
+                    data['viewRoot'])
+                : null) ??
+            (data['root'] is Map
+                ? (data['root']['linkedUser'] ??
+                    data['root']['user'] ??
+                    data['root'])
+                : null) ??
+            data;
+        if (linked is Map) {
+          json = Map<String, dynamic>.from(
+            linked.map((key, value) => MapEntry(key.toString(), value)),
+          );
         }
       }
       return UserModel.fromJson(json);

@@ -27,19 +27,25 @@ extension AppExceptionX on Object {
 }
 
 extension StringDisplayX on String {
-  /// Capitalizes the first letter of each word: "female" → "Female".
+  /// Capitalizes the first letter of each word: "female" → "Female", "Bachelor's Degree" → "Bachelor's Degree".
   String get toTitleCase {
     final trimmed = trim();
     if (trimmed.isEmpty) return this;
     if (trimmed.toUpperCase() == 'N/A') return trimmed;
 
-    return trimmed.split(RegExp(r'(\s+)')).map((part) {
+    final clean = trimmed.replaceAll('_', ' ');
+    final spaced = clean.replaceAllMapped(
+      RegExp(r"([a-z'])([A-Z])"),
+      (match) => '${match.group(1)} ${match.group(2)}',
+    );
+
+    return spaced.split(RegExp(r'\s+')).map((part) {
       if (part.trim().isEmpty) return part;
       return part.split('-').map((word) {
         if (word.isEmpty) return word;
         return '${word[0].toUpperCase()}${word.substring(1)}';
       }).join('-');
-    }).join();
+    }).join(' ');
   }
 }
 

@@ -200,9 +200,15 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
     return controller.usersData.where((u) {
       if (u.isDeleted == true) return false;
       if (u.sId != null && u.sId == currentId) return false;
+      if (_isSuperAdmin(u)) return false;
       if (motherId == null && !_isPlaced(u)) return false;
       return true;
     }).toList();
+  }
+
+  bool _isSuperAdmin(UserModel user) {
+    final role = (user.role ?? '').trim().toLowerCase();
+    return role == 'superadmin' || role == 'super_admin';
   }
 
   bool _isPlaced(UserModel user) =>

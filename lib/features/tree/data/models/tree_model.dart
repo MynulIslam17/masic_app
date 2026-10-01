@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:masic_generation/features/profile/data/models/user_model.dart';
 
 String? _readTreeId(Map<String, dynamic> json) {
   final raw = json['_id'] ?? json['id'];
@@ -185,8 +186,29 @@ class LinkedUser {
   String? arabicName;
   String? role;
   String? profileImage;
+  String? linkedinLink;
+  String? phone;
+  String? dateOfBirth;
+  String? gender;
+  String? education;
+  String? universityName;
+  String? fieldOfWork;
 
-  LinkedUser({this.sId, this.email, this.name, this.arabicName, this.role, this.profileImage});
+  LinkedUser({
+    this.sId,
+    this.email,
+    this.name,
+    this.arabicName,
+    this.role,
+    this.profileImage,
+    this.linkedinLink,
+    this.phone,
+    this.dateOfBirth,
+    this.gender,
+    this.education,
+    this.universityName,
+    this.fieldOfWork,
+  });
 
   LinkedUser.fromJson(Map<String, dynamic> json) {
     sId = _readTreeId(json);
@@ -196,6 +218,13 @@ class LinkedUser {
         ?.toString();
     role = json['role']?.toString();
     profileImage = json['profileImage']?.toString();
+    linkedinLink = (json['linkedinLink'] ?? json['linkedin'])?.toString();
+    phone = json['phone']?.toString();
+    dateOfBirth = json['dateOfBirth']?.toString();
+    gender = json['gender']?.toString();
+    education = json['education']?.toString();
+    universityName = json['universityName']?.toString();
+    fieldOfWork = json['fieldOfWork']?.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -206,7 +235,38 @@ class LinkedUser {
     data['arabicName'] = arabicName;
     data['role'] = role;
     data['profileImage'] = profileImage;
+    data['linkedinLink'] = linkedinLink;
+    data['phone'] = phone;
+    data['dateOfBirth'] = dateOfBirth;
+    data['gender'] = gender;
+    data['education'] = education;
+    data['universityName'] = universityName;
+    data['fieldOfWork'] = fieldOfWork;
     return data;
+  }
+
+  UserModel toUserModel() {
+    return UserModel(
+      sId: sId,
+      email: email,
+      name: name,
+      arabicName: arabicName,
+      role: role,
+      profileImage: profileImage,
+      linkedinLink: linkedinLink,
+      phone: phone,
+      dateOfBirth: dateOfBirth,
+      gender: gender,
+      education: education,
+      universityName: universityName,
+      fieldOfWork: fieldOfWork,
+      contact: (phone != null || linkedinLink != null)
+          ? UserContact(
+              phone: phone,
+              linkedin: linkedinLink,
+            )
+          : null,
+    );
   }
 }
 
