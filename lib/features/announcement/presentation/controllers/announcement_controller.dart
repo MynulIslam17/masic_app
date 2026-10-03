@@ -10,6 +10,7 @@ import 'package:masic_generation/core/services/search_service.dart';
 import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
 import 'package:masic_generation/features/announcement/data/models/create_request_model.dart';
 import 'package:masic_generation/features/announcement/domain/services/announcement_services.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,6 +43,8 @@ class AnnouncementController extends GetxController {
   final RxInt selectedTab = 0.obs;
 
   String get _currentType => selectedTab.value == 1 ? 'my' : '';
+  String? get _currentStatus =>
+      (AuthController.to.isAdmin() && selectedTab.value == 0) ? 'pending' : null;
 
   // ─── Loading States ────────────────────────────────────────────────────────
   final Rx<LoadingState> _loadingState = LoadingState.initial.obs;
@@ -145,6 +148,8 @@ class AnnouncementController extends GetxController {
     _isLoadingMore.value = false;
   }
 
+  String get _currentCacheKey => _currentType.isNotEmpty ? _currentType : (_currentStatus ?? '');
+
   void _syncHasMoreAfterFirstPage() {
     _hasMore.value = _announcements.length >= _limit;
   }
@@ -152,7 +157,9 @@ class AnnouncementController extends GetxController {
   Future<void> _loadData() async {
     try {
       final type = _currentType;
-      final hasCache = _service.hasCache(type);
+      final status = _currentStatus;
+      final cacheKey = _currentCacheKey;
+      final hasCache = _service.hasCache(cacheKey);
       final isOnline = _connectivityService.isConnected.value;
 
       if (hasCache) {
@@ -177,6 +184,7 @@ class AnnouncementController extends GetxController {
           _limit,
           search: searchController.text,
           type: type,
+          status: status,
         );
         _loadFromCache();
         _currentPage = 1;
@@ -189,7 +197,7 @@ class AnnouncementController extends GetxController {
         if (kDebugMode) debugPrint('Fetch error: $e');
       }
     } catch (e) {
-      if (_service.hasCache(_currentType) && _announcements.isNotEmpty) {
+      if (_service.hasCache(_currentCacheKey) && _announcements.isNotEmpty) {
         _loadFromCache();
         _currentPage = 1;
         _syncHasMoreAfterFirstPage();
@@ -210,7 +218,8 @@ class AnnouncementController extends GetxController {
       final newAnnouncements = await _service.fetchMoreAnnouncements(
         _currentPage,
         _limit,
-        _currentType,
+        type: _currentType,
+        status: _currentStatus,
       );
 
       if (newAnnouncements.isNotEmpty) {
@@ -231,22 +240,28 @@ class AnnouncementController extends GetxController {
   }
 
   void _loadFromCache() {
-    _announcements.value = _service.getCachedAnnouncements(_currentType);
+    _announcements.value = _service.getCachedAnnouncements(_currentCacheKey);
   }
 
 
   Future<List<AnnouncementModel>> _fetchSearch(String query) async {
     final fromCache = _service
-        .getCachedAnnouncements(_currentType)
+        .getCachedAnnouncements(_currentCacheKey)
         .where((a) => a.title?.toLowerCase().contains(query.toLowerCase()) ?? false)
         .toList();
     if (fromCache.isNotEmpty) return fromCache;
 
     if (!_connectivityService.isConnected.value) return [];
 
-    await _service.fetchAnnouncements(1, 20, search: query, type: _currentType);
+    await _service.fetchAnnouncements(
+      1,
+      20,
+      search: query,
+      type: _currentType,
+      status: _currentStatus,
+    );
     return _service
-        .getCachedAnnouncements(_currentType)
+        .getCachedAnnouncements(_currentCacheKey)
         .where((a) => a.title?.toLowerCase().contains(query.toLowerCase()) ?? false)
         .toList();
   }

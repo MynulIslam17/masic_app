@@ -13,6 +13,7 @@ import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/services/connectivity_service.dart';
 import 'package:masic_generation/core/services/search_service.dart';
 import 'package:masic_generation/features/auth/domain/services/auth_services.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/domain/services/profile_service.dart';
 import 'package:masic_generation/features/tree/presentation/controllers/tree_controller.dart';
@@ -44,9 +45,16 @@ class ProfileController extends GetxController {
 
   final Rx<LoadingState> _motherTreeState = LoadingState.initial.obs;
   final Rx<LoadingState> _blockUserState = LoadingState.initial.obs;
+  final Rx<LoadingState> _deleteAccountState = LoadingState.initial.obs;
+  final Rx<LoadingState> _deleteUserState = LoadingState.initial.obs;
 
   LoadingState get motherTreeState => _motherTreeState.value;
   LoadingState get blockUserState => _blockUserState.value;
+  LoadingState get deleteAccountState => _deleteAccountState.value;
+  LoadingState get deleteUserState => _deleteUserState.value;
+
+  final RxList<UserModel> _motherTreesData = <UserModel>[].obs;
+  List<UserModel> get motherTreesData => _motherTreesData;
 
 
   LoadingState get updateRoleState => _updateRoleState.value;
@@ -964,6 +972,50 @@ class ProfileController extends GetxController {
     } catch (e) {
       _blockUserState.value = LoadingState.error;
       debugPrint('❌ Update error: $e');
+      ToastMessageHelper.show(e.errorMessage);
+    }
+  }
+
+  Future<void> deleteAccount() async {
+    _deleteAccountState.value = LoadingState.loading;
+    try {
+      await _service.deleteAccount();
+      _deleteAccountState.value = LoadingState.loaded;
+      ToastMessageHelper.show('Account deleted successfully');
+      await AuthController.to.logout();
+    } catch (e) {
+      _deleteAccountState.value = LoadingState.error;
+      debugPrint('❌ Delete account error: $e');
+      ToastMessageHelper.show(e.errorMessage);
+    }
+  }
+
+  Future<void> deleteUser(String userId) async {
+    _deleteUserState.value = LoadingState.loading;
+    try {
+      await _service.deleteUser(userId);
+      _usersData.removeWhere((u) => u.sId == userId);
+      _usersTotal.value = (_usersTotal.value - 1).clamp(0, double.infinity).toInt();
+      _deleteUserState.value = LoadingState.loaded;
+      if (Get.isDialogOpen == true) Get.back();
+      ToastMessageHelper.show('User deleted successfully');
+      await retry();
+    } catch (e) {
+      _deleteUserState.value = LoadingState.error;
+      debugPrint('❌ Delete user error: $e');
+      ToastMessageHelper.show(e.errorMessage);
+    }
+  }
+
+  Future<void> loadMotherTrees() async {
+    _motherTreeState.value = LoadingState.loading;
+    try {
+      final trees = await _service.fetchMotherTrees();
+      _motherTreesData.assignAll(trees);
+      _motherTreeState.value = LoadingState.loaded;
+    } catch (e) {
+      _motherTreeState.value = LoadingState.error;
+      debugPrint('❌ Error loading mother trees: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }

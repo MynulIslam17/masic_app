@@ -124,8 +124,10 @@ class ProfileRepository {
         if (fieldOfWork != null && fieldOfWork.isNotEmpty)
           'fieldOfWork': fieldOfWork,
         if (name != null && name.isNotEmpty) 'name': name,
-        if (treeJoinStatus != null && treeJoinStatus.isNotEmpty)
+        if (treeJoinStatus != null && treeJoinStatus.isNotEmpty) ...{
           'treeJoinStatus': treeJoinStatus,
+          if (treeJoinStatus.toLowerCase() == 'placed') 'placedOnly': true,
+        },
       };
       final response = await _apiService.get(
         ApiConstants.usersProfile,
@@ -391,8 +393,56 @@ class ProfileRepository {
     }
   }
 
+  Future<void> deleteAccount() async {
+    try {
+      await _apiService.delete(ApiConstants.deleteMe);
+      await _cacheService.delete(ApiConstants.cacheUserProfile);
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
 
+  Future<void> deleteUser(String userId) async {
+    try {
+      await _apiService.delete(ApiConstants.deleteUserByAdmin(userId));
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
 
+  Future<List<UserModel>> fetchMotherTrees() async {
+    try {
+      final response = await _apiService.get(ApiConstants.motherTrees);
+      final rawData = response.data['data'];
+      final list = rawData is List
+          ? rawData
+          : rawData is Map
+              ? (rawData['motherTrees'] ??
+                    rawData['trees'] ??
+                    rawData['items'] ??
+                    rawData['data'] ??
+                    const [])
+              : const [];
+      return (list as List)
+          .whereType<Map>()
+          .map(
+            (e) => UserModel.fromJson(
+              Map<String, dynamic>.from(
+                e.map((k, v) => MapEntry(k.toString(), v)),
+              ),
+            ),
+          )
+          .toList();
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
+  }
 
   bool hasCache() {
     return _cacheService.containsKey(ApiConstants.cacheUserProfile);

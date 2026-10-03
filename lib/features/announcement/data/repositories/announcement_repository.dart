@@ -29,12 +29,25 @@ class AnnouncementRepository {
     }
   }
 
-  Future<List<AnnouncementModel>> getAnnouncements(int page, int limit,{String? search,String? type}) async {
-    final cacheKey = _cacheKey(type ?? '');
+  Future<List<AnnouncementModel>> getAnnouncements(
+    int page,
+    int limit, {
+    String? search,
+    String? type,
+    String? status,
+  }) async {
+    final cacheKey = _cacheKey(type ?? status ?? '');
     try {
+      final endpoint = type == 'my'
+          ? ApiConstants.myAnnouncements(page, limit)
+          : ApiConstants.announcements(page, limit);
       final response = await _apiService.get(
-        ApiConstants.announcements(page, limit),
-        queryParameters: {'searchTerm': search,'type': type},
+        endpoint,
+        queryParameters: {
+          if (search != null && search.isNotEmpty) 'searchTerm': search,
+          if (type != null && type.isNotEmpty && type != 'my') 'type': type,
+          if (status != null && status.isNotEmpty) 'status': status,
+        },
       );
 
       final announcements = (response.data['data'] as List)
@@ -72,11 +85,12 @@ class AnnouncementRepository {
 
   Future<List<AnnouncementModel>> fetchMoreAnnouncements(
     int page,
-    int limit,
-      String? type,
-  ) async {
-    final cacheKey = _cacheKey(type ?? '');
-    final response = await getAnnouncements(page, limit);
+    int limit, {
+    String? type,
+    String? status,
+  }) async {
+    final cacheKey = _cacheKey(type ?? status ?? '');
+    final response = await getAnnouncements(page, limit, type: type, status: status);
     if (response.isNotEmpty) {
       final currentCached = getCachedAnnouncements(cacheKey);
       final newList = [...currentCached, ...response];

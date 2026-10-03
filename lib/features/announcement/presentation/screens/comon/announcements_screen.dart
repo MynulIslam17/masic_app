@@ -27,7 +27,7 @@ class AnnouncementsScreen extends StatelessWidget {
     return CustomScaffold(
       paddingSide: 0,
       body: RefreshIndicator(
-        edgeOffset: kToolbarHeight * (AuthController.to.isAdmin() ? 3.h : 2.h),
+        edgeOffset: kToolbarHeight * 3.h,
         onRefresh: () async => await controller.refresh(),
         child: CustomScrollView(
           controller: controller.scrollController,
@@ -41,7 +41,7 @@ class AnnouncementsScreen extends StatelessWidget {
               floating: false,
               elevation: 0,
               scrolledUnderElevation: 0,
-              expandedHeight: AuthController.to.isAdmin() ? 150.h : 116.h,
+              expandedHeight: 150.h,
 
               leading: IconButton(
                 icon: isRtl
@@ -107,27 +107,29 @@ class AnnouncementsScreen extends StatelessWidget {
                 ),
               ),
 
-              bottom: AuthController.to.isAdmin()
-                  ? PreferredSize(
-                      preferredSize: Size.fromHeight(26.h),
-                      child: Row(
-                        children: [
-                          TabItem(
-                            label: 'Requested announce',
-                            index: 0,
-                            selectedTab: controller.selectedTab,
-                            onTap: controller.onTabChanged,
-                          ),
-                          TabItem(
-                            label: 'My announce',
-                            index: 1,
-                            selectedTab: controller.selectedTab,
-                            onTap: controller.onTabChanged,
-                          ),
-                        ],
-                      ),
-                    )
-                  : null,
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(26.h),
+                child: Row(
+                  children: [
+                    TabItem(
+                      label: AuthController.to.isAdmin()
+                          ? 'Requested announce'
+                          : 'Announcements',
+                      index: 0,
+                      selectedTab: controller.selectedTab,
+                      onTap: controller.onTabChanged,
+                    ),
+                    TabItem(
+                      label: AuthController.to.isAdmin()
+                          ? 'My announce'
+                          : 'My requests',
+                      index: 1,
+                      selectedTab: controller.selectedTab,
+                      onTap: controller.onTabChanged,
+                    ),
+                  ],
+                ),
+              ),
             ),
             SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),

@@ -97,43 +97,63 @@ class UserModel {
       certificateUrl = [json['certificateUrl']];
     }
 
-    sId = json['_id'];
-    email = json['email'];
-    name = json['name'];
-    arabicName = json['arabicName'];
-    role = json['role'];
-    country = json['country'];
-    countryCode = json['countryCode'];
-    motherTree = json['motherTree'];
-    linkedMember = json['linkedMember'];
-    treeJoinStatus = json['treeJoinStatus'];
-    adminScope = json['adminScope'];
-    adminGrantedBy = json['adminGrantedBy'];
+    sId = json['_id']?.toString();
+    email = json['email']?.toString();
+    name = json['name']?.toString() ?? json['label']?.toString();
+    arabicName = json['arabicName']?.toString();
+    role = json['role']?.toString();
+    country = json['country']?.toString();
+    countryCode = json['countryCode']?.toString();
+    motherTree = json['motherTree']?.toString();
+    linkedMember = json['linkedMember']?.toString() ?? json['_id']?.toString();
+    treeJoinStatus = json['treeJoinStatus']?.toString();
+    adminScope = json['adminScope']?.toString();
+    adminGrantedBy = json['adminGrantedBy']?.toString();
     isActive = json['isActive'];
     isVerified = json['isVerified'];
     isDeleted = json['isDeleted'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
+    createdAt = json['createdAt']?.toString();
+    updatedAt = json['updatedAt']?.toString();
     iV = json['__v'];
-    address = json['address'];
-    age = json['age'];
-    city = json['city'];
-    dateOfBirth = json['dateOfBirth'];
-    district = json['district'];
-    education = json['education'];
-    educationLevel = json['educationLevel'];
-    employmentStatus = json['employmentStatus'];
-    fieldOfWork = json['fieldOfWork'];
-    gender = json['gender'];
-    linkedinLink = json['linkedinLink'];
-    region = json['region'];
-    spouseName = json['spouseName'];
-    spousePhone = json['spousePhone'];
-    universityName = json['universityName'];
-    profileImage = json['profileImage'];
-    bio = json['bio'];
-    cvUrl = json['cvUrl'];
-    phone = json['phone'];
+    address = json['address']?.toString();
+    age = json['age'] is int ? json['age'] : int.tryParse('${json['age'] ?? ''}');
+    city = json['city']?.toString();
+    dateOfBirth = json['dateOfBirth']?.toString();
+    district = json['district']?.toString();
+    education = json['education']?.toString();
+    educationLevel = json['educationLevel']?.toString();
+    employmentStatus = json['employmentStatus']?.toString();
+    fieldOfWork = json['fieldOfWork']?.toString();
+    gender = json['gender']?.toString();
+    linkedinLink = json['linkedinLink']?.toString();
+    region = json['region']?.toString();
+    spouseName = json['spouseName']?.toString();
+    spousePhone = json['spousePhone']?.toString();
+    universityName = json['universityName']?.toString();
+    profileImage = json['profileImage']?.toString();
+    bio = json['bio']?.toString();
+    cvUrl = json['cvUrl']?.toString();
+    phone = json['phone']?.toString();
+
+    // Check linkedUser if populated on tree/member responses
+    if (json['linkedUser'] is Map) {
+      final lu = json['linkedUser'] as Map;
+      if (profileImage == null || profileImage!.isEmpty) {
+        profileImage = lu['profileImage']?.toString();
+      }
+      if (name == null || name!.isEmpty) {
+        name = lu['name']?.toString();
+      }
+      if (arabicName == null || arabicName!.isEmpty) {
+        arabicName = lu['arabicName']?.toString();
+      }
+      if (email == null || email!.isEmpty) {
+        email = lu['email']?.toString();
+      }
+      if (phone == null || phone!.isEmpty) {
+        phone = lu['phone']?.toString();
+      }
+    }
 
     if (json['educationHistory'] != null) {
       educationHistory = <EducationHistory>[];

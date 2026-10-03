@@ -19,8 +19,10 @@ class ApiConstants {
 
   /// USER ──────────────────────────────────────────────
   static const String userProfile = '/api/v1/users/me';
+  static const String deleteMe = '/api/v1/users/me';
   static const String userProfileUpdate = '/api/v1/users/edit-profile';
   static const String usersProfile = '/api/v1/users';
+  static String deleteUserByAdmin(String userId) => '/api/v1/super-admin/users/$userId';
   static String addMember(String userId,String motherId) => '/api/v1/member/add-child/$userId/$motherId';
   static String updateRole(String userId) => '/api/v1/super-admin/role/update/$userId';
   static String blockUser(String userId) => '/api/v1/super-admin/block-unblock/$userId';
@@ -30,6 +32,8 @@ class ApiConstants {
 
   /// ─── Announcement Marker ───────────────────────────
   static String announcements(int page, int limit) => '/api/v1/announcement/all?page=$page&limit=$limit';
+  static String myAnnouncements(int page, int limit) => '/api/v1/announcement/my-requests?page=$page&limit=$limit';
+  static const String myAnnouncementsPath = '/api/v1/announcement/my-requests';
   static String announcementCreate = '/api/v1/announcement/create';
   static String announcementStatus(String announcementId) => '/api/v1/announcement/$announcementId';
   static String announcementDelete(String announcementId) => '/api/v1/announcement/$announcementId/delete';
@@ -74,6 +78,7 @@ class ApiConstants {
   static  String treeUserDetails(String userID) => '/api/v1/tree/$userID';
   static String deleteUser(String userId) => '/api/v1/member/remove-child/$userId';
   static  String motherTreeSelect(String userId) => '/api/v1/member/choose-mother/$userId';
+  static const String motherTrees = '/api/v1/member/mother-trees';
 
 
 

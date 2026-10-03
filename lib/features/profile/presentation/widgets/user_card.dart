@@ -8,6 +8,7 @@ import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/core/widgets/localized_name_text.dart';
+import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
 import 'package:masic_generation/features/profile/data/models/user_model.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
@@ -53,10 +54,9 @@ class UserCard extends StatelessWidget {
                     options: [
                       'View Details',
                       if (user.isDeleted == true) 'Unblock' else 'Block',
-                      if (ProfileController.to.userData?.normalizedRole ==
-                              'superadmin' &&
-                          user.sId != ProfileController.to.userData?.sId &&
-                          user.normalizedRole != 'superadmin') ...[
+                      if (AuthController.isAdminRole(ProfileController.to.userData?.role) &&
+                          user.sId != ProfileController.to.userData?.sId) ...[
+                        'Delete Account',
                         if (user.normalizedRole == 'admin')
                           'Decline admin access',
                         if (user.normalizedRole == 'user') 'Give admin access',
@@ -64,7 +64,7 @@ class UserCard extends StatelessWidget {
                     ],
                   );
 
-                  if (selectedMenu == null) return;
+                  if (selectedMenu == null || !context.mounted) return;
 
                   final userId = user.sId;
                   if (userId == null || userId.isEmpty) return;
@@ -73,6 +73,23 @@ class UserCard extends StatelessWidget {
                     Get.toNamed(
                       AppRoutes.profileDetailsScreen,
                       arguments: user,
+                    );
+                  } else if (selectedMenu == 'Delete Account') {
+                    showDialog(
+                      context: context,
+                      builder: (context) => Obx(
+                        () => CustomDialog(
+                          title: 'Delete user account?',
+                          leftButtonLabel: 'Cancel',
+                          rightButtonLabel: 'Delete',
+                          rightButtonBgColor: AppColors.errorColor,
+                          isLoading: controller.deleteUserState.isLoading,
+                          onTapLeftButton: () => Get.back(),
+                          onTapRightButton: () => controller.deleteUser(userId),
+                          description:
+                              'Are you sure you want to permanently delete this user account? This cannot be undone.',
+                        ),
+                      ),
                     );
                   } else if (selectedMenu == 'Decline admin access') {
                     showDialog(

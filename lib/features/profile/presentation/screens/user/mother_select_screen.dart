@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
@@ -23,23 +24,45 @@ class MotherSelectScreen extends StatefulWidget {
 class _MotherSelectScreenState extends State<MotherSelectScreen> {
   late final String? motherId;
   late final bool isMandatory;
+  final RxString _searchQuery = ''.obs;
+  Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
     motherId = Get.arguments as String?;
     isMandatory = motherId == null && !AuthController.to.isAdmin();
-    ProfileController.to.enterMotherTreePicker(placedOnly: motherId == null);
+    ProfileController.to.searchController.clear();
+    _searchQuery.value = '';
+    if (motherId == null) {
+      ProfileController.to.loadMotherTrees();
+    } else {
+      ProfileController.to.enterMotherTreePicker(placedOnly: false);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ProfileController.to.refresh(showLoader: true);
+      if (motherId != null) {
+        ProfileController.to.refresh(showLoader: true);
+      }
     });
   }
 
   @override
   void dispose() {
+    _debounceTimer?.cancel();
+    ProfileController.to.searchController.clear();
     ProfileController.to.stopMotherTreePicker();
     super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    _searchQuery.value = value.trim();
+    if (motherId != null) {
+      _debounceTimer?.cancel();
+      _debounceTimer = Timer(const Duration(milliseconds: 400), () {
+        ProfileController.to.refresh(showLoader: false);
+      });
+    }
   }
 
   Future<void> _handleBack() async {
@@ -53,7 +76,6 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
   @override
   Widget build(BuildContext context) {
     final controller = ProfileController.to;
-    final bool isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return PopScope(
       canPop: false,
@@ -78,7 +100,7 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
           ],
         ),
         body: RefreshIndicator(
-          onRefresh: () => controller.refresh(),
+          onRefresh: () => motherId == null ? controller.loadMotherTrees() : controller.refresh(),
           child: SingleChildScrollView(
             controller: controller.scrollController,
             physics: AlwaysScrollableScrollPhysics(
@@ -86,15 +108,29 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
             ),
             child: Column(
               children: [
-                CustomTextField(
+                Obx(() => CustomTextField(
                   validator: (_) => null,
                   prefixIcon: Assets.icons.search.svg(),
+                  suffixIcon: _searchQuery.value.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(
+                            Icons.close_rounded,
+                            size: 18.r,
+                            color: AppColors.appGreyColor,
+                          ),
+                          onPressed: () {
+                            controller.searchController.clear();
+                            _onSearchChanged('');
+                          },
+                        )
+                      : null,
                   borderRadio: 100.r,
                   borderColor: AppColors.colorE6E6E6,
                   showShadow: false,
                   controller: controller.searchController,
                   hintText: 'Search here . . .',
-                ),
+                  onChanged: _onSearchChanged,
+                )),
                 SizedBox(height: 10.h),
                 Obx(() {
                   final users = _displayedUsers(controller, motherId);
@@ -111,7 +147,10 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
 
                 SizedBox(height: 24.h),
                 Obx(() {
-                  switch (controller.loadingState) {
+                  final activeState = motherId == null
+                      ? controller.motherTreeState
+                      : controller.loadingState;
+                  switch (activeState) {
                     case LoadingState.initial:
                     case LoadingState.loading:
                       return SizedBox(
@@ -125,7 +164,9 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
                         height: MediaQuery.sizeOf(context).height * 0.45,
                         child: EmptyDataWidget(
                           message: 'Failed to load users. Please try again.',
-                          onRefresh: () => controller.refresh(),
+                          onRefresh: () => motherId == null
+                              ? controller.loadMotherTrees()
+                              : controller.refresh(),
                         ),
                       );
 
@@ -196,12 +237,28 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
     ProfileController controller,
     String? motherId,
   ) {
+    final query = _searchQuery.value.toLowerCase();
+    if (motherId == null) {
+      final list = controller.motherTreesData;
+      if (query.isEmpty) return list;
+      return list.where((u) {
+        final name = (u.name ?? '').toLowerCase();
+        final ar = (u.arabicName ?? '').toLowerCase();
+        final email = (u.email ?? '').toLowerCase();
+        return name.contains(query) || ar.contains(query) || email.contains(query);
+      }).toList();
+    }
     final currentId = ProfileController.to.userData?.sId;
     return controller.usersData.where((u) {
       if (u.isDeleted == true) return false;
       if (u.sId != null && u.sId == currentId) return false;
       if (_isSuperAdmin(u)) return false;
-      if (motherId == null && !_isPlaced(u)) return false;
+      if (query.isNotEmpty) {
+        final name = (u.name ?? '').toLowerCase();
+        final ar = (u.arabicName ?? '').toLowerCase();
+        final email = (u.email ?? '').toLowerCase();
+        return name.contains(query) || ar.contains(query) || email.contains(query);
+      }
       return true;
     }).toList();
   }
@@ -209,14 +266,5 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
   bool _isSuperAdmin(UserModel user) {
     final role = (user.role ?? '').trim().toLowerCase();
     return role == 'superadmin' || role == 'super_admin';
-  }
-
-  bool _isPlaced(UserModel user) =>
-      (user.treeJoinStatus ?? '').trim().toLowerCase() == 'placed';
-}
-
-extension on Widget {
-  Widget get flipped {
-    return Transform.flip(flipX: true, child: this);
   }
 }

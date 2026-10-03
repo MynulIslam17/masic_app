@@ -5,7 +5,9 @@ import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/core/widgets/profile_list_tile.dart';
+import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/features/auth/presentation/controller/auth_controller.dart';
+import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -81,17 +83,20 @@ class SettingScreen extends StatelessWidget {
             onPressed: () {
               showDialog(
                 context: context,
-                builder: (context) => CustomDialog(
-                  title: "Delete Account",
-                  rightButtonLabel: 'Yes, Delete',
-                  onTapLeftButton: () {
-                    Get.back();
-                  },
-                  onTapRightButton: () {
-                    // Handle delete logic here
-                    // Get.offAllNamed(AppRoutes.signUpScreen);
-                  },
-                  description: 'Are you sure want to delete your Account?',
+                builder: (context) => Obx(
+                  () => CustomDialog(
+                    title: "Delete Account",
+                    rightButtonLabel: 'Yes, Delete',
+                    rightButtonBgColor: AppColors.errorColor,
+                    isLoading: ProfileController.to.deleteAccountState.isLoading,
+                    onTapLeftButton: () {
+                      Get.back();
+                    },
+                    onTapRightButton: () {
+                      ProfileController.to.deleteAccount();
+                    },
+                    description: 'Are you sure want to delete your Account? This action cannot be undone.',
+                  ),
                 ),
               );
             },

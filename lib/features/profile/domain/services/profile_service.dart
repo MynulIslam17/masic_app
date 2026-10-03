@@ -114,7 +114,17 @@ class ProfileService {
     return await _repository.blockUser(userId,type: type);
   }
 
+  Future<void> deleteAccount() async {
+    return await _repository.deleteAccount();
+  }
 
+  Future<void> deleteUser(String userId) async {
+    return await _repository.deleteUser(userId);
+  }
+
+  Future<List<UserModel>> fetchMotherTrees() async {
+    return await _repository.fetchMotherTrees();
+  }
 
   bool hasCache() {
     return _repository.hasCache();
