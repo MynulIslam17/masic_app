@@ -32,6 +32,7 @@ class AuthInterceptor extends Interceptor {
     AppConstants.cacheUser,
     AppConstants.cacheUserRole,
     AppConstants.lastSyncedFcmToken,
+    AppConstants.profileSetupPending,
   ];
 
   final CacheService _cacheService;
@@ -61,11 +62,20 @@ class AuthInterceptor extends Interceptor {
     // Only a request that actually carried a token can have an expired
     // session. Without this, requests fired after logout would keep
     // re-triggering the logout flow.
+    final hadToken = options.headers.containsKey('Authorization');
     final isSessionExpiry = err.response?.statusCode == 401 &&
-        options.headers.containsKey('Authorization') &&
+        hadToken &&
         !_isSessionEndpoint(options);
 
-    if (isSessionExpiry && !_expiryHandled) {
+    // `GET /users/me` answering 404 means the account behind this token no
+    // longer exists (deleted, or the token belongs to another server). The
+    // session is as dead as an expired one, so end it the same way.
+    final isAccountGone = err.response?.statusCode == 404 &&
+        hadToken &&
+        options.method.toUpperCase() == 'GET' &&
+        options.path.endsWith(ApiConstants.userProfile);
+
+    if ((isSessionExpiry || isAccountGone) && !_expiryHandled) {
       _expiryHandled = true;
       await _cacheService.deleteAll(_sessionKeys);
       await _onSessionExpired?.call();

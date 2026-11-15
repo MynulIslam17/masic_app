@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/features/announcement/data/models/announcement_model.dart';
 import 'package:masic_generation/features/announcement/data/models/create_request_model.dart';
 import 'package:masic_generation/features/announcement/data/repositories/announcement_repository.dart';
@@ -11,30 +10,20 @@ class AnnouncementServices {
   AnnouncementServices({required AnnouncementRepository repository})
     : _repository = repository;
 
-  Future<void> fetchAnnouncements(
+  Future<List<AnnouncementModel>> fetchAnnouncements(
     int currentPage,
     int limit, {
     String? search,
     String? type,
     String? status,
   }) async {
-    try {
-      await Future.wait([
-        _repository.getAnnouncements(
-          currentPage,
-          limit,
-          search: search,
-          type: type,
-          status: status,
-        ),
-      ]);
-    } on AppException {
-      if (!_repository.hasCache(type ?? status ?? '')) {
-        rethrow;
-      }
-    } catch (e) {
-      throw UnknownException(e.toString());
-    }
+    return _repository.getAnnouncements(
+      currentPage,
+      limit,
+      search: search,
+      type: type,
+      status: status,
+    );
   }
 
   Future<List<AnnouncementModel>> fetchMoreAnnouncements(
@@ -42,36 +31,51 @@ class AnnouncementServices {
     int limit, {
     String? type,
     String? status,
+    String? search,
   }) async {
     return await _repository.fetchMoreAnnouncements(
       offset,
       limit,
       type: type,
       status: status,
+      search: search,
     );
   }
-
-
 
   List<AnnouncementModel> getCachedAnnouncements(String type) {
     return _repository.getCachedAnnouncements(type);
   }
 
-
-  Future<void> updateStatus(String announcementId, String status) async {
-    return await _repository.updateStatus(announcementId, status);
+  Future<void> updateStatus(
+    String announcementId,
+    String status, {
+    String? declineReason,
+  }) async {
+    return await _repository.updateStatus(
+      announcementId,
+      status,
+      declineReason: declineReason,
+    );
   }
 
   Future<void> deleteAnnouncement(String announcementId) async {
     return await _repository.deleteAnnouncement(announcementId);
   }
 
-
-
-  Future<void> createAnnouncement(List<File> images, CreateRequestModel model) async {
+  Future<void> createAnnouncement(
+    List<File> images,
+    CreateRequestModel model,
+  ) async {
     return await _repository.createAnnouncement(images, model);
   }
 
+  Future<AnnouncementModel?> fetchAnnouncementById(String id) {
+    return _repository.getAnnouncementById(id);
+  }
+
+  AnnouncementModel? findCachedAnnouncement(String id) {
+    return _repository.findCachedAnnouncement(id);
+  }
 
   bool hasCache(String type) {
     return _repository.hasCache(type);

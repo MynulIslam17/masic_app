@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'dart:async';
 import 'dart:math';
 
@@ -61,8 +62,8 @@ class RetryInterceptor extends Interceptor {
 
     final delay = _delayFor(attempt, err);
     if (kDebugMode) {
-      debugPrint(
-        '🟠 RETRY ${attempt + 1}/$maxRetries in ${delay.inMilliseconds}ms '
+      AppLog.warn('API', 
+        'RETRY ${attempt + 1}/$maxRetries in ${delay.inMilliseconds}ms '
         '→ ${options.method} ${options.path}',
       );
     }

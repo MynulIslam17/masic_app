@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
@@ -49,7 +50,7 @@ class TreeRepository {
       if (json == null) return null;
       return TreeModel.fromJson(json);
     } catch (e) {
-      debugPrint('❌ Error getting cached user data: $e');
+      AppLog.error('Tree', 'Error getting cached user data: $e');
       return null;
     }
   }

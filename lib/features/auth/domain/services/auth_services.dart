@@ -90,6 +90,11 @@ class AuthService {
   Future<void> syncTreeJoinStatus(String treeJoinStatus) =>
       _repository.updateCachedUserTreeJoinStatus(treeJoinStatus);
 
+  bool get isProfileSetupPending => _repository.isProfileSetupPending();
+
+  Future<void> setProfileSetupPending(bool pending) =>
+      _repository.setProfileSetupPending(pending);
+
   bool isTreePlaced([UserResponseModel? user]) {
     final currentUser = user ?? getCachedUser();
     return currentUser?.treeJoinStatus == 'placed';

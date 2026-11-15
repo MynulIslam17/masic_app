@@ -28,6 +28,10 @@ class RequestServices {
     return await _repository.fetchMoreRequests(offset, limit);
   }
 
+  Future<RequestModel?> findRequestById(String id) {
+    return _repository.findRequestById(id);
+  }
+
   List<RequestModel> getCachedRequests() {
     return _repository.getCachedRequests();
   }

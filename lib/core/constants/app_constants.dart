@@ -5,6 +5,9 @@ class AppConstants{
   static const String cacheUserRole = "cacheUserRole";
   static const String cacheUser = "cacheUser";
   static const String lastSyncedFcmToken = 'last_synced_fcm_token';
+  /// True from OTP verification until the Setup Profile step is saved, so a
+  /// restart resumes sign-up on Setup Profile instead of skipping it.
+  static const String profileSetupPending = 'profile_setup_pending';
 
 
 

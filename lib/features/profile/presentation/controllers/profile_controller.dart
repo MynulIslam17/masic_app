@@ -1,8 +1,10 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/helpers/dialog_close_helper.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/extensions/app_extension.dart';
 import 'package:masic_generation/core/helpers/document_upload_helper.dart';
@@ -49,6 +51,12 @@ class ProfileController extends GetxController {
   final Rx<LoadingState> _deleteUserState = LoadingState.initial.obs;
 
   LoadingState get motherTreeState => _motherTreeState.value;
+
+  /// Submit on the Select Mother Tree page (choose-mother / add-child). Kept
+  /// apart from [motherTreeState] so loading the list never spins the button
+  /// and submitting never blanks the list.
+  final Rx<LoadingState> _motherSubmitState = LoadingState.initial.obs;
+  LoadingState get motherSubmitState => _motherSubmitState.value;
   LoadingState get blockUserState => _blockUserState.value;
   LoadingState get deleteAccountState => _deleteAccountState.value;
   LoadingState get deleteUserState => _deleteUserState.value;
@@ -79,7 +87,6 @@ class ProfileController extends GetxController {
 
   UserModel? get userData => _userData.value;
 
-  DateTime? _selectedDate;
 
   // ─── Users List ────────────────────────────────────────────────────────────
   final RxList<UserModel> _usersData = <UserModel>[].obs;
@@ -169,13 +176,12 @@ class ProfileController extends GetxController {
 
   List<String> get selectedUserIds => _selectedUserIds;
 
-  final RxString _selectedUserId = 'khjk'.obs;
+  final RxString _selectedUserId = ''.obs;
 
   String get selectedUserId => _selectedUserId.value;
 
   void selectSingleUser(String id) {
     _selectedUserId.value = id;
-    debugPrint('Selected user ID: $id');
   }
 
   // ─── Edit Tracking ─────────────────────────────────────────────────────────
@@ -206,7 +212,6 @@ class ProfileController extends GetxController {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
-  final dateOfBirthController = TextEditingController();
   final genderController = TextEditingController();
   final employmentController = TextEditingController();
   final educationController = TextEditingController();
@@ -235,11 +240,31 @@ class ProfileController extends GetxController {
     search = SearchService(fetcher: _fetchSearch);
     _initScrollController();
     ever(_connectivityService.isConnected, (isConnected) {
-      if (isConnected) loadData();
+      if (!isConnected || !isAuthenticated) return;
+      if (!_hasAppAccess) {
+        // Still on the Select Mother Tree page: retry its list if it failed,
+        // and leave the member directory alone.
+        if (_motherTreeState.value == LoadingState.error) loadMotherTrees();
+        return;
+      }
+      loadData();
     });
     ever(_roleFilter, (_) => refresh(showLoader: true));
-    loadData();
+    // Controller is created eagerly at app start; before login there is no
+    // token and `GET /users/me` would just 401. AuthController triggers
+    // loadData() after a successful login / session restore.
+    // Users who still have to pick a mother tree don't need the directory.
+    if (isAuthenticated && _hasAppAccess) loadData();
   }
+
+  /// False while the logged-in user still has to pick a mother tree.
+  bool get _hasAppAccess =>
+      !Get.isRegistered<AuthController>() || AuthController.to.hasAppAccess;
+
+  /// Whether a session token exists. Overridable in tests.
+  @visibleForTesting
+  bool get isAuthenticated =>
+      Get.isRegistered<AuthController>() && AuthController.to.isLoggedIn();
 
   void _initScrollController() {
     _scrollController = ScrollController();
@@ -275,8 +300,20 @@ class ProfileController extends GetxController {
     _hasMore.value = _usersData.length >= _limit;
   }
 
-  String? get _activeTreeJoinStatus =>
-      _motherTreePickerMode && _motherTreePlacedOnly ? 'placed' : null;
+  /// Tree filter sent to `GET /users`.
+  ///
+  /// The member directory only ever shows users who are placed in the tree —
+  /// for admins too (client requirement: no users outside the tree). The only
+  /// escape hatch is the admin "assign to mother tree" picker, which needs to
+  /// see unplaced accounts and therefore asks explicitly for `all` (the
+  /// backend now defaults to `placed` when no filter is sent).
+  @visibleForTesting
+  String get activeTreeJoinStatus => _activeTreeJoinStatus;
+
+  String get _activeTreeJoinStatus {
+    if (_motherTreePickerMode && !_motherTreePlacedOnly) return 'all';
+    return 'placed';
+  }
 
   int get _activeUserLimit =>
       _motherTreePickerMode ? _motherTreeLimit : _limit;
@@ -410,20 +447,51 @@ class ProfileController extends GetxController {
 
   bool isUserSelected(String userId) => _selectedUserIds.contains(userId);
 
-  // ─── Date ──────────────────────────────────────────────────────────────────
-  void setSelectedDate(DateTime date) {
-    _selectedDate = date;
-    dateOfBirthController.text = TimeFormatHelper.formatDateTime(
-      date.toString(),
-    );
-  }
-
   void onChangedJob(value) => _isJobOngoings.value = value!;
 
   void onChangedEducation(value) => _isEducationOngoings.value = value!;
 
   // ─── Load Data ─────────────────────────────────────────────────────────────
+  DateTime? _lastLoadAt;
+  String? _lastLoadUserId;
+
+  String? get _authUserId => Get.isRegistered<AuthService>()
+      ? Get.find<AuthService>().getCachedUser()?.id
+      : null;
+
+  /// [loadData], unless it already ran for this user a moment ago. App start
+  /// loads once in [onInit]; the splash must not repeat the same requests.
+  Future<void> loadDataIfNeeded() async {
+    final last = _lastLoadAt;
+    if (last != null &&
+        _lastLoadUserId == _authUserId &&
+        DateTime.now().difference(last) < const Duration(seconds: 15)) {
+      return;
+    }
+    await loadData();
+  }
+
+  /// The server is the source of truth for tree placement. If it says a
+  /// user this device believed to be placed no longer is (an admin removed
+  /// them), send them back to the Select Mother Tree page.
+  Future<void> _redirectIfNoLongerPlaced() async {
+    if (!Get.isRegistered<AuthController>()) return;
+    final auth = AuthController.to;
+    if (!auth.isLoggedIn() || auth.isAdmin()) return;
+    if (auth.cachedUser?.treeJoinStatus != 'placed') return;
+    final serverStatus = (_userData.value?.treeJoinStatus ?? '').toLowerCase();
+    if (serverStatus.isEmpty || serverStatus == 'placed') return;
+
+    AppLog.warn('Profile', 'Tree status is now "$serverStatus": back to Select Mother Tree');
+    await Get.find<AuthService>().syncTreeJoinStatus(serverStatus);
+    if (Get.currentRoute != AppRoutes.motherSelectScreen) {
+      Get.offAllNamed(AppRoutes.motherSelectScreen);
+    }
+  }
+
   Future<void> loadData({bool showLoader = false}) async {
+    _lastLoadAt = DateTime.now();
+    _lastLoadUserId = _authUserId;
     try {
       final role = _roleFilter.value;
       final hasCache = _service.hasCache();
@@ -461,11 +529,13 @@ class ProfileController extends GetxController {
           fieldOfWork: fieldOfWorkFilter,
           name: nameFilter,
           treeJoinStatus: _activeTreeJoinStatus,
+          includeProfile: !_motherTreePickerMode,
         );
         _loadFromCache();
         _currentPage = 1;
         _syncHasMoreAfterFirstPage();
         _loadingState.value = LoadingState.loaded;
+        if (!_motherTreePickerMode) await _redirectIfNoLongerPlaced();
       } on AppException catch (e) {
         if (hasCache) {
           _loadFromCache();
@@ -473,7 +543,7 @@ class ProfileController extends GetxController {
         } else {
           _loadingState.value = LoadingState.error;
         }
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Profile', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -484,7 +554,7 @@ class ProfileController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: $e');
+      if (kDebugMode) AppLog.error('Profile', 'Unexpected error: $e');
     }
   }
 
@@ -506,6 +576,7 @@ class ProfileController extends GetxController {
         role: roleFilter,
         fieldOfWork: fieldOfWorkFilter,
         name: nameFilter,
+        searchTerm: searchController.text,
         treeJoinStatus: _activeTreeJoinStatus,
       );
 
@@ -527,56 +598,40 @@ class ProfileController extends GetxController {
       }
     } on AppException catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Load more error: $e');
+      if (kDebugMode) AppLog.error('Profile', 'Load more error: $e');
     } catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Unexpected error: $e');
+      if (kDebugMode) AppLog.error('Profile', 'Unexpected error: $e');
     } finally {
       _isLoadingMore.value = false;
     }
   }
 
   // ─── Cache ─────────────────────────────────────────────────────────────────
-  void _resolveCurrentUserFromAuth(String? authUserId) {
-    if (authUserId == null) return;
-    if (_userData.value?.sId == authUserId &&
-        (_userData.value?.treeJoinStatus?.isNotEmpty ?? false)) {
-      return;
-    }
-
-    for (final user in _usersData) {
-      if (user.sId == authUserId) {
-        _userData.value = user;
-        _populateControllers(user);
-        return;
-      }
-    }
-  }
-
+  /// Tree placement status used to route the user after login / app start.
+  ///
+  /// * `placed` on this device is trusted ([loadData] re-checks it right
+  ///   after and redirects if the server disagrees).
+  /// * [isFresh] means [cachedStatus] just came from the server (login).
+  /// * Otherwise the server is asked: an admin may have placed the user
+  ///   since the app was last open. Offline, the last known status is used.
   Future<String?> resolveTreeJoinStatus({
-    required String? userId,
     String? cachedStatus,
+    bool isFresh = false,
   }) async {
     if (cachedStatus == 'placed') return 'placed';
-
-    _loadFromCache();
-    _resolveCurrentUserFromAuth(userId);
-
-    final profileStatus = _userData.value?.treeJoinStatus;
-    if (profileStatus == 'placed') return 'placed';
-    if (profileStatus != null && profileStatus.isNotEmpty) return profileStatus;
+    if (isFresh && (cachedStatus?.isNotEmpty ?? false)) return cachedStatus;
 
     try {
-      final user = await _service.fetchCurrentUser(
-        userId: Get.find<AuthService>().getCachedUser()?.id,
-      );
+      final user = await _service.fetchCurrentUser(userId: _authUserId);
       if (user != null) {
         _userData.value = user;
         _populateControllers(user);
-        return user.treeJoinStatus ?? cachedStatus;
+        final status = user.treeJoinStatus;
+        if (status != null && status.isNotEmpty) return status;
       }
     } catch (e) {
-      if (kDebugMode) debugPrint('resolveTreeJoinStatus error: $e');
+      AppLog.error('Profile', 'Could not check tree status: $e');
     }
 
     return cachedStatus;
@@ -600,8 +655,7 @@ class ProfileController extends GetxController {
 
     assert(() {
       if (kDebugMode) {
-        print('📦 Loaded from cache:');
-        print('   Users: ${_usersData.length}');
+        AppLog.info('Profile', 'Loaded from cache → Users: ${_usersData.length}');
       }
       return true;
     }());
@@ -617,7 +671,7 @@ class ProfileController extends GetxController {
 
   Future<List<UserModel>> _fetchSearch(String query) async {
     final fromCache = _service
-        .getCachedUsers(roleFilter)
+        .getCachedUsers(roleFilter, treeJoinStatus: _activeTreeJoinStatus)
         .where((a) => a.matchesLocalizedNameSearch(query))
         .toList();
     if (fromCache.isNotEmpty) return fromCache;
@@ -632,9 +686,10 @@ class ProfileController extends GetxController {
       role: roleFilter,
       fieldOfWork: fieldOfWorkFilter,
       name: nameFilter,
+      treeJoinStatus: _activeTreeJoinStatus,
     );
     return _service
-        .getCachedUsers(roleFilter)
+        .getCachedUsers(roleFilter, treeJoinStatus: _activeTreeJoinStatus)
         .where((a) => a.matchesLocalizedNameSearch(query))
         .toList();
   }
@@ -646,10 +701,18 @@ class ProfileController extends GetxController {
   void beginOnboarding() {
     _isOnboardingFlow = true;
     _selectedUserId.value = '';
+    _rememberProfileSetupPending(true);
   }
 
   void finishOnboarding() {
     _isOnboardingFlow = false;
+    _rememberProfileSetupPending(false);
+  }
+
+  /// Persisted so that closing the app on Setup Profile resumes there.
+  void _rememberProfileSetupPending(bool pending) {
+    if (!Get.isRegistered<AuthService>()) return;
+    Get.find<AuthService>().setProfileSetupPending(pending);
   }
 
   Future<void> prepareOnboardingProfile() async {
@@ -669,7 +732,7 @@ class ProfileController extends GetxController {
     } catch (e) {
       if (isClosed) return;
       _seedProfileFromAuthCache();
-      if (kDebugMode) debugPrint('Onboarding profile fetch error: $e');
+      if (kDebugMode) AppLog.error('Profile', 'Onboarding profile fetch error: $e');
     }
   }
 
@@ -706,10 +769,6 @@ class ProfileController extends GetxController {
 
     try {
       _updateLoadingState.value = LoadingState.loading;
-
-      final dateOfBirth = _selectedDate != null
-          ? _selectedDate!.toUtc().toIso8601String()
-          : user.dateOfBirth;
 
       // ── Education list ────────────────────────────────────────────────────
       final currentEducation = List<EducationHistory>.from(
@@ -785,7 +844,7 @@ class ProfileController extends GetxController {
           name: nameController.text.trim(),
           email: emailController.text.trim(),
           phone: phoneController.text.trim(),
-          dateOfBirth: dateOfBirth,
+          // DOB is deprecated by the client — never sent on edit-profile.
           gender: genderController.text.trim(),
           employmentStatus: employmentController.text.trim(),
           education: educationController.text.trim(),
@@ -813,7 +872,6 @@ class ProfileController extends GetxController {
       );
       _userData.value = updatedUser;
 
-      _selectedDate = null;
       _editingEducationIndex = null;
       _editingExperienceIndex = null;
 
@@ -824,14 +882,23 @@ class ProfileController extends GetxController {
 
       if (isOnboarding) {
         finishOnboarding();
-        Get.toNamed(AppRoutes.motherSelectScreen);
-        loadData();
+        // Next step is the Select Mother Tree page, unless the server says
+        // the user is already `placed`.
+        if ((updatedUser.treeJoinStatus ?? '').toLowerCase() == 'placed') {
+          await Get.find<AuthService>().syncTreeJoinStatus('placed');
+          Get.offAllNamed(AppRoutes.bottomNavUserBar);
+          loadData();
+        } else {
+          // The update response already says "not placed": go straight to
+          // the picker without asking the server again.
+          Get.offAllNamed(AppRoutes.motherSelectScreen);
+        }
       } else {
         Get.back(canPop: true);
       }
     } catch (e) {
       _updateLoadingState.value = LoadingState.error;
-      debugPrint('❌ Update error: $e');
+      AppLog.error('Profile', 'Update error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
@@ -842,9 +909,6 @@ class ProfileController extends GetxController {
     nameController.text = data.name ?? '';
     emailController.text = data.email ?? '';
     phoneController.text = data.phone ?? '';
-    dateOfBirthController.text = TimeFormatHelper.formatDateTime(
-      data.dateOfBirth ?? '',
-    );
     genderController.text = data.gender?.toTitleCase ?? '';
     employmentController.text = data.employmentStatus?.toTitleCase ?? '';
     educationController.text = data.education?.toTitleCase ?? '';
@@ -876,13 +940,18 @@ class ProfileController extends GetxController {
     }
   }
 
-  void clearAllFilters() {
+  /// Clears the filter values without reloading anything.
+  void resetFilters() {
     _genderFilter.value = '';
     _employmentFilter.value = '';
     _educationFilter.value = '';
     _ageFilter.value = '';
     _fieldOfWorkFilter.value = '';
     _nameFilter.value = '';
+  }
+
+  void clearAllFilters() {
+    resetFilters();
     retry();
   }
 
@@ -907,14 +976,14 @@ class ProfileController extends GetxController {
       }
 
       _updateRoleState.value = LoadingState.loaded;
-      if (Get.isDialogOpen == true) Get.back();
+      DialogCloseHelper.closeIfOpen();
       ToastMessageHelper.show(
         role == 'admin' ? 'Admin access granted' : 'Admin access removed',
       );
       await retry();
     } catch (e) {
       _updateRoleState.value = LoadingState.error;
-      debugPrint('❌ Update error: $e');
+      AppLog.error('Profile', 'Update error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
@@ -927,36 +996,42 @@ class ProfileController extends GetxController {
     }
 
     try {
-      _motherTreeState.value = LoadingState.loading;
+      _motherSubmitState.value = LoadingState.loading;
       await _service.motherTreeSelect(_selectedUserId.value);
-      final user = await _service.fetchCurrentUser(
-        userId: Get.find<AuthService>().getCachedUser()?.id,
-      );
-      if (user != null) {
-        _userData.value = user;
-        _populateControllers(user);
-      }
       await Get.find<AuthService>().syncTreeJoinStatus('placed');
-      _motherTreeState.value = LoadingState.loaded;
+      _motherSubmitState.value = LoadingState.loaded;
       Get.offAllNamed(AppRoutes.bottomNavUserBar);
+      // The user is placed now: load the profile and member directory once.
+      loadData();
     } catch (e) {
-      _motherTreeState.value = LoadingState.error;
-      debugPrint('❌ Update error: $e');
+      AppLog.error('Profile', 'Choose mother tree failed: $e');
+      // An admin may have placed this user in the meantime, in which case
+      // the request can never succeed: check before reporting a failure.
+      final status = await resolveTreeJoinStatus();
+      if (status == 'placed') {
+        await Get.find<AuthService>().syncTreeJoinStatus('placed');
+        _motherSubmitState.value = LoadingState.loaded;
+        ToastMessageHelper.show('You are already placed in the family tree');
+        Get.offAllNamed(AppRoutes.bottomNavUserBar);
+        loadData();
+        return;
+      }
+      _motherSubmitState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
     }
   }
 
   Future<void> addMember(String motherId) async {
     try {
-      _motherTreeState.value = LoadingState.loading;
+      _motherSubmitState.value = LoadingState.loading;
       await _service.addMember(_selectedUserId.value,motherId);
-      _motherTreeState.value = LoadingState.loaded;
+      _motherSubmitState.value = LoadingState.loaded;
       await TreeController.to.loadData();
       await retry();
       Get.back(canPop: true);
     } catch (e) {
-      _motherTreeState.value = LoadingState.error;
-      debugPrint('❌ Update error: $e');
+      _motherSubmitState.value = LoadingState.error;
+      AppLog.error('Profile', 'Update error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
@@ -967,11 +1042,11 @@ class ProfileController extends GetxController {
       _blockUserState.value = LoadingState.loading;
       await _service.blockUser(userId,type: type);
       _blockUserState.value = LoadingState.loaded;
+      DialogCloseHelper.closeIfOpen();
       await retry();
-      Get.back(canPop: true);
     } catch (e) {
       _blockUserState.value = LoadingState.error;
-      debugPrint('❌ Update error: $e');
+      AppLog.error('Profile', 'Update error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
@@ -985,7 +1060,7 @@ class ProfileController extends GetxController {
       await AuthController.to.logout();
     } catch (e) {
       _deleteAccountState.value = LoadingState.error;
-      debugPrint('❌ Delete account error: $e');
+      AppLog.error('Profile', 'Delete account error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
@@ -997,25 +1072,36 @@ class ProfileController extends GetxController {
       _usersData.removeWhere((u) => u.sId == userId);
       _usersTotal.value = (_usersTotal.value - 1).clamp(0, double.infinity).toInt();
       _deleteUserState.value = LoadingState.loaded;
-      if (Get.isDialogOpen == true) Get.back();
+      DialogCloseHelper.closeIfOpen();
       ToastMessageHelper.show('User deleted successfully');
       await retry();
     } catch (e) {
       _deleteUserState.value = LoadingState.error;
-      debugPrint('❌ Delete user error: $e');
+      AppLog.error('Profile', 'Delete user error: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
 
-  Future<void> loadMotherTrees() async {
-    _motherTreeState.value = LoadingState.loading;
+  /// Loads the mother tree list.
+  ///
+  /// [silent] is for pull-to-refresh: the current list stays on screen and
+  /// only the pull indicator shows progress. A failed silent refresh keeps
+  /// the list that was already loaded.
+  Future<void> loadMotherTrees({bool silent = false}) async {
+    final keepList = silent && _motherTreeState.value == LoadingState.loaded;
+    if (!keepList) _motherTreeState.value = LoadingState.loading;
     try {
-      final trees = await _service.fetchMotherTrees();
+      final trees = await _service.fetchMotherTrees(
+        gender: genderFilter,
+        employmentStatus: employmentFilter,
+        educationLevel: educationFilter,
+        age: ageFilter,
+      );
       _motherTreesData.assignAll(trees);
       _motherTreeState.value = LoadingState.loaded;
     } catch (e) {
-      _motherTreeState.value = LoadingState.error;
-      debugPrint('❌ Error loading mother trees: $e');
+      if (!keepList) _motherTreeState.value = LoadingState.error;
+      AppLog.error('Profile', 'Error loading mother trees: $e');
       ToastMessageHelper.show(e.errorMessage);
     }
   }
@@ -1079,7 +1165,6 @@ class ProfileController extends GetxController {
     nameController.dispose();
     emailController.dispose();
     phoneController.dispose();
-    dateOfBirthController.dispose();
     genderController.dispose();
     employmentController.dispose();
     educationController.dispose();

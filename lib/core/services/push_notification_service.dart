@@ -1,8 +1,8 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -81,7 +81,7 @@ class PushNotificationService {
       }
       return await _messaging.getToken();
     } catch (e) {
-      debugPrint('PushNotificationService.getToken: $e');
+      AppLog.warn('Push', 'Could not get FCM token: $e');
       return null;
     }
   }
@@ -90,7 +90,7 @@ class PushNotificationService {
     try {
       await _messaging.deleteToken();
     } catch (e) {
-      debugPrint('PushNotificationService.deleteToken: $e');
+      AppLog.warn('Push', 'Could not delete FCM token: $e');
     }
     if (Get.isRegistered<StorageService>()) {
       await Get.find<StorageService>().remove(StorageKeys.fcmToken);
@@ -216,6 +216,12 @@ class PushNotificationService {
       if (Get.currentRoute != AppRoutes.loginScreen) {
         Get.toNamed(AppRoutes.loginScreen);
       }
+      return;
+    }
+
+    // Sign-up is not finished until a mother tree is chosen; a notification
+    // tap must not open the app's content before that.
+    if (Get.isRegistered<AuthController>() && !AuthController.to.hasAppAccess) {
       return;
     }
 

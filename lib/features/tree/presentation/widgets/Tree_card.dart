@@ -38,7 +38,6 @@ class NodeCard extends StatelessWidget {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: () {
-              debugPrint('CLICKED => ${meta.id}');
               Get.toNamed(AppRoutes.treeDetailsScreen, arguments: meta.id);
             },
             child: CustomContainer(

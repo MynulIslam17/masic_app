@@ -43,7 +43,8 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.terms.path,
             title: "Terms & Condition",
             onTap: () {
-              Get.toNamed(AppRoutes.privacyPolicyAllScreen,
+              Get.toNamed(
+                AppRoutes.privacyPolicyAllScreen,
                 arguments: {'title': 'Terms & Condition', 'key': 'terms'},
               );
             },
@@ -54,7 +55,8 @@ class SettingScreen extends StatelessWidget {
             icon: Assets.icons.policy.path,
             title: "Privacy Policy",
             onTap: () {
-              Get.toNamed(AppRoutes.privacyPolicyAllScreen,
+              Get.toNamed(
+                AppRoutes.privacyPolicyAllScreen,
                 arguments: {'title': 'Privacy Policy', 'key': 'privacy'},
               );
             },
@@ -70,37 +72,39 @@ class SettingScreen extends StatelessWidget {
           //     );
           //   },
           // ),
-
           Spacer(),
-          CustomButton(
-            bordersColor: AppColors.errorColor,
-            prefixIcon: Icons.delete_forever_outlined,
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w400,
-            backgroundColor: Colors.transparent,
-            foregroundColor: AppColors.errorColor,
-            label: 'Delete Account',
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => Obx(
-                  () => CustomDialog(
-                    title: "Delete Account",
-                    rightButtonLabel: 'Yes, Delete',
-                    rightButtonBgColor: AppColors.errorColor,
-                    isLoading: ProfileController.to.deleteAccountState.isLoading,
-                    onTapLeftButton: () {
-                      Get.back();
-                    },
-                    onTapRightButton: () {
-                      ProfileController.to.deleteAccount();
-                    },
-                    description: 'Are you sure want to delete your Account? This action cannot be undone.',
+          if (!AuthController.to.isSuperAdmin())
+            CustomButton(
+              bordersColor: AppColors.errorColor,
+              prefixIcon: Icons.delete_forever_outlined,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w400,
+              backgroundColor: Colors.transparent,
+              foregroundColor: AppColors.errorColor,
+              label: 'Delete Account',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => Obx(
+                    () => CustomDialog(
+                      title: "Delete Account",
+                      rightButtonLabel: 'Yes, Delete',
+                      rightButtonBgColor: AppColors.errorColor,
+                      isLoading:
+                          ProfileController.to.deleteAccountState.isLoading,
+                      onTapLeftButton: () {
+                        Get.back();
+                      },
+                      onTapRightButton: () {
+                        ProfileController.to.deleteAccount();
+                      },
+                      description:
+                          'Are you sure want to delete your Account? This action cannot be undone.',
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
 
           SizedBox(height: 20.h),
         ],

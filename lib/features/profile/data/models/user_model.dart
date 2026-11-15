@@ -261,7 +261,6 @@ class UserModel {
     addIfNotNull("region", region);
     addIfNotNull("city", city);
     addIfNotNull("district", district);
-    addIfNotNull("dateOfBirth", dateOfBirth);
     addIfNotNull("age", age);
     addIfNotNull("gender", gender);
     addIfNotNull("employmentStatus", employmentStatus);

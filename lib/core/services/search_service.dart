@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 
@@ -24,7 +25,7 @@ class SearchService<T> {
       results.value = await fetcher(q);
     } catch (e) {
       results.clear();
-      if (kDebugMode) debugPrint('SearchService error: $e');
+      if (kDebugMode) AppLog.error('Search', 'SearchService error: $e');
     } finally {
       isLoading.value = false;
     }

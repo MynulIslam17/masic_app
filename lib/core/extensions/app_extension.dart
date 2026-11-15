@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
@@ -19,7 +20,7 @@ extension AppExceptionX on Object {
   String get errorMessage {
     if (this is AppException) {
       final e = this as AppException;
-      debugPrint('====================================>> Errored: ${e.toString()}');
+      AppLog.error('Error', '${e.runtimeType}: ${e.message}');
       return e.message;
     }
     return toString();

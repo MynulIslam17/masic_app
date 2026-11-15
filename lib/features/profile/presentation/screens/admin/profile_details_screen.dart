@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
@@ -55,12 +54,6 @@ class ProfileDetailsScreen extends StatelessWidget {
                     label: 'Phone no',
                     value: user?.phone ?? 'N/A',
                     copyable: true,
-                  ),
-                  InfoRow(
-                    label: 'Date of birth',
-                    value: TimeFormatHelper.formatDateTime(
-                      user?.dateOfBirth ?? '',
-                    ),
                   ),
                   InfoRow(label: 'Gender', value: user?.gender ?? 'N/A', translateValue: true),
                   InfoRow(

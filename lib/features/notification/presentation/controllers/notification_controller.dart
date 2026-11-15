@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
@@ -97,7 +98,7 @@ class NotificationController extends GetxController {
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
-        if (kDebugMode) debugPrint('Fetch notification error: $e');
+        if (kDebugMode) AppLog.error('Notification', 'Fetch notification error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -108,7 +109,7 @@ class NotificationController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected notification error: $e');
+      if (kDebugMode) AppLog.error('Notification', 'Unexpected notification error: $e');
     }
   }
 
@@ -131,10 +132,10 @@ class NotificationController extends GetxController {
       }
     } on AppException catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Load more notification error: $e');
+      if (kDebugMode) AppLog.error('Notification', 'Load more notification error: $e');
     } catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Unexpected load more error: $e');
+      if (kDebugMode) AppLog.error('Notification', 'Unexpected load more error: $e');
     } finally {
       _isLoadingMore.value = false;
     }

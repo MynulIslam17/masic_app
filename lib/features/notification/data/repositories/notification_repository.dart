@@ -1,4 +1,5 @@
 import 'package:masic_generation/core/constants/api_constants.dart';
+import 'package:masic_generation/core/helpers/api_response_parser.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
@@ -23,8 +24,8 @@ class NotificationRepository {
         ApiConstants.notifications(page, limit),
       );
 
-      final notifications = (response.data['data'] as List)
-          .map((e) => NotificationModel.fromJson(e))
+      final notifications = ApiResponseParser.dataList(response.data)
+          .map(NotificationModel.fromJson)
           .toList();
 
       await _cacheService.put(
@@ -33,6 +34,11 @@ class NotificationRepository {
       );
 
       return notifications;
+    } on ResourceNotFoundException {
+      if (page == 1) {
+        await _cacheService.put(ApiConstants.cacheNotifications, const <dynamic>[]);
+      }
+      return const [];
     } on AppException {
       return getCachedNotifications();
     } catch (e) {

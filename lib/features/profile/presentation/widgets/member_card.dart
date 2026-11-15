@@ -112,9 +112,6 @@ class MemberCard extends StatelessWidget {
           onPressed: () {
             if (isMotherTree || isTree) {
               final id = isTree ? user.sId ?? '' : user.linkedMember ?? '';
-              debugPrint('Current selected: ${controller.selectedUserId}');
-              debugPrint('This user id: $id');
-              debugPrint('isSelected: $isSelected');
               if (isSelected) {
                 controller.selectSingleUser('');
               } else {

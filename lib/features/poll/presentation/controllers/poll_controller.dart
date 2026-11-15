@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
@@ -184,7 +185,7 @@ class PollController extends GetxController {
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Poll', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -195,7 +196,7 @@ class PollController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) AppLog.error('Poll', 'Unexpected error: ${e.toString()}');
     }
   }
 
@@ -216,10 +217,10 @@ class PollController extends GetxController {
       }
     } on AppException catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Load more error: $e');
+      if (kDebugMode) AppLog.error('Poll', 'Load more error: $e');
     } catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) AppLog.error('Poll', 'Unexpected error: ${e.toString()}');
     } finally {
       _isLoadingMore.value = false;
     }
@@ -271,7 +272,7 @@ class PollController extends GetxController {
       answerController.clear();
     } catch (e) {
       _detailsLoadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('fetchPollDetails error: $e');
+      if (kDebugMode) AppLog.error('Poll', 'fetchPollDetails error: $e');
     }
   }
 
@@ -285,7 +286,7 @@ class PollController extends GetxController {
       _resultLoadingState.value = LoadingState.loaded;
     } catch (e) {
       _resultLoadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('fetchPollResult error: $e');
+      if (kDebugMode) AppLog.error('Poll', 'fetchPollResult error: $e');
     }
   }
 
@@ -307,7 +308,7 @@ class PollController extends GetxController {
     } catch (e) {
       ToastMessageHelper.show(e.errorMessage);
       _writeInLoadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('pollAnswer error: $e');
+      if (kDebugMode) AppLog.error('Poll', 'pollAnswer error: $e');
     }
   }
 
@@ -339,7 +340,7 @@ class PollController extends GetxController {
     } catch (e) {
       ToastMessageHelper.show(e.errorMessage);
       _createLoadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('createPoll error: $e');
+      if (kDebugMode) AppLog.error('Poll', 'createPoll error: $e');
     }
   }
 
@@ -355,7 +356,7 @@ class PollController extends GetxController {
     } catch (e) {
       ToastMessageHelper.show(e.errorMessage);
       _deleteLoadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('deletePoll error: $e');
+      if (kDebugMode) AppLog.error('Poll', 'deletePoll error: $e');
     }
   }
 

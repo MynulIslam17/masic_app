@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
@@ -88,7 +89,7 @@ class HomeController extends GetxController {
           _errorMessage.value = e.message;
           _loadingState.value = LoadingState.error;
         }
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Home', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -98,7 +99,7 @@ class HomeController extends GetxController {
         _errorMessage.value = e.errorMessage;
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) AppLog.error('Home', 'Unexpected error: ${e.toString()}');
     }
   }
 
@@ -120,10 +121,9 @@ class HomeController extends GetxController {
     // Debug logging
     assert(() {
       if (kDebugMode) {
-        print('📦 Loaded from cache:');
-        print('   Announcements home: ${_announcements.length}');
-        print('   Polls home: ${_polls.length}');
-        print('   Banner home: $_bannerUrl');
+        AppLog.info('Home', 'Loaded from cache → Announcements home: ${_announcements.length}');
+        AppLog.info('Home', 'Loaded from cache → Polls home: ${_polls.length}');
+        AppLog.info('Home', 'Loaded from cache → Banner home: $_bannerUrl');
       }
 
       return true;

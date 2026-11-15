@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
@@ -9,6 +10,8 @@ import 'package:masic_generation/core/services/push_notification_service.dart';
 import 'package:masic_generation/features/auth/domain/services/auth_services.dart';
 import 'package:masic_generation/features/profile/presentation/controllers/profile_controller.dart';
 import 'package:get/get.dart';
+import 'package:masic_generation/core/helpers/dialog_close_helper.dart';
+import 'package:masic_generation/core/widgets/native_loading_dialog.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService;
@@ -106,8 +109,17 @@ class AuthController extends GetxController {
   }
 
   /// ─── REGISTER ──────────────────────────
+  /// Flow: sign-up -> OTP -> setup profile -> Select Mother Tree. The mother
+  /// tree is chosen after the account exists (`POST /member/choose-mother`).
   Future<void> register() async {
-    if (!registerFormKey.currentState!.validate() || !checked) return;
+    if (_registerState == LoadingState.loading) return;
+    if (!registerFormKey.currentState!.validate()) return;
+    if (!checked) {
+      ToastMessageHelper.show(
+        'Please accept the Terms & Conditions & Privacy Policy',
+      );
+      return;
+    }
 
     _registerState = LoadingState.loading;
     update();
@@ -235,15 +247,30 @@ class AuthController extends GetxController {
   /// in the tree fighting over the same form [GlobalKey].
   bool _loggingOut = false;
 
-  Future<void> logout() async {
+  Future<void> logout({bool showProgress = true}) async {
     if (_loggingOut) return;
     _loggingOut = true;
     try {
-      await _pushNotificationService.deleteToken();
+      // Swap the "Are you sure?" dialog for a blocking native spinner so the
+      // user can't tap twice or navigate while the session is torn down.
+      DialogCloseHelper.closeIfOpen();
+      if (showProgress) {
+        await NativeLoadingDialog.show(message: 'Logging out...');
+      }
+      try {
+        // Firebase can stall without network; never block logout on it.
+        await _pushNotificationService.deleteToken().timeout(
+          const Duration(seconds: 5),
+        );
+      } catch (e) {
+        AppLog.warn('Auth', 'Logout: push token cleanup skipped: $e');
+      }
       await _authService.logout();
       clearControllers();
+      // Replaces every route, the progress dialog included.
       Get.offAllNamed(AppRoutes.loginScreen);
     } finally {
+      NativeLoadingDialog.hide();
       _loggingOut = false;
     }
   }
@@ -267,6 +294,11 @@ class AuthController extends GetxController {
 
   bool isSuperAdmin() => isSuperAdminRole(cachedUser?.role);
 
+  /// Admins, and users already placed in the family tree, may use the app.
+  /// Everyone else must finish the Select Mother Tree page first.
+  bool get hasAppAccess =>
+      isAdmin() || cachedUser?.treeJoinStatus == 'placed';
+
   Future<void> navigateAuthenticatedUser({UserResponseModel? user}) async {
     final currentUser = user ?? _authService.getCachedUser();
     if (currentUser == null) {
@@ -276,24 +308,37 @@ class AuthController extends GetxController {
 
     if (isAdminRole(currentUser.role)) {
       Get.offAllNamed(AppRoutes.adminBottomNavBar);
-      ProfileController.to.loadData();
+      ProfileController.to.loadDataIfNeeded();
+      return;
+    }
+
+    // The app was closed between OTP and Setup Profile: resume there.
+    if (_authService.isProfileSetupPending) {
+      ProfileController.to.beginOnboarding();
+      Get.offAllNamed(AppRoutes.editProfileScreen, arguments: 'onboarding');
       return;
     }
 
     final treeStatus = await ProfileController.to.resolveTreeJoinStatus(
-      userId: currentUser.id,
       cachedStatus: currentUser.treeJoinStatus,
+      // A status straight from the login response needs no second request.
+      isFresh: user != null,
     );
+
+    // The status check can end the session (expired token, deleted
+    // account); the user is already on the login screen in that case.
+    if (!isLoggedIn()) return;
 
     if (treeStatus == 'placed') {
       await _authService.syncTreeJoinStatus('placed');
       Get.offAllNamed(AppRoutes.bottomNavUserBar);
-      ProfileController.to.loadData();
+      ProfileController.to.loadDataIfNeeded();
       return;
     }
 
+    // The Select Mother Tree page loads its own list; the profile and member
+    // directory are loaded once the user is placed.
     Get.offAllNamed(AppRoutes.motherSelectScreen);
-    ProfileController.to.loadData();
   }
 
 

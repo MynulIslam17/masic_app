@@ -140,30 +140,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             keyboardType: TextInputType.phone,
           ),
 
-          CustomTextField(
-            prefixIcon: Assets.icons.date.svg(),
-            showShadow: false,
-            borderColor: AppColors.colorE6E6E6,
-            filColor: AppColors.bgColor,
-            controller: controller.dateOfBirthController,
-            hintText: "Date of birth",
-            readOnly: true,
-            suffixIcon: Icon(
-              Icons.arrow_drop_down_outlined,
-              color: AppColors.colorB0B0B0,
-            ),
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: DateTime(2000),
-                firstDate: DateTime(1950),
-                lastDate: DateTime.now(),
-              );
-              if (picked != null) {
-                controller.setSelectedDate(picked);
-              }
-            },
-          ),
 
           _dropdownField(
             options: const ['Male', 'Female'],

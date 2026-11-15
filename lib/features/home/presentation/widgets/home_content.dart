@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
@@ -26,7 +27,10 @@ class HomeContent extends StatelessWidget {
     return Obx(
       () => RefreshIndicator(
         onRefresh: () async {
-          controller.refresh();
+          await Future.wait([
+            controller.refresh(),
+            if (AuthController.to.isAdmin()) controllerD.refresh(),
+          ]);
         },
         child: CustomScrollView(
           physics: AlwaysScrollableScrollPhysics(
@@ -194,6 +198,33 @@ class HomeContent extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Obx(() {
                   final dashboard = controllerD.dashboard;
+                  final dashLoading =
+                      controllerD.loadingState == LoadingState.loading ||
+                      controllerD.loadingState == LoadingState.initial;
+                  if (dashboard == null || !dashboard.hasAnyChartData) {
+                    if (dashLoading) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40.h),
+                        child: const Center(child: CustomLoader()),
+                      );
+                    }
+                    return HomeEmptyStateCard(
+                      key: const ValueKey('home_admin_empty_state'),
+                      title: controller.announcements.isEmpty &&
+                              controller.polls.isEmpty
+                          ? 'Nothing to show yet'
+                          : 'No dashboard statistics yet',
+                      message: controllerD.loadingState == LoadingState.error
+                          ? 'Could not load dashboard statistics. Pull down to retry.'
+                          : 'Charts appear here once members fill in their profile details (age, gender, work, education, location).',
+                      onRefresh: () async {
+                        await Future.wait([
+                          controller.refresh(),
+                          controllerD.refresh(),
+                        ]);
+                      },
+                    );
+                  }
                  return Padding(
                    padding:  EdgeInsets.symmetric(horizontal: 16.w),
                    child: Column(
@@ -279,9 +310,72 @@ class HomeContent extends StatelessWidget {
                  );
                 }),
               ),
-            SliverToBoxAdapter(child: SizedBox(height: 10.h)),
+            // Keep the last item clear of the floating bottom nav bar.
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: MediaQuery.paddingOf(context).bottom + 24.h,
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+
+/// Placeholder shown on the home screen when there is nothing else to render,
+/// so the area under the header is never a blank white void.
+class HomeEmptyStateCard extends StatelessWidget {
+  const HomeEmptyStateCard({
+    super.key,
+    required this.title,
+    required this.message,
+    this.onRefresh,
+  });
+
+  final String title;
+  final String message;
+  final Future<void> Function()? onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomContainer(
+      horizontalMargin: 16.w,
+      verticalMargin: 16.h,
+      bordersColor: AppColors.color8A8A8A,
+      radiusAll: 20.r,
+      width: double.infinity,
+      paddingHorizontal: 24.w,
+      paddingVertical: 24.h,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.insights_outlined,
+            size: 40.r,
+            color: AppColors.primaryColor,
+          ),
+          SizedBox(height: 12.h),
+          CustomText(
+            text: title,
+            fontSize: 16.sp,
+            color: AppColors.primaryColor,
+          ),
+          SizedBox(height: 8.h),
+          CustomText(text: message, fontSize: 12.sp, maxline: 4),
+          if (onRefresh != null) ...[
+            SizedBox(height: 12.h),
+            TextButton(
+              onPressed: () => onRefresh!(),
+              child: CustomText(
+                text: 'Refresh',
+                color: AppColors.primaryColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

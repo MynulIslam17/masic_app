@@ -27,10 +27,12 @@ class ProfileService {
     String? fieldOfWork,
     String? name,
     String? treeJoinStatus,
+    bool includeProfile = true,
   }) async {
     try {
       await Future.wait([
-        _repository.fetchUserProfile(),
+        // The picker only needs the list; skip the redundant `GET /users/me`.
+        if (includeProfile) _repository.fetchUserProfile(),
         _repository.fetchUsers(
           page: page,
           limit: limit,
@@ -122,8 +124,19 @@ class ProfileService {
     return await _repository.deleteUser(userId);
   }
 
-  Future<List<UserModel>> fetchMotherTrees() async {
-    return await _repository.fetchMotherTrees();
+  Future<List<UserModel>> fetchMotherTrees({
+    String? gender,
+    String? employmentStatus,
+    String? educationLevel,
+    String? age,
+  }) async {
+    // Same value normalisation as the `GET /users` filters.
+    return await _repository.fetchMotherTrees(
+      gender: gender?.toLowerCase(),
+      employmentStatus: _fixEmploymentCase(employmentStatus),
+      educationLevel: educationLevel?.toLowerCase(),
+      age: age?.toLowerCase(),
+    );
   }
 
   bool hasCache() {

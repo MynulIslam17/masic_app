@@ -54,9 +54,12 @@ class UserCard extends StatelessWidget {
                     options: [
                       'View Details',
                       if (user.isDeleted == true) 'Unblock' else 'Block',
-                      if (AuthController.isAdminRole(ProfileController.to.userData?.role) &&
+                      if (AuthController.isAdminRole(
+                            ProfileController.to.userData?.role,
+                          ) &&
                           user.sId != ProfileController.to.userData?.sId) ...[
-                        'Delete Account',
+                        if (!AuthController.isSuperAdminRole(user.role))
+                          'Delete Account',
                         if (user.normalizedRole == 'admin')
                           'Decline admin access',
                         if (user.normalizedRole == 'user') 'Give admin access',
@@ -131,7 +134,9 @@ class UserCard extends StatelessWidget {
                       context: context,
                       builder: (context) => Obx(
                         () => CustomDialog(
-                          title: selectedMenu == 'Unblock' ? 'Unblock user?' : 'Block user?',
+                          title: selectedMenu == 'Unblock'
+                              ? 'Unblock user?'
+                              : 'Block user?',
                           leftButtonLabel: 'Cancel',
                           rightButtonLabel: 'Block',
                           isLoading: controller.blockUserState.isLoading,
@@ -142,7 +147,8 @@ class UserCard extends StatelessWidget {
                                 ? 'unblock'
                                 : 'block',
                           ),
-                          description: 'Are you sure you want to ${selectedMenu.toLowerCase()} this user?'
+                          description:
+                              'Are you sure you want to ${selectedMenu.toLowerCase()} this user?',
                         ),
                       ),
                     );
@@ -184,9 +190,8 @@ class UserCard extends StatelessWidget {
     bool copyable = false,
     String copyLabel = '',
   }) {
-    final canCopy = copyable &&
-        label.trim().isNotEmpty &&
-        label.toUpperCase() != 'N/A';
+    final canCopy =
+        copyable && label.trim().isNotEmpty && label.toUpperCase() != 'N/A';
 
     return CustomContainer(
       marginBottom: 10.h,

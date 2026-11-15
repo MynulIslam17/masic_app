@@ -4,19 +4,35 @@ import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
+import 'package:masic_generation/core/enums/loading_state.dart';
+import 'package:masic_generation/core/widgets/empty_data_widget.dart';
 import 'package:masic_generation/core/widgets/widgets.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/info_row.dart';
 import 'package:masic_generation/features/request/presentation/controllers/request_controller.dart';
 import 'package:masic_generation/features/request/presentation/widgets/details_bottom_nav.dart';
 import 'package:get/get.dart';
 
-class RequestDetailsScreen extends StatelessWidget {
+class RequestDetailsScreen extends StatefulWidget {
   const RequestDetailsScreen({super.key});
 
   @override
+  State<RequestDetailsScreen> createState() => _RequestDetailsScreenState();
+}
+
+class _RequestDetailsScreenState extends State<RequestDetailsScreen> {
+  late final String requestId;
+  final controller = RequestController.to;
+
+  @override
+  void initState() {
+    super.initState();
+    final args = Get.arguments;
+    requestId = (args is String ? args : args?.toString() ?? '').trim();
+    controller.loadRequestDetails(requestId);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final requestId = Get.arguments as String;
-    final controller = RequestController.to;
     return CustomScaffold(
       appBar: CustomAppBar(
         title: "Details",
@@ -34,11 +50,26 @@ class RequestDetailsScreen extends StatelessWidget {
       ),
       body: Obx(() {
         TranslationController.to.currentLanguage.value;
-        final request = controller.requests.firstWhereOrNull(
-          (e) => e.sId == requestId,
-        );
+        final request = controller.findRequest(requestId);
         if (request == null) {
-          return const Center(child: Text('Request not found'));
+          switch (controller.detailState(requestId)) {
+            case LoadingState.initial:
+            case LoadingState.loading:
+              return const Center(child: CustomLoader());
+            case LoadingState.offline:
+            case LoadingState.error:
+              return EmptyDataWidget(
+                message: controller.detailState(requestId) ==
+                        LoadingState.offline
+                    ? 'You are offline. Connect to load this request.'
+                    : 'Could not load this request.',
+                onRefresh: () => controller.loadRequestDetails(requestId),
+              );
+            case LoadingState.loaded:
+              return const EmptyDataWidget(
+                message: 'This request is no longer available.',
+              );
+          }
         }
         return SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(
