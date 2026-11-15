@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -23,7 +24,7 @@ class CacheService {
 
   Future<void> put(String key, dynamic value) async {
     await box.put(key, value);
-    debugPrint('Saved to cache: ----------------------->>>  $key: $value');
+    AppLog.info('Cache', 'Saved: $key');
   }
 
   // T? get<T>(String key, {T? defaultValue}) {
@@ -59,12 +60,12 @@ class CacheService {
 
   Future<void> delete(String key) async {
     await box.delete(key);
-    debugPrint('Deleted from cache: ----------------------->>>  $key');
+    AppLog.info('Cache', 'Deleted: $key');
   }
 
   Future<void> deleteAll(Iterable<String> keys) async {
     await box.deleteAll(keys);
-    debugPrint('Deleted from cache: ----------------------->>>  $keys');
+    AppLog.info('Cache', 'Deleted: $keys');
   }
 
   Future<void> clear() async {

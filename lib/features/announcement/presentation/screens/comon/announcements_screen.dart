@@ -207,8 +207,9 @@ class AnnouncementsScreen extends StatelessWidget {
                   return SliverFillRemaining(
                     hasScrollBody: false,
                     child: EmptyDataWidget(
-                      message:
-                          'Failed to load announcements. Please try again.',
+                      message: controller.loadingState == LoadingState.offline
+                          ? 'You are offline. Connect to the internet and try again.'
+                          : 'Failed to load announcements. Please try again.',
                       onRefresh: () async => await controller.refresh(),
                     ),
                   );
@@ -220,7 +221,9 @@ class AnnouncementsScreen extends StatelessWidget {
                       child: EmptyDataWidget(
                         message: controller.selectedTab.value == 1
                             ? 'You have no announcements yet.'
-                            : 'No announcements found.',
+                            : AuthController.to.isAdmin()
+                                ? 'No pending requests.'
+                                : 'No announcements found.',
                         onRefresh: () async => await controller.refresh(),
                       ),
                     );

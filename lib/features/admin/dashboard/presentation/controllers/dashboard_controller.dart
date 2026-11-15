@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
@@ -58,7 +59,7 @@ class DashboardController extends GetxController {
         if (!hasCache) {
           _loadingState.value = LoadingState.error;
         }
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Dashboard', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -67,7 +68,7 @@ class DashboardController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) AppLog.error('Dashboard', 'Unexpected error: ${e.toString()}');
     }
   }
 
@@ -76,8 +77,7 @@ class DashboardController extends GetxController {
 
     assert(() {
       if (kDebugMode) {
-        print('📦 Loaded from cache:');
-        print('   Announcements: ${_dashboard.value}');
+        AppLog.info('Dashboard', 'Loaded from cache → Announcements: ${_dashboard.value}');
       }
       return true;
     }());

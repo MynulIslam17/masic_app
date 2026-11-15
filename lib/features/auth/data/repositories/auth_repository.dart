@@ -45,6 +45,10 @@ abstract class AuthRepository {
 
   Future<void> updateCachedUserTreeJoinStatus(String treeJoinStatus);
 
+  /// Whether sign-up stopped before the Setup Profile step was saved.
+  bool isProfileSetupPending();
+  Future<void> setProfileSetupPending(bool pending);
+
   /// ─── LOGOUT ──────────────────────────────────────
   Future<void> logout();
 }

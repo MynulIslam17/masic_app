@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -85,7 +86,7 @@ class BannerController extends GetxController {
         if (!hasCache || _banners.isEmpty) {
           _loadingState.value = LoadingState.error;
         }
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Banner', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache() && _banners.isNotEmpty) {
@@ -94,7 +95,7 @@ class BannerController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) AppLog.error('Banner', 'Unexpected error: ${e.toString()}');
     }
   }
 
@@ -103,8 +104,7 @@ class BannerController extends GetxController {
 
     assert(() {
       if (kDebugMode) {
-        print('📦 Loaded from cache:');
-        print('   Banner: ${_banners.length}');
+        AppLog.info('Banner', 'Loaded from cache → Banner: ${_banners.length}');
       }
       return true;
     }());
@@ -125,7 +125,7 @@ class BannerController extends GetxController {
     } on AppException catch (e) {
       ToastMessageHelper.show(e.errorMessage);
       if (kDebugMode) {
-        debugPrint('Create banner error: $e');
+        AppLog.error('Banner', 'Create banner error: $e');
       }
     }
   }
@@ -142,7 +142,7 @@ class BannerController extends GetxController {
       _deleteLoadingState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
       if (kDebugMode) {
-        debugPrint('Delete banner error: $e');
+        AppLog.error('Banner', 'Delete banner error: $e');
       }
     }
   }

@@ -1,5 +1,7 @@
 class ApiConstants {
-  static const String baseUrl = 'https://api.masicgeneration.com';
+ static const String baseUrl = 'https://api.masicgeneration.com';
+  //local url
+ // static const String baseUrl = 'https://mihad4173.ssh.bd';
 
   static const Map<String, dynamic> headers = {
     'Content-Type': 'application/json',
@@ -31,7 +33,8 @@ class ApiConstants {
 
 
   /// ─── Announcement Marker ───────────────────────────
-  static String announcements(int page, int limit) => '/api/v1/announcement/all?page=$page&limit=$limit';
+  static const String announcementBase = '/api/v1/announcement';
+  static String announcements(int page, int limit) => '$announcementBase?page=$page&limit=$limit';
   static String myAnnouncements(int page, int limit) => '/api/v1/announcement/my-requests?page=$page&limit=$limit';
   static const String myAnnouncementsPath = '/api/v1/announcement/my-requests';
   static String announcementCreate = '/api/v1/announcement/create';
@@ -106,7 +109,14 @@ class ApiConstants {
   static const String cacheAdminProfile = 'users/admin';
   static const String cachePlacedUsers = 'users/placed';
   static const String cacheAnnouncements = 'announcements';
-  static const String cacheMyAnnouncements = 'announcements_my';
+  static const String cacheAnnouncementFeed = 'announcements_feed_v1';
+  static const String cacheInProgressAnnouncements = 'announcements_in_progress';
+  // Separate approved data from the legacy cache, which could contain requests.
+  static const String cacheApprovedAnnouncements = 'announcements_approved';
+  static const String cachePendingAnnouncements = 'announcements_pending';
+  static const String cacheDeclinedAnnouncements = 'announcements_declined';
+  // The previous personal cache could contain public items from pagination.
+  static const String cacheMyAnnouncements = 'announcements_my_v2';
   static const String cachePolls = 'poll';
   static const String cacheRequests = 'requests';
   static const String cacheBanner = 'banner';

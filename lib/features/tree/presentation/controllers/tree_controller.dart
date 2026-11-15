@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
@@ -101,7 +102,7 @@ class TreeController extends GetxController {
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Tree', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -110,7 +111,7 @@ class TreeController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: $e');
+      if (kDebugMode) AppLog.error('Tree', 'Unexpected error: $e');
     }
   }
 
@@ -120,8 +121,7 @@ class TreeController extends GetxController {
     _ensureRootExpanded();
     assert(() {
       if (kDebugMode) {
-        print('📦 Loaded from cache:');
-        print('   TREE DATA: ${_treeData.value?.root?.children?.length}');
+        AppLog.info('Tree', 'Loaded from cache → TREE DATA: ${_treeData.value?.root?.children?.length}');
       }
       return true;
     }());
@@ -252,7 +252,7 @@ class TreeController extends GetxController {
       if (_userDetails.value == null) {
         _detailsLoadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('fetchUserDetails error: $e');
+      if (kDebugMode) AppLog.error('Tree', 'fetchUserDetails error: $e');
     }
   }
 
@@ -266,7 +266,7 @@ class TreeController extends GetxController {
       Get.back(canPop: true);
     } catch (e) {
       _deleteState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('deleteUser error: $e');
+      if (kDebugMode) AppLog.error('Tree', 'deleteUser error: $e');
     }
   }
 }

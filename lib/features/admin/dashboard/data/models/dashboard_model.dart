@@ -91,6 +91,7 @@ class DashboardModel {
   }
 
   List<BarChartModel> get ageRangeChartData => (ageRange ?? [])
+      .where((e) => _hasValue(e.range, e.percentage ?? e.count))
       .map(
         (e) => BarChartModel(
       label: e.range ?? '',
@@ -104,6 +105,7 @@ class DashboardModel {
     for (final e in gender ?? []) {
       final raw = (e.gender ?? '').trim();
       if (raw.isEmpty) continue;
+      if ((e.count ?? e.percentage ?? 0) <= 0) continue;
       final key = _genderKey(raw);
       merged[key] =
           (merged[key] ?? 0) + (e.count ?? e.percentage ?? 0).toDouble();
@@ -119,6 +121,21 @@ class DashboardModel {
         .toList();
   }
 
+  static bool _hasValue(String? label, num? value) =>
+      (label ?? '').trim().isNotEmpty && (value ?? 0) > 0;
+
+  /// True when at least one chart has something to draw. Used by the home
+  /// screen to decide whether to show an empty-state card instead of a blank
+  /// area when demographic fields are not filled in yet.
+  bool get hasAnyChartData =>
+      ageRangeChartData.isNotEmpty ||
+      genderChartData.isNotEmpty ||
+      commonNamesChartData.isNotEmpty ||
+      employmentStatusChartData.isNotEmpty ||
+      fieldOfWorkChartData.isNotEmpty ||
+      educationLevelChartData.isNotEmpty ||
+      locationChartData.isNotEmpty;
+
   static String _genderKey(String raw) {
     final lower = raw.toLowerCase();
     if (lower.startsWith('f')) return 'female';
@@ -127,6 +144,7 @@ class DashboardModel {
   }
 
   List<BarChartModel> get commonNamesChartData => (commonNames ?? [])
+      .where((e) => _hasValue(e.name, e.percentage ?? e.count))
       .map(
         (e) => BarChartModel(
       label: e.name ?? '',
@@ -184,6 +202,7 @@ class DashboardModel {
   }
 
   List<BarChartModel> get fieldOfWorkChartData => (fieldOfWork ?? [])
+      .where((e) => _hasValue(e.field, e.percentage ?? e.count))
       .map(
         (e) => BarChartModel(
       label: e.field ?? '',
@@ -203,6 +222,7 @@ class DashboardModel {
       .toList();
 
   List<BarChartModel> get locationChartData => (location ?? [])
+      .where((e) => _hasValue(e.location, e.percentage ?? e.count))
       .map(
         (e) => BarChartModel(
       label: e.location ?? '',

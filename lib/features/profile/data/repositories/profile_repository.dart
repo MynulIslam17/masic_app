@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'dart:convert';
 import 'dart:io';
 
@@ -78,7 +79,7 @@ class ProfileRepository {
       if (json == null) return null;
       return UserModel.fromJson(json);
     } catch (e) {
-      debugPrint('❌ Error getting cached user data: $e');
+      AppLog.error('Profile', 'Error getting cached user data: $e');
       return null;
     }
   }
@@ -414,9 +415,27 @@ class ProfileRepository {
     }
   }
 
-  Future<List<UserModel>> fetchMotherTrees() async {
+  /// Mother trees for the Select Mother Tree page. Takes the same filter
+  /// parameters as `GET /users`.
+  Future<List<UserModel>> fetchMotherTrees({
+    String? gender,
+    String? employmentStatus,
+    String? educationLevel,
+    String? age,
+  }) async {
     try {
-      final response = await _apiService.get(ApiConstants.motherTrees);
+      final queryParameters = <String, dynamic>{
+        if (gender != null && gender.isNotEmpty) 'gender': gender,
+        if (employmentStatus != null && employmentStatus.isNotEmpty)
+          'employmentStatus': employmentStatus,
+        if (educationLevel != null && educationLevel.isNotEmpty)
+          'educationLevel': educationLevel,
+        if (age != null && age.isNotEmpty) 'age': age,
+      };
+      final response = await _apiService.get(
+        ApiConstants.motherTrees,
+        queryParameters: queryParameters.isEmpty ? null : queryParameters,
+      );
       final rawData = response.data['data'];
       final list = rawData is List
           ? rawData

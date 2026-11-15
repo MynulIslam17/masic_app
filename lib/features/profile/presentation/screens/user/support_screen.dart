@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
@@ -72,7 +73,7 @@ class SupportScreen extends StatelessWidget {
                     if (await launchUrl(url)) {
                       await launchUrl(url);
                     } else {
-                      debugPrint('Could not launch phone dialer');
+                      AppLog.error('Profile', 'Could not launch phone dialer');
                     }
                   },
                   label: CustomText(text: '+966 55 797 2888',color: Colors.white,fontWeight: FontWeight.w600),

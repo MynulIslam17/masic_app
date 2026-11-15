@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
+import 'package:masic_generation/core/helpers/api_response_parser.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
@@ -32,14 +33,19 @@ class RequestRepository {
         queryParameters: {'page': page, 'limit': limit, 'searchTerm': search},
       );
 
-      final users = (response.data['data'] as List)
-          .map((e) => RequestModel.fromJson(e))
+      final users = ApiResponseParser.dataList(response.data)
+          .map(RequestModel.fromJson)
           .toList();
       await _cacheService.put(
         ApiConstants.cacheRequests,
         users.map((e) => e.toJson()).toList(),
       );
       return users;
+    } on ResourceNotFoundException {
+      if (page == 1) {
+        await _cacheService.put(ApiConstants.cacheRequests, const <dynamic>[]);
+      }
+      return const [];
     } on AppException {
       final cached = getCachedRequests();
       if (cached.isNotEmpty) return cached;
@@ -60,6 +66,39 @@ class RequestRepository {
       );
     }
     return response;
+  }
+
+  /// The backend has no `GET /request/:id`, so a request opened from a
+  /// notification is located by scanning pages. Does not touch the list cache.
+  Future<RequestModel?> findRequestById(
+    String id, {
+    int pageSize = 50,
+    int maxPages = 10,
+  }) async {
+    try {
+      for (var page = 1; page <= maxPages; page++) {
+        final response = await _apiService.get(
+          ApiConstants.requests,
+          queryParameters: {'page': page, 'limit': pageSize},
+        );
+        final body = response.data;
+        final raw = body is Map ? body['data'] : body;
+        if (raw is! List || raw.isEmpty) return null;
+        for (final item in raw.whereType<Map>()) {
+          if (item['_id']?.toString() == id) {
+            return RequestModel.fromJson(Map<String, dynamic>.from(item));
+          }
+        }
+        if (raw.length < pageSize) return null;
+      }
+      return null;
+    } on ResourceNotFoundException {
+      return null;
+    } on AppException {
+      rethrow;
+    } catch (e) {
+      throw UnknownException(e.toString());
+    }
   }
 
   List<RequestModel> getCachedRequests() {

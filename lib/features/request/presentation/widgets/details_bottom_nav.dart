@@ -21,9 +21,7 @@ class DetailsBottomNav extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(16.r),
         child: Obx(() {
-          final request = controller.requests.firstWhereOrNull(
-            (e) => e.sId == requestId,
-          );
+          final request = controller.findRequest(requestId);
           if (request == null) return const SizedBox.shrink();
           final status = request.status ?? '';
           final isAdmin = AuthController.to.isAdmin();

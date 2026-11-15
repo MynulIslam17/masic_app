@@ -65,6 +65,7 @@ class _ImagePreviewViewerState extends State<ImagePreviewViewer> {
   late int _currentIndex;
   late final PageController _pageController;
   bool _saving = false;
+  bool _zoomed = false;
 
   @override
   void initState() {
@@ -168,32 +169,161 @@ class _ImagePreviewViewerState extends State<ImagePreviewViewer> {
       body: PageView.builder(
         controller: _pageController,
         itemCount: _urls.length,
+        // While an image is zoomed, a horizontal drag pans the image instead
+        // of flipping to the next page.
+        physics: _zoomed
+            ? const NeverScrollableScrollPhysics()
+            : const PageScrollPhysics(),
         onPageChanged: (index) {
           setState(() {
             _currentIndex = index;
+            _zoomed = false;
           });
         },
         itemBuilder: (context, index) {
-          final url = _urls[index];
-          return Center(
-            child: InteractiveViewer(
-              minScale: 0.8,
-              maxScale: 5,
-              child: CachedNetworkImage(
-                imageUrl: url,
-                fit: BoxFit.contain,
-                placeholder: (_, __) => const CircularProgressIndicator(
-                  color: AppColors.white,
-                ),
-                errorWidget: (_, __, ___) => const Icon(
+          return ZoomableNetworkImage(
+            key: ValueKey('preview_$index'),
+            url: _urls[index],
+            active: index == _currentIndex,
+            onZoomChanged: (zoomed) {
+              if (index == _currentIndex && zoomed != _zoomed) {
+                setState(() => _zoomed = zoomed);
+              }
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+
+/// Full-screen pinch / double-tap zoom for one image.
+///
+/// The zoom surface is the whole viewport (not just the image's box), so the
+/// image can be enlarged past its letterboxed size and panned edge to edge.
+/// Double tap zooms into the tapped point and back out; leaving the page
+/// resets the zoom.
+class ZoomableNetworkImage extends StatefulWidget {
+  const ZoomableNetworkImage({
+    super.key,
+    required this.url,
+    this.active = true,
+    this.onZoomChanged,
+    this.maxScale = 5,
+    this.doubleTapScale = 2.5,
+  });
+
+  final String url;
+  final bool active;
+  final ValueChanged<bool>? onZoomChanged;
+  final double maxScale;
+  final double doubleTapScale;
+
+  @override
+  State<ZoomableNetworkImage> createState() => _ZoomableNetworkImageState();
+}
+
+class _ZoomableNetworkImageState extends State<ZoomableNetworkImage>
+    with SingleTickerProviderStateMixin {
+  final _transform = TransformationController();
+  late final AnimationController _animation;
+  Animation<Matrix4>? _tween;
+  Offset _doubleTapAt = Offset.zero;
+  bool _zoomed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animation = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+    )..addListener(() {
+        final tween = _tween;
+        if (tween != null) _transform.value = tween.value;
+      });
+    _transform.addListener(_reportZoom);
+  }
+
+  @override
+  void didUpdateWidget(covariant ZoomableNetworkImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.active && !widget.active) {
+      _animation.stop();
+      _transform.value = Matrix4.identity();
+    }
+  }
+
+  @override
+  void dispose() {
+    _transform.removeListener(_reportZoom);
+    _transform.dispose();
+    _animation.dispose();
+    super.dispose();
+  }
+
+  double get _scale => _transform.value.getMaxScaleOnAxis();
+
+  void _reportZoom() {
+    final zoomed = _scale > 1.01;
+    if (zoomed == _zoomed) return;
+    _zoomed = zoomed;
+    widget.onZoomChanged?.call(zoomed);
+  }
+
+  void _animateTo(Matrix4 target) {
+    _tween = Matrix4Tween(begin: _transform.value, end: target).animate(
+      CurvedAnimation(parent: _animation, curve: Curves.easeOutCubic),
+    );
+    _animation.forward(from: 0);
+  }
+
+  void _onDoubleTap() {
+    if (_scale > 1.01) {
+      _animateTo(Matrix4.identity());
+      return;
+    }
+    final s = widget.doubleTapScale;
+    final p = _doubleTapAt;
+    // Keep the tapped point under the finger while scaling.
+    _animateTo(
+      Matrix4.identity()
+        ..translateByDouble(-p.dx * (s - 1), -p.dy * (s - 1), 0, 1)
+        ..scaleByDouble(s, s, 1, 1),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onDoubleTapDown: (d) => _doubleTapAt = d.localPosition,
+      onDoubleTap: _onDoubleTap,
+      child: SizedBox.expand(
+        child: InteractiveViewer(
+          transformationController: _transform,
+          minScale: 1,
+          maxScale: widget.maxScale,
+          // Pan only within the zoomed image, never into empty space.
+          boundaryMargin: EdgeInsets.zero,
+          panEnabled: true,
+          onInteractionStart: (_) => _animation.stop(),
+          child: SizedBox.expand(
+            child: CachedNetworkImage(
+              imageUrl: widget.url,
+              fit: BoxFit.contain,
+              placeholder: (_, __) => const Center(
+                child: CircularProgressIndicator(color: AppColors.white),
+              ),
+              errorWidget: (_, __, ___) => const Center(
+                child: Icon(
                   Icons.broken_image_outlined,
                   color: Colors.white,
                   size: 48,
                 ),
               ),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

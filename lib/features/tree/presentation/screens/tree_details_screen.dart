@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
-import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/features/profile/presentation/widgets/info_row.dart';
 import 'package:masic_generation/features/translation/presentation/controller/translation_controller.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
@@ -92,14 +91,6 @@ class _TreeDetailsScreenState extends State<TreeDetailsScreen> {
                             label: 'Phone no',
                             value: user.phone,
                             copyable: true,
-                          ),
-                        if (user?.dateOfBirth != null &&
-                            user!.dateOfBirth!.isNotEmpty)
-                          InfoRow(
-                            label: 'Date of birth',
-                            value: TimeFormatHelper.formatDateTime(
-                              user.dateOfBirth ?? '',
-                            ),
                           ),
                         if (user?.gender != null && user!.gender!.isNotEmpty)
                           InfoRow(

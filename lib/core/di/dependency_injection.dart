@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/toast_message_helper.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
@@ -72,7 +73,8 @@ class DependencyInjection {
       onSessionExpired: () async {
         if (Get.currentRoute == AppRoutes.loginScreen) return;
         if (!Get.isRegistered<AuthController>()) return;
-        await AuthController.to.logout();
+        ToastMessageHelper.show('Your session has ended. Please log in again.');
+        await AuthController.to.logout(showProgress: false);
       },
     );
     Get.put<ApiService>(apiService, permanent: true);

@@ -20,6 +20,51 @@ class FamilyTreeGraph extends StatefulWidget {
     this.onToggleEdit = false,
   });
 
+  /// Space kept clear above the graph for the floating search/origin buttons.
+  static const double topActionsHeight = 72;
+
+  /// Minimum space kept clear below the graph for the floating bottom nav bar
+  /// (the nav scaffolds use `extendBody: true`, so the body runs underneath it).
+  static const double minBottomBarHeight = 120;
+
+  /// Extra breathing room under the last row of nodes.
+  static const double bottomBreathingRoom = 32;
+
+  static EdgeInsets verticalInsets(EdgeInsets mediaPadding) {
+    final bottomBar = mediaPadding.bottom > minBottomBarHeight
+        ? mediaPadding.bottom
+        : minBottomBarHeight;
+    return EdgeInsets.only(
+      top: mediaPadding.top + topActionsHeight,
+      bottom: bottomBar + bottomBreathingRoom,
+    );
+  }
+
+  /// Total scrollable canvas height. Always tall enough that the lowest node
+  /// can be scrolled fully above the bottom nav bar.
+  static double canvasHeight({
+    required double graphHeight,
+    required double screenHeight,
+    required double topInset,
+    required double bottomInset,
+  }) {
+    final needed = graphHeight + topInset + bottomInset;
+    return needed > screenHeight ? needed : screenHeight;
+  }
+
+  /// Top offset of the graph: centred within the visible band when it fits,
+  /// otherwise pinned under the top inset.
+  static double graphTop({
+    required double graphHeight,
+    required double canvasHeight,
+    required double topInset,
+    required double bottomInset,
+  }) {
+    final band = canvasHeight - topInset - bottomInset;
+    final slack = band - graphHeight;
+    return topInset + (slack > 0 ? slack / 2 : 0);
+  }
+
   @override
   State<FamilyTreeGraph> createState() => _FamilyTreeGraphState();
 }
@@ -130,9 +175,22 @@ class _FamilyTreeGraphState extends State<FamilyTreeGraph> {
           screenW * 2,
           double.infinity,
         );
-        final totalH = (graphSize.height + 80).clamp(screenH, double.infinity);
+        final insets = FamilyTreeGraph.verticalInsets(
+          MediaQuery.paddingOf(context),
+        );
+        final totalH = FamilyTreeGraph.canvasHeight(
+          graphHeight: graphSize.height,
+          screenHeight: screenH,
+          topInset: insets.top,
+          bottomInset: insets.bottom,
+        );
         final treeTopOffset = (totalH - screenH) / 2;
-        final graphTopOffset = (totalH - graphSize.height) / 2;
+        final graphTopOffset = FamilyTreeGraph.graphTop(
+          graphHeight: graphSize.height,
+          canvasHeight: totalH,
+          topInset: insets.top,
+          bottomInset: insets.bottom,
+        );
 
         return SizedBox(
           width: totalW,

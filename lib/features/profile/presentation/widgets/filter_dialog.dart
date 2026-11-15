@@ -6,7 +6,11 @@ import 'package:masic_generation/features/profile/presentation/controllers/profi
 import 'package:get/get.dart';
 
 class FilterDialog extends StatelessWidget {
-  const FilterDialog({super.key});
+  const FilterDialog({super.key, this.onApply, this.onClear});
+
+  /// Override what Apply / Clear reload. Defaults to the member directory.
+  final VoidCallback? onApply;
+  final VoidCallback? onClear;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +72,7 @@ class FilterDialog extends StatelessWidget {
                 foregroundColor: AppColors.primaryColor,
                 label: 'Apply',
                 onPressed: () {
-                  controller.refresh();
+                  onApply != null ? onApply!() : controller.refresh();
                   Get.back();
                 },
               ),
@@ -81,7 +85,7 @@ class FilterDialog extends StatelessWidget {
                 foregroundColor: AppColors.errorColor,
                 label: 'Clear',
                 onPressed: () {
-                  controller.clearAllFilters();
+                  onClear != null ? onClear!() : controller.clearAllFilters();
                   Get.back();
                 },
               ),

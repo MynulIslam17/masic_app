@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
@@ -74,7 +75,7 @@ class PrivacyController extends GetxController {
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Privacy', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -83,7 +84,7 @@ class PrivacyController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: $e');
+      if (kDebugMode) AppLog.error('Privacy', 'Unexpected error: $e');
     }
   }
 
@@ -95,9 +96,8 @@ class PrivacyController extends GetxController {
 
     assert(() {
       if (kDebugMode) {
-        print('📦 Loaded from cache:');
         for (final key in ['privacy', 'about', 'terms']) {
-          print('   $key: ${_descriptions[key]?.length ?? 0} chars');
+          AppLog.info('Privacy', 'Loaded from cache → $key: ${_descriptions[key]?.length ?? 0} chars');
         }
       }
       return true;
@@ -118,10 +118,10 @@ class PrivacyController extends GetxController {
     } on AppException catch (e) {
       _updateLoadingState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
-      if (kDebugMode) debugPrint('Update error: $e');
+      if (kDebugMode) AppLog.error('Privacy', 'Update error: $e');
     } catch (e) {
       _updateLoadingState.value = LoadingState.error;
-      if (kDebugMode) debugPrint('Update error: $e');
+      if (kDebugMode) AppLog.error('Privacy', 'Update error: $e');
     }
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:masic_generation/core/helpers/time_format.dart';
 import 'package:masic_generation/core/routes/app_routes.dart';
 import 'package:masic_generation/core/theme/app_colors.dart';
 import 'package:masic_generation/core/utils/assets_path/assets.gen.dart';
@@ -67,14 +66,6 @@ class ProfileInformationScreen extends StatelessWidget {
                       InfoRow(label: 'Email', value: user.email, copyable: true),
                     if (user?.phone != null && user!.phone!.isNotEmpty)
                       InfoRow(label: 'Phone no', value: user!.phone, copyable: true),
-                    if (user?.dateOfBirth != null &&
-                        user!.dateOfBirth!.isNotEmpty)
-                      InfoRow(
-                        label: 'Date of birth',
-                        value: TimeFormatHelper.formatDateTime(
-                          user!.dateOfBirth,
-                        ),
-                      ),
                     if (user?.gender != null && user!.gender!.isNotEmpty)
                       InfoRow(label: 'Gender', value: user!.gender, translateValue: true),
                     if (user?.employmentStatus != null &&

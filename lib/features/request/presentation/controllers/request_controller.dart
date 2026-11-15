@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:masic_generation/core/enums/loading_state.dart';
@@ -136,7 +137,7 @@ class RequestController extends GetxController {
         _loadingState.value = LoadingState.loaded;
       } on AppException catch (e) {
         if (!hasCache) _loadingState.value = LoadingState.error;
-        if (kDebugMode) debugPrint('Fetch error: $e');
+        if (kDebugMode) AppLog.error('Request', 'Fetch error: $e');
       }
     } catch (e) {
       if (_service.hasCache()) {
@@ -147,7 +148,7 @@ class RequestController extends GetxController {
       } else {
         _loadingState.value = LoadingState.error;
       }
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) AppLog.error('Request', 'Unexpected error: ${e.toString()}');
     }
   }
 
@@ -168,10 +169,10 @@ class RequestController extends GetxController {
       }
     } on AppException catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Load more error: $e');
+      if (kDebugMode) AppLog.error('Request', 'Load more error: $e');
     } catch (e) {
       _currentPage--;
-      if (kDebugMode) debugPrint('Unexpected error: ${e.toString()}');
+      if (kDebugMode) AppLog.error('Request', 'Unexpected error: ${e.toString()}');
     } finally {
       _isLoadingMore.value = false;
     }
@@ -181,7 +182,7 @@ class RequestController extends GetxController {
     _requests.value = _service.getCachedRequests();
     assert(() {
       if (kDebugMode) {
-        print('📦 Loaded from cache: ${_requests.length} Requests');
+        AppLog.info('Request', 'Loaded from cache → ${_requests.length} Requests');
       }
       return true;
     }());
@@ -203,6 +204,49 @@ class RequestController extends GetxController {
         .toList();
   }
 
+  // ─── Details ─────────────────────────────────────────────────────────────────
+  /// Requests located for the details screen that are not in the loaded page
+  /// (e.g. opened from a notification).
+  final RxMap<String, RequestModel> _details = <String, RequestModel>{}.obs;
+  final RxMap<String, LoadingState> _detailStates =
+      <String, LoadingState>{}.obs;
+
+  LoadingState detailState(String id) =>
+      _detailStates[id] ?? LoadingState.initial;
+
+  RequestModel? findRequest(String id) {
+    if (id.isEmpty) return null;
+    return _requests.firstWhereOrNull((e) => e.sId == id) ??
+        _details[id] ??
+        _service.getCachedRequests().firstWhereOrNull((e) => e.sId == id);
+  }
+
+  Future<void> loadRequestDetails(String id) async {
+    if (id.isEmpty) {
+      _detailStates[id] = LoadingState.loaded;
+      return;
+    }
+    if (findRequest(id) != null) {
+      _detailStates[id] = LoadingState.loaded;
+      return;
+    }
+    if (!_connectivityService.isConnected.value) {
+      _detailStates[id] = LoadingState.offline;
+      return;
+    }
+    _detailStates[id] = LoadingState.loading;
+    try {
+      final found = await _service.findRequestById(id);
+      if (found != null) _details[id] = found;
+      _detailStates[id] = LoadingState.loaded;
+    } on AppException catch (e) {
+      _detailStates[id] = e is NoInternetException
+          ? LoadingState.offline
+          : LoadingState.error;
+      if (kDebugMode) AppLog.error('Request', 'Request details error ($id): $e');
+    }
+  }
+
   Future<void> updateStatus({
     required String requestId,
     required String status,
@@ -215,12 +259,18 @@ class RequestController extends GetxController {
     try {
       await _service.updateStatus(requestId, status, declineReason);
       _updateState.value = LoadingState.loaded;
+      final located = _details[requestId];
+      if (located != null) {
+        final json = located.toJson()..['status'] = status;
+        if (declineReason != null) json['declineReason'] = declineReason;
+        _details[requestId] = RequestModel.fromJson(json);
+      }
       refresh();
       Get.back(canPop: true);
     } on AppException catch (e) {
       _updateState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
-      if (kDebugMode) debugPrint('Update status error: $e');
+      if (kDebugMode) AppLog.error('Request', 'Update status error: $e');
     }
   }
 
@@ -286,7 +336,7 @@ class RequestController extends GetxController {
     } catch (e) {
       _createState.value = LoadingState.error;
       ToastMessageHelper.show(e.errorMessage);
-      if (kDebugMode) debugPrint('Create request error: $e');
+      if (kDebugMode) AppLog.error('Request', 'Create request error: $e');
       return false;
     }
   }

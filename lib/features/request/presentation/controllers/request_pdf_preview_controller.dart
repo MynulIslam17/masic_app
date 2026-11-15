@@ -28,9 +28,11 @@ class RequestPdfPreviewController extends GetxController {
     error.value = null;
 
     final requestId = Get.arguments as String;
-    final request = RequestController.to.requests.firstWhereOrNull(
-      (e) => e.sId == requestId,
-    );
+    final controller = RequestController.to;
+    if (controller.findRequest(requestId) == null) {
+      await controller.loadRequestDetails(requestId);
+    }
+    final request = controller.findRequest(requestId);
 
     if (request == null) {
       isLoading.value = false;

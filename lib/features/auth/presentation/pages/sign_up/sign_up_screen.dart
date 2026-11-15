@@ -127,7 +127,8 @@ class SignUpScreen extends StatelessWidget {
                  builder: (controller) {
                    return CustomButton(
                      isLoading: controller.registerState.isLoading,
-                       label: "Sign Up", onPressed: controller.register);
+                       label: "Sign Up",
+                       onPressed: controller.register);
                  }
                ),
 

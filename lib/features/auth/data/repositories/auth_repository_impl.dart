@@ -236,6 +236,15 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  bool isProfileSetupPending() =>
+      _cacheService.get<bool>(AppConstants.profileSetupPending) ?? false;
+
+  @override
+  Future<void> setProfileSetupPending(bool pending) => pending
+      ? _cacheService.put(AppConstants.profileSetupPending, true)
+      : _cacheService.delete(AppConstants.profileSetupPending);
+
+  @override
   Future<void> changePassword({
     required String oldPassword,
     required String newPassword,

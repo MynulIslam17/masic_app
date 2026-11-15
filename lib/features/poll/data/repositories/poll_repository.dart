@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:masic_generation/core/constants/api_constants.dart';
+import 'package:masic_generation/core/helpers/api_response_parser.dart';
 import 'package:masic_generation/core/exceptions/app_exceptions.dart';
 import 'package:masic_generation/core/services/api_service.dart';
 import 'package:masic_generation/core/services/cache_service.dart';
@@ -34,8 +35,8 @@ class PollRepository {
         queryParameters: {'searchTerm': search},
       );
 
-      final announcements = (response.data['data'] as List)
-          .map((e) => PollModel.fromJson(e))
+      final announcements = ApiResponseParser.dataList(response.data)
+          .map(PollModel.fromJson)
           .toList();
 
       await _cacheService.put(
@@ -44,6 +45,11 @@ class PollRepository {
       );
 
       return announcements;
+    } on ResourceNotFoundException {
+      if (page == 1) {
+        await _cacheService.put(ApiConstants.cachePolls, const <dynamic>[]);
+      }
+      return const [];
     } on AppException {
       return getCachedPolls();
     } catch (e) {

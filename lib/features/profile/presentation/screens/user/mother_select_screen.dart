@@ -25,6 +25,7 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
   late final String? motherId;
   late final bool isMandatory;
   final RxString _searchQuery = ''.obs;
+  final RxBool _isPullRefreshing = false.obs;
   Timer? _debounceTimer;
 
   @override
@@ -32,7 +33,11 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
     super.initState();
     motherId = Get.arguments as String?;
     isMandatory = motherId == null && !AuthController.to.isAdmin();
+    // Onboarding picker starts with nothing selected.
+    if (isMandatory) ProfileController.to.selectSingleUser('');
     ProfileController.to.searchController.clear();
+    // Filters live on the shared controller; start clean.
+    ProfileController.to.resetFilters();
     _searchQuery.value = '';
     if (motherId == null) {
       ProfileController.to.loadMotherTrees();
@@ -51,6 +56,7 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
   void dispose() {
     _debounceTimer?.cancel();
     ProfileController.to.searchController.clear();
+    ProfileController.to.resetFilters();
     ProfileController.to.stopMotherTreePicker();
     super.dispose();
   }
@@ -65,12 +71,43 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
     }
   }
 
+  /// Pull-to-refresh: the pull indicator is the only loader; the list stays
+  /// visible and Submit is disabled until the fresh data is in.
+  Future<void> _onPullRefresh() async {
+    if (_isPullRefreshing.value) return;
+    _isPullRefreshing.value = true;
+    try {
+      if (motherId == null) {
+        await ProfileController.to.loadMotherTrees(silent: true);
+      } else {
+        await ProfileController.to.refresh();
+      }
+    } finally {
+      if (mounted) _isPullRefreshing.value = false;
+    }
+  }
+
   Future<void> _handleBack() async {
     if (Navigator.of(context).canPop() && !isMandatory) {
       Get.back();
       return;
     }
-    await AuthController.to.logout();
+    // Choosing a mother tree is mandatory, so leaving means logging out.
+    // Ask first: this is also what the Android back gesture triggers.
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (_) => CustomDialog(
+        title: 'Log out?',
+        description:
+            'You need to select a mother tree to continue. '
+            'Do you want to log out instead?',
+        leftButtonLabel: 'Cancel',
+        rightButtonLabel: 'Log out',
+        onTapLeftButton: () => Get.back(),
+        onTapRightButton: () => AuthController.to.logout(),
+      ),
+    );
   }
 
   @override
@@ -92,7 +129,17 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => FilterDialog(),
+                  // Mother tree mode filters `GET /member/mother-trees`;
+                  // the admin picker keeps filtering the member directory.
+                  builder: (context) => motherId == null
+                      ? FilterDialog(
+                          onApply: controller.loadMotherTrees,
+                          onClear: () {
+                            controller.resetFilters();
+                            controller.loadMotherTrees();
+                          },
+                        )
+                      : const FilterDialog(),
                 );
               },
               icon: Assets.icons.filter.svg(),
@@ -100,9 +147,11 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
           ],
         ),
         body: RefreshIndicator(
-          onRefresh: () => motherId == null ? controller.loadMotherTrees() : controller.refresh(),
+          onRefresh: _onPullRefresh,
           child: SingleChildScrollView(
-            controller: controller.scrollController,
+            // The shared controller pages `GET /users` on scroll, which
+            // the mother tree list must not trigger.
+            controller: motherId == null ? null : controller.scrollController,
             physics: AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics(),
             ),
@@ -139,7 +188,9 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
                       CustomText(
                         textAlign: TextAlign.start,
                         fontSize: 12.sp,
-                        text: 'Total user : ${users.length}',
+                        text: motherId == null
+                            ? 'Total mother trees : ${users.length}'
+                            : 'Total user : ${users.length}',
                       ),
                     ],
                   );
@@ -163,7 +214,9 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
                       return SizedBox(
                         height: MediaQuery.sizeOf(context).height * 0.45,
                         child: EmptyDataWidget(
-                          message: 'Failed to load users. Please try again.',
+                          message: motherId == null
+                              ? 'Failed to load mother trees. Please try again.'
+                              : 'Failed to load users. Please try again.',
                           onRefresh: () => motherId == null
                               ? controller.loadMotherTrees()
                               : controller.refresh(),
@@ -176,8 +229,12 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
                         return SizedBox(
                           height: MediaQuery.sizeOf(context).height * 0.45,
                           child: EmptyDataWidget(
-                            message: 'No user found.',
-                            onRefresh: () => controller.refresh(),
+                            message: motherId == null
+                                ? 'No mother tree found.'
+                                : 'No user found.',
+                            onRefresh: () => motherId == null
+                                ? controller.loadMotherTrees()
+                                : controller.refresh(),
                           ),
                         );
                       }
@@ -215,16 +272,29 @@ class _MotherSelectScreenState extends State<MotherSelectScreen> {
           child: Padding(
             padding: EdgeInsets.all(16.r),
             child: Obx(() {
-              return CustomButton(
-                isLoading: controller.motherTreeState.isLoading,
-                onPressed: () {
-                  if (AuthController.to.isAdmin()) {
-                    controller.addMember(motherId ?? '');
-                  } else {
-                    controller.motherTreeSelect();
-                  }
-                },
-                label: 'Submit',
+              final listState = motherId == null
+                  ? controller.motherTreeState
+                  : controller.loadingState;
+              // The spinner is for submitting only. While the list is
+              // loading or refreshing the button is just disabled.
+              final isListBusy =
+                  _isPullRefreshing.value || listState.isLoading;
+              return AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: isListBusy ? 0.5 : 1,
+                child: CustomButton(
+                  isLoading: controller.motherSubmitState.isLoading,
+                  onPressed: isListBusy
+                      ? null
+                      : () {
+                          if (AuthController.to.isAdmin()) {
+                            controller.addMember(motherId ?? '');
+                          } else {
+                            controller.motherTreeSelect();
+                          }
+                        },
+                  label: 'Submit',
+                ),
               );
             }),
           ),

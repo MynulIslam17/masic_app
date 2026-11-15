@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -17,6 +18,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
     await Firebase.initializeApp(options: options);
   } catch (e, stack) {
-    debugPrint('firebaseMessagingBackgroundHandler init failed: $e\n$stack');
+    AppLog.error('Push', 'firebaseMessagingBackgroundHandler init failed: $e\n$stack');
   }
 }

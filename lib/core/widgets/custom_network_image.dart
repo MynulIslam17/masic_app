@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +61,7 @@ class CustomNetworkImage extends StatelessWidget {
           child: _buildContainer(null, shimmer: true),
         ),
         errorWidget: (context, url, error) {
-          debugPrint('❌ Image load error: $error');
+          AppLog.error('Image', 'Image load error: $error');
           return _buildFallback();
         },
       );

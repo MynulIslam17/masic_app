@@ -1,3 +1,4 @@
+import 'package:masic_generation/core/helpers/app_log.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +12,7 @@ class TimeFormatHelper {
     try {
       return DateFormat('MMM dd, yyyy').tryParse(formattedDate.trim());
     } catch (e) {
-      debugPrint('❌ parseDate error: $e');
+      AppLog.error('TimeFormat', 'parseDate error: $e');
       return null;
     }
   }
@@ -25,7 +26,7 @@ class TimeFormatHelper {
       if (dt == null) return '-';
       return DateFormat('dd-MMM-yyyy').format(dt);
     } catch (e) {
-      debugPrint('❌ formatDateTime error for "$date": $e');
+      AppLog.error('TimeFormat', 'formatDateTime error for "$date": $e');
       return '-';
     }
   }
@@ -35,7 +36,7 @@ class TimeFormatHelper {
     try {
       return parseDate(text.trim())?.toUtc().toIso8601String();
     } catch (e) {
-      debugPrint('❌ parseToIso error: $e');
+      AppLog.error('TimeFormat', 'parseToIso error: $e');
       return null;
     }
   }
@@ -65,7 +66,7 @@ class TimeFormatHelper {
     try {
       return DateFormat('EEEE').format(DateTime.parse(dateString).toLocal());
     } catch (e) {
-      debugPrint('❌ getDayName error: $e');
+      AppLog.error('TimeFormat', 'getDayName error: $e');
       return '-';
     }
   }
@@ -75,7 +76,7 @@ class TimeFormatHelper {
     try {
       return DateFormat('dd MMMM').format(DateTime.parse(dateString).toLocal());
     } catch (e) {
-      debugPrint('❌ getDate error: $e');
+      AppLog.error('TimeFormat', 'getDate error: $e');
       return '-';
     }
   }
@@ -85,7 +86,7 @@ class TimeFormatHelper {
     try {
       return DateFormat('MMMM').format(DateTime.parse(dateString).toLocal());
     } catch (e) {
-      debugPrint('❌ getMonth error: $e');
+      AppLog.error('TimeFormat', 'getMonth error: $e');
       return '-';
     }
   }
@@ -95,7 +96,7 @@ class TimeFormatHelper {
     try {
       return DateFormat('MMM d').format(DateTime.parse(date).toLocal());
     } catch (e) {
-      debugPrint('❌ formatMonthOrDate error: $e');
+      AppLog.error('TimeFormat', 'formatMonthOrDate error: $e');
       return '-';
     }
   }
